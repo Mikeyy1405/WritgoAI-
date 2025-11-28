@@ -1,10 +1,6 @@
 <?php
 /**
- * Main Template File
- *
- * This is the most generic template file in a WordPress theme
- * and one of the two required files for a theme (the other being style.css).
- * It is used to display a page when nothing more specific matches a query.
+ * The template for displaying archive pages
  *
  * @package WritgoCMS
  */
@@ -18,11 +14,12 @@ get_header();
 
 <main id="primary" class="site-main">
     <div class="content-area">
-        <?php if ( is_home() && ! is_front_page() ) : ?>
-            <header class="page-header">
-                <h1 class="page-title"><?php single_post_title(); ?></h1>
-            </header>
-        <?php endif; ?>
+        <header class="page-header">
+            <?php
+            the_archive_title( '<h1 class="page-title">', '</h1>' );
+            the_archive_description( '<div class="archive-description">', '</div>' );
+            ?>
+        </header>
 
         <?php if ( have_posts() ) : ?>
             <div class="blog-posts">
@@ -55,14 +52,6 @@ get_header();
                                             <?php echo esc_html( get_the_author() ); ?>
                                         </a>
                                     </span>
-                                    <?php
-                                    $categories_list = get_the_category_list( ', ' );
-                                    if ( $categories_list ) :
-                                        ?>
-                                        <span class="cat-links">
-                                            <?php echo $categories_list; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                                        </span>
-                                    <?php endif; ?>
                                 </div>
                             </header>
 
@@ -92,7 +81,7 @@ get_header();
         <?php else : ?>
             <div class="no-results">
                 <h2><?php esc_html_e( 'Nothing Found', 'writgocms' ); ?></h2>
-                <p><?php esc_html_e( 'It looks like nothing was found at this location. Maybe try a search?', 'writgocms' ); ?></p>
+                <p><?php esc_html_e( 'It appears there are no posts in this archive. Maybe try searching for what you are looking for?', 'writgocms' ); ?></p>
                 <?php get_search_form(); ?>
             </div>
         <?php endif; ?>
