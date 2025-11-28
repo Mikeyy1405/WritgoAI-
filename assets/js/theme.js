@@ -1,7 +1,7 @@
 /**
  * WritgoCMS Theme JavaScript
  *
- * Handles mobile navigation, smooth scrolling, and other interactive elements.
+ * Handles mobile navigation, smooth scrolling, animations, and other interactive elements.
  *
  * @package WritgoCMS
  */
@@ -10,52 +10,83 @@
     'use strict';
 
     /**
-     * Mobile Navigation Toggle
+     * Mobile Navigation Toggle with Smooth Animation
      */
     function initMobileNav() {
         const menuToggle = document.querySelector( '.menu-toggle' );
         const navigation = document.querySelector( '.main-navigation' );
         const menu = document.querySelector( '#primary-menu' );
+        const backdrop = document.querySelector( '.menu-backdrop' );
+        const body = document.body;
 
         if ( ! menuToggle || ! navigation ) {
             return;
+        }
+
+        function openMenu() {
+            menuToggle.setAttribute( 'aria-expanded', 'true' );
+            navigation.classList.add( 'toggled' );
+            if ( backdrop ) {
+                backdrop.classList.add( 'is-visible' );
+            }
+            body.style.overflow = 'hidden';
+        }
+
+        function closeMenu() {
+            menuToggle.setAttribute( 'aria-expanded', 'false' );
+            navigation.classList.remove( 'toggled' );
+            if ( backdrop ) {
+                backdrop.classList.remove( 'is-visible' );
+            }
+            body.style.overflow = '';
         }
 
         menuToggle.addEventListener( 'click', function( e ) {
             e.preventDefault();
             const isExpanded = menuToggle.getAttribute( 'aria-expanded' ) === 'true';
             
-            menuToggle.setAttribute( 'aria-expanded', ! isExpanded );
-            navigation.classList.toggle( 'toggled' );
-            
-            // Toggle menu visibility
-            if ( menu ) {
-                menu.style.display = navigation.classList.contains( 'toggled' ) ? 'block' : '';
+            if ( isExpanded ) {
+                closeMenu();
+            } else {
+                openMenu();
             }
         } );
 
-        // Close menu when clicking outside
-        document.addEventListener( 'click', function( e ) {
-            if ( ! navigation.contains( e.target ) && navigation.classList.contains( 'toggled' ) ) {
-                menuToggle.setAttribute( 'aria-expanded', 'false' );
-                navigation.classList.remove( 'toggled' );
-                if ( menu ) {
-                    menu.style.display = '';
-                }
-            }
-        } );
+        // Close menu when clicking on backdrop
+        if ( backdrop ) {
+            backdrop.addEventListener( 'click', closeMenu );
+        }
+
+        // Close menu when clicking a menu link
+        if ( menu ) {
+            const menuLinks = menu.querySelectorAll( 'a' );
+            menuLinks.forEach( function( link ) {
+                link.addEventListener( 'click', function() {
+                    if ( navigation.classList.contains( 'toggled' ) ) {
+                        closeMenu();
+                    }
+                } );
+            } );
+        }
 
         // Close menu on escape key
         document.addEventListener( 'keydown', function( e ) {
             if ( e.key === 'Escape' && navigation.classList.contains( 'toggled' ) ) {
-                menuToggle.setAttribute( 'aria-expanded', 'false' );
-                navigation.classList.remove( 'toggled' );
+                closeMenu();
                 menuToggle.focus();
-                if ( menu ) {
-                    menu.style.display = '';
-                }
             }
         } );
+
+        // Close menu on resize to desktop
+        let resizeTimer;
+        window.addEventListener( 'resize', function() {
+            clearTimeout( resizeTimer );
+            resizeTimer = setTimeout( function() {
+                if ( window.innerWidth >= 768 && navigation.classList.contains( 'toggled' ) ) {
+                    closeMenu();
+                }
+            }, 100 );
+        }, { passive: true } );
 
         // Handle dropdown menus on touch devices
         const menuItemsWithChildren = navigation.querySelectorAll( '.menu-item-has-children > a' );
@@ -95,7 +126,8 @@
                 if ( target ) {
                     e.preventDefault();
                     
-                    const headerHeight = document.querySelector( '.site-header' )?.offsetHeight || 0;
+                    const header = document.querySelector( '.site-header' );
+                    const headerHeight = header ? header.offsetHeight : 0;
                     const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
                     
                     window.scrollTo( {
@@ -108,7 +140,7 @@
                     
                     // Set focus to target for accessibility
                     target.setAttribute( 'tabindex', '-1' );
-                    target.focus();
+                    target.focus( { preventScroll: true } );
                 }
             } );
         } );
@@ -170,8 +202,9 @@
         }
         
         let lastScroll = 0;
+        let ticking = false;
         
-        window.addEventListener( 'scroll', function() {
+        function updateHeader() {
             const currentScroll = window.pageYOffset;
             
             // Add scrolled class when page is scrolled
@@ -181,18 +214,19 @@
                 header.classList.remove( 'is-scrolled' );
             }
             
-            // Hide/show header on scroll direction (optional - disabled by default)
-            // Uncomment the following if you want hide-on-scroll behavior
-            /*
-            if ( currentScroll > lastScroll && currentScroll > 200 ) {
-                header.classList.add( 'is-hidden' );
-            } else {
-                header.classList.remove( 'is-hidden' );
-            }
-            */
-            
             lastScroll = currentScroll;
+            ticking = false;
+        }
+        
+        window.addEventListener( 'scroll', function() {
+            if ( ! ticking ) {
+                window.requestAnimationFrame( updateHeader );
+                ticking = true;
+            }
         }, { passive: true } );
+        
+        // Initial check
+        updateHeader();
     }
 
     /**
@@ -218,38 +252,54 @@
                     right: 2rem;
                     width: 48px;
                     height: 48px;
-                    background-color: var(--color-primary, #6366f1);
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     color: #fff;
                     border: none;
-                    border-radius: 50%;
+                    border-radius: 12px;
                     cursor: pointer;
                     opacity: 0;
                     visibility: hidden;
-                    transition: all 0.3s ease;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     z-index: 100;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35);
                 }
                 .back-to-top:hover {
-                    background-color: var(--color-primary-dark, #4f46e5);
-                    transform: translateY(-2px);
+                    transform: translateY(-4px);
+                    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.45);
                 }
                 .back-to-top.is-visible {
                     opacity: 1;
                     visibility: visible;
+                }
+                @media (max-width: 767px) {
+                    .back-to-top {
+                        bottom: 1rem;
+                        right: 1rem;
+                        width: 44px;
+                        height: 44px;
+                    }
                 }
             `;
             document.head.appendChild( style );
         }
         
         // Show/hide based on scroll position
+        let ticking = false;
+        
         window.addEventListener( 'scroll', function() {
-            if ( window.pageYOffset > 500 ) {
-                backToTop.classList.add( 'is-visible' );
-            } else {
-                backToTop.classList.remove( 'is-visible' );
+            if ( ! ticking ) {
+                window.requestAnimationFrame( function() {
+                    if ( window.pageYOffset > 500 ) {
+                        backToTop.classList.add( 'is-visible' );
+                    } else {
+                        backToTop.classList.remove( 'is-visible' );
+                    }
+                    ticking = false;
+                } );
+                ticking = true;
             }
         }, { passive: true } );
         
@@ -259,6 +309,110 @@
                 top: 0,
                 behavior: 'smooth'
             } );
+        } );
+    }
+
+    /**
+     * Scroll Animations with Intersection Observer
+     */
+    function initScrollAnimations() {
+        const animatedElements = document.querySelectorAll( '.fade-in-up, .fade-in-left, .fade-in-right' );
+        
+        if ( animatedElements.length === 0 ) {
+            return;
+        }
+        
+        // Check if user prefers reduced motion
+        const prefersReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+        
+        if ( prefersReducedMotion ) {
+            // Show all elements immediately if reduced motion is preferred
+            animatedElements.forEach( function( el ) {
+                el.classList.add( 'is-visible' );
+            } );
+            return;
+        }
+        
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -50px 0px',
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver( function( entries ) {
+            entries.forEach( function( entry ) {
+                if ( entry.isIntersecting ) {
+                    entry.target.classList.add( 'is-visible' );
+                    observer.unobserve( entry.target );
+                }
+            } );
+        }, observerOptions );
+        
+        animatedElements.forEach( function( el ) {
+            observer.observe( el );
+        } );
+    }
+
+    /**
+     * Stats Counter Animation
+     */
+    function initStatsCounter() {
+        const statNumbers = document.querySelectorAll( '.stat-number[data-count], .hero-stat-number[data-count]' );
+        
+        if ( statNumbers.length === 0 ) {
+            return;
+        }
+        
+        // Check if user prefers reduced motion
+        const prefersReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+        
+        const animateCounter = function( element ) {
+            const target = parseInt( element.getAttribute( 'data-count' ), 10 );
+            const duration = 2000; // 2 seconds
+            const startTime = performance.now();
+            
+            if ( prefersReducedMotion ) {
+                element.textContent = target;
+                return;
+            }
+            
+            function updateCounter( currentTime ) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min( elapsed / duration, 1 );
+                
+                // Easing function (ease-out)
+                const easeOut = 1 - Math.pow( 1 - progress, 3 );
+                const current = Math.floor( easeOut * target );
+                
+                element.textContent = current;
+                
+                if ( progress < 1 ) {
+                    requestAnimationFrame( updateCounter );
+                } else {
+                    element.textContent = target;
+                }
+            }
+            
+            requestAnimationFrame( updateCounter );
+        };
+        
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.5
+        };
+        
+        const observer = new IntersectionObserver( function( entries ) {
+            entries.forEach( function( entry ) {
+                if ( entry.isIntersecting ) {
+                    animateCounter( entry.target );
+                    observer.unobserve( entry.target );
+                }
+            } );
+        }, observerOptions );
+        
+        statNumbers.forEach( function( el ) {
+            observer.observe( el );
         } );
     }
 
@@ -334,7 +488,7 @@
                 const errorElement = document.createElement( 'span' );
                 errorElement.className = 'error-message';
                 errorElement.textContent = message;
-                errorElement.style.cssText = 'color: var(--color-error, #ef4444); font-size: 0.875rem; display: block; margin-top: 0.25rem;';
+                errorElement.style.cssText = 'color: var(--color-error, #f56565); font-size: 0.875rem; display: block; margin-top: 0.25rem;';
                 input.parentElement.appendChild( errorElement );
             }
             
@@ -364,7 +518,7 @@
                 outline: none;
             }
             body.user-is-tabbing *:focus {
-                outline: 2px solid var(--color-primary, #6366f1);
+                outline: 2px solid var(--color-primary, #667eea);
                 outline-offset: 2px;
             }
         `;
@@ -380,6 +534,8 @@
         initLazyLoading();
         initStickyHeader();
         initBackToTop();
+        initScrollAnimations();
+        initStatsCounter();
         initFormValidation();
         initKeyboardNav();
     }
