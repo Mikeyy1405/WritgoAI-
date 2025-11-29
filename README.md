@@ -1,10 +1,16 @@
 # WritgoCMS
 
-AI-Powered Multi-Purpose WordPress Theme with AIML Multi-Provider Integration.
+AI-Powered Full Site Editing (FSE) Block Theme with AIML Multi-Provider Integration.
 
 ![WritgoCMS Theme](screenshot.png)
 
 ## 🚀 Features
+
+### Full Site Editing (FSE) Block Theme
+- **Fully Block-Based**: All templates are editable via the WordPress Site Editor
+- **Block Patterns**: 12+ pre-built patterns for quick page building
+- **Template Parts**: Reusable header, footer, sidebar, and post meta components
+- **Custom Templates**: About, Contact, and more page templates
 
 ### AI Integration
 - **Text Generation**: OpenAI (GPT-4, GPT-3.5), Anthropic Claude, Google Gemini, Mistral AI
@@ -13,13 +19,61 @@ AI-Powered Multi-Purpose WordPress Theme with AIML Multi-Provider Integration.
 - **Classic Editor Integration**: AI button for traditional editing experience
 
 ### Theme Features
-- **4 Professional Templates**: Shop, Blog, Business, Affiliate
+- **9 Block Templates**: Homepage, Single Post, Page, Archive, Search, 404, About, Contact
+- **4 Template Parts**: Header, Footer, Sidebar, Post Meta
+- **12+ Block Patterns**: Heroes, Features, Blog Grids, CTAs, Team, Stats, Testimonials
 - **Fully Responsive Design**: Mobile-first approach with breakpoints for all devices
 - **Modern CSS Variables**: Easy customization of colors, fonts, and spacing
-- **Widget Areas**: Sidebar, 3 Footer columns, Hero section
-- **Navigation Menus**: Primary, Footer, and Social Links menus
 - **Block Editor Support**: Full support for Gutenberg with custom styles
-- **WooCommerce Compatible**: Ready for e-commerce integration
+
+## 📁 Full Site Editing Structure
+
+### Block Templates (`/templates/`)
+
+| Template | Description |
+|----------|-------------|
+| `index.html` | Default fallback template with post grid |
+| `home.html` | Homepage with hero, features, blog preview, CTA |
+| `page.html` | Default page template |
+| `page-about.html` | About Us page with team section |
+| `page-contact.html` | Contact page with info cards |
+| `single.html` | Single post with author box and sidebar |
+| `archive.html` | Archive/category pages with post grid |
+| `search.html` | Search results page |
+| `404.html` | Custom 404 not found page |
+
+### Template Parts (`/parts/`)
+
+| Part | Description |
+|------|-------------|
+| `header.html` | Site header with navigation |
+| `footer.html` | Multi-column footer with social links |
+| `sidebar.html` | Sidebar with search, categories, recent posts |
+| `post-meta.html` | Reusable post metadata (date, author, category) |
+
+### Block Patterns (`/patterns/`)
+
+**Hero Patterns:**
+- `hero-gradient.php` - Full-width hero with gradient background
+- `hero-image.php` - Hero with background image overlay
+- `hero-minimal.php` - Clean minimal hero section
+
+**Feature Patterns:**
+- `features-grid-3col.php` - 3-column feature grid with icons
+- `features-cards.php` - Feature cards with colored icons
+
+**Blog Patterns:**
+- `blog-grid-3col.php` - 3-column blog post grid with query loop
+
+**CTA Patterns:**
+- `cta-boxed.php` - Boxed call-to-action section
+- `cta-fullwidth.php` - Full-width CTA with gradient
+
+**Content Patterns:**
+- `team-grid.php` - Team member grid
+- `stats-row.php` - Statistics counter row
+- `testimonials.php` - Testimonial cards
+- `contact-info.php` - Contact information cards
 
 ## 📋 Installation
 
@@ -57,18 +111,24 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git
 3. Select your preferred default text and image providers
 4. Save settings
 
-### Setting Up Menus
-1. Go to Appearance → Menus
-2. Create menus for:
-   - **Primary Menu**: Main navigation in header
-   - **Footer Menu**: Links in footer
-   - **Social Links Menu**: Social media icons in footer
+### Editing Templates with Site Editor
+1. Go to WordPress Admin → Appearance → Editor
+2. Click on "Templates" or "Template Parts" in the sidebar
+3. Select any template to edit
+4. Use the block editor to customize content
+5. Save your changes
 
-### Setting Up Widget Areas
-Go to Appearance → Widgets to configure:
-- **Sidebar**: Main sidebar widgets
-- **Footer 1, 2, 3**: Three-column footer widget areas
-- **Hero Section**: Homepage hero section widgets
+### Using Block Patterns
+1. Open any page or post in the editor
+2. Click the "+" button to add a block
+3. Go to the "Patterns" tab
+4. Select "WritgoCMS" categories to see available patterns:
+   - Hero Sections
+   - Features
+   - Blog Layouts
+   - Call to Action
+   - Content Sections
+5. Click a pattern to insert it
 
 ## 🎨 Customization
 
@@ -113,17 +173,19 @@ The `theme.json` file provides block editor configuration:
 - Spacing presets
 - Layout widths
 
-## 📁 Template Files
+## 📁 Legacy Template Files
+
+These PHP templates are still available for backward compatibility:
 
 | File | Description |
 |------|-------------|
-| `header.php` | Site header with logo and navigation |
-| `footer.php` | Site footer with widgets and copyright |
-| `index.php` | Main template for blog archives |
-| `front-page.php` | Homepage template with hero and features |
-| `page.php` | Single page template |
-| `single.php` | Single post template |
-| `sidebar.php` | Sidebar widget area |
+| `header.php` | Legacy site header (use Site Editor for FSE) |
+| `footer.php` | Legacy site footer (use Site Editor for FSE) |
+| `index.php` | Fallback template for blog archives |
+| `front-page.php` | Legacy homepage template |
+| `page.php` | Legacy single page template |
+| `single.php` | Legacy single post template |
+| `sidebar.php` | Legacy sidebar widget area |
 | `functions.php` | Theme setup and functionality |
 
 ## 🔌 JavaScript Features
@@ -163,7 +225,7 @@ The theme includes `assets/js/theme.js` with:
 
 ## 📄 Requirements
 
-- WordPress 5.9 or higher
+- WordPress 5.9 or higher (for Full Site Editing)
 - PHP 7.4 or higher
 - MySQL 5.7 or MariaDB 10.3
 
@@ -175,6 +237,14 @@ The theme includes `assets/js/theme.js` with:
 - Secure API key storage
 
 ## 📝 Changelog
+
+### Version 2.0.0
+- **Full Site Editing**: Complete FSE block theme transformation
+- **Block Templates**: 9 block-based templates for all page types
+- **Template Parts**: Reusable header, footer, sidebar, post-meta components
+- **Block Patterns**: 12+ patterns (heroes, features, CTAs, team, stats, testimonials)
+- **Enhanced theme.json**: Custom templates, template parts, pattern categories
+- **All content editable**: No hardcoded content - everything via blocks
 
 ### Version 1.0.0
 - Initial release

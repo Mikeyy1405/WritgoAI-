@@ -408,6 +408,52 @@ function writgocms_get_blog_url() {
     return home_url( '/' );
 }
 
+/**
+ * Register block pattern categories for WritgoCMS.
+ */
+function writgocms_register_block_pattern_categories() {
+	register_block_pattern_category(
+		'writgocms-hero',
+		array(
+			'label'       => esc_html__( 'Hero Sections', 'writgocms' ),
+			'description' => esc_html__( 'Hero sections for page headers and landing pages.', 'writgocms' ),
+		)
+	);
+
+	register_block_pattern_category(
+		'writgocms-features',
+		array(
+			'label'       => esc_html__( 'Features', 'writgocms' ),
+			'description' => esc_html__( 'Feature grids and service sections.', 'writgocms' ),
+		)
+	);
+
+	register_block_pattern_category(
+		'writgocms-blog',
+		array(
+			'label'       => esc_html__( 'Blog Layouts', 'writgocms' ),
+			'description' => esc_html__( 'Blog post grids and layouts.', 'writgocms' ),
+		)
+	);
+
+	register_block_pattern_category(
+		'writgocms-cta',
+		array(
+			'label'       => esc_html__( 'Call to Action', 'writgocms' ),
+			'description' => esc_html__( 'Call to action sections.', 'writgocms' ),
+		)
+	);
+
+	register_block_pattern_category(
+		'writgocms-content',
+		array(
+			'label'       => esc_html__( 'Content Sections', 'writgocms' ),
+			'description' => esc_html__( 'Team grids, testimonials, stats, and more.', 'writgocms' ),
+		)
+	);
+}
+add_action( 'init', 'writgocms_register_block_pattern_categories' );
+
 // AIML Integration
 require_once WRITGOCMS_DIR . '/inc/class-aiml-provider.php';
 require_once WRITGOCMS_DIR . '/inc/admin-aiml-settings.php';

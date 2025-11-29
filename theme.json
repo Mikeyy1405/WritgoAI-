@@ -359,9 +359,29 @@
             "name": "footer",
             "title": "Footer",
             "area": "footer"
+        },
+        {
+            "name": "sidebar",
+            "title": "Sidebar",
+            "area": "uncategorized"
+        },
+        {
+            "name": "post-meta",
+            "title": "Post Meta",
+            "area": "uncategorized"
         }
     ],
     "customTemplates": [
+        {
+            "name": "page-about",
+            "title": "About Us",
+            "postTypes": ["page"]
+        },
+        {
+            "name": "page-contact",
+            "title": "Contact",
+            "postTypes": ["page"]
+        },
         {
             "name": "page-full-width",
             "title": "Full Width Page",
