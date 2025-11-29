@@ -1,0 +1,470 @@
+/**
+ * Editor Styles for WritgoCMS Theme
+ *
+ * These styles are loaded in the WordPress block editor to provide
+ * a consistent editing experience that matches the frontend.
+ *
+ * @package WritgoCMS
+ */
+
+/* ==========================================================================
+   Root Variables for Editor
+   ========================================================================== */
+
+:root {
+    --color-primary: #1877F2;
+    --color-primary-dark: #1565c0;
+    --color-primary-light: #42a5f5;
+    --color-secondary: #f97316;
+    --color-accent: #fb923c;
+    --color-dark: #0f172a;
+    --color-dark-lighter: #1f2937;
+    --color-light: #f9fafb;
+    --color-white: #ffffff;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    
+    --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+    
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+    
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   Editor Body Styles
+   ========================================================================== */
+
+.editor-styles-wrapper {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-dark);
+    background-color: var(--color-white);
+}
+
+.editor-styles-wrapper .wp-block {
+    max-width: 1200px;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4,
+.editor-styles-wrapper h5,
+.editor-styles-wrapper h6 {
+    font-family: var(--font-primary);
+    font-weight: 700;
+    line-height: var(--line-height-tight);
+    color: var(--color-dark);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+}
+
+.editor-styles-wrapper h1 {
+    font-size: var(--font-size-4xl);
+}
+
+.editor-styles-wrapper h2 {
+    font-size: var(--font-size-3xl);
+}
+
+.editor-styles-wrapper h3 {
+    font-size: var(--font-size-2xl);
+}
+
+.editor-styles-wrapper h4 {
+    font-size: var(--font-size-xl);
+}
+
+.editor-styles-wrapper h5 {
+    font-size: var(--font-size-lg);
+}
+
+.editor-styles-wrapper h6 {
+    font-size: var(--font-size-base);
+}
+
+.editor-styles-wrapper p {
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    line-height: var(--line-height-relaxed);
+}
+
+.editor-styles-wrapper a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.editor-styles-wrapper a:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+.editor-styles-wrapper ul,
+.editor-styles-wrapper ol {
+    margin: 0 0 var(--spacing-md) 0;
+    padding-left: var(--spacing-xl);
+}
+
+.editor-styles-wrapper li {
+    margin-bottom: var(--spacing-sm);
+    line-height: var(--line-height-relaxed);
+}
+
+.editor-styles-wrapper ul ul,
+.editor-styles-wrapper ol ol,
+.editor-styles-wrapper ul ol,
+.editor-styles-wrapper ol ul {
+    margin-top: var(--spacing-sm);
+    margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Blockquote
+   ========================================================================== */
+
+.editor-styles-wrapper blockquote,
+.editor-styles-wrapper .wp-block-quote {
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-left: 4px solid var(--color-primary);
+    background-color: var(--color-light);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-style: italic;
+}
+
+.editor-styles-wrapper blockquote p:last-child,
+.editor-styles-wrapper .wp-block-quote p:last-child {
+    margin-bottom: 0;
+}
+
+.editor-styles-wrapper blockquote cite,
+.editor-styles-wrapper .wp-block-quote cite {
+    display: block;
+    margin-top: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    font-style: normal;
+}
+
+/* ==========================================================================
+   Code and Pre
+   ========================================================================== */
+
+.editor-styles-wrapper code,
+.editor-styles-wrapper kbd,
+.editor-styles-wrapper samp {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    background-color: var(--color-gray-100);
+    border-radius: var(--radius-sm);
+}
+
+.editor-styles-wrapper pre,
+.editor-styles-wrapper .wp-block-code {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-md);
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: var(--spacing-lg) 0;
+}
+
+.editor-styles-wrapper pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+/* ==========================================================================
+   Images
+   ========================================================================== */
+
+.editor-styles-wrapper img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
+
+.editor-styles-wrapper figure {
+    margin: var(--spacing-lg) 0;
+}
+
+.editor-styles-wrapper figcaption {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    text-align: center;
+    margin-top: var(--spacing-sm);
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.editor-styles-wrapper table,
+.editor-styles-wrapper .wp-block-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-lg) 0;
+}
+
+.editor-styles-wrapper th,
+.editor-styles-wrapper td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-gray-200);
+    text-align: left;
+}
+
+.editor-styles-wrapper th {
+    background-color: var(--color-gray-100);
+    font-weight: 600;
+}
+
+.editor-styles-wrapper tr:nth-child(even) {
+    background-color: var(--color-gray-100);
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.editor-styles-wrapper .wp-block-button__link {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.editor-styles-wrapper .wp-block-button__link:not(.has-background) {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.editor-styles-wrapper .wp-block-button__link:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.editor-styles-wrapper .is-style-outline .wp-block-button__link {
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+}
+
+.editor-styles-wrapper .is-style-outline .wp-block-button__link:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+/* ==========================================================================
+   Separator
+   ========================================================================== */
+
+.editor-styles-wrapper hr,
+.editor-styles-wrapper .wp-block-separator {
+    border: none;
+    border-top: 2px solid var(--color-gray-200);
+    margin: var(--spacing-xl) 0;
+}
+
+.editor-styles-wrapper .wp-block-separator.is-style-wide {
+    border-top-width: 3px;
+}
+
+.editor-styles-wrapper .wp-block-separator.is-style-dots {
+    border: none;
+    text-align: center;
+}
+
+.editor-styles-wrapper .wp-block-separator.is-style-dots::before {
+    content: "···";
+    font-size: var(--font-size-xl);
+    letter-spacing: var(--spacing-lg);
+    color: var(--color-gray-400);
+}
+
+/* ==========================================================================
+   Pullquote
+   ========================================================================== */
+
+.editor-styles-wrapper .wp-block-pullquote {
+    border: none;
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.editor-styles-wrapper .wp-block-pullquote blockquote {
+    border: none;
+    background: none;
+    font-size: var(--font-size-xl);
+    font-style: italic;
+    padding: 0;
+}
+
+.editor-styles-wrapper .wp-block-pullquote cite {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   Cover Block
+   ========================================================================== */
+
+.editor-styles-wrapper .wp-block-cover {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.editor-styles-wrapper .wp-block-cover .wp-block-cover__inner-container {
+    max-width: 1200px;
+}
+
+/* ==========================================================================
+   Columns
+   ========================================================================== */
+
+.editor-styles-wrapper .wp-block-columns {
+    margin-bottom: var(--spacing-lg);
+}
+
+.editor-styles-wrapper .wp-block-column {
+    margin-bottom: var(--spacing-md);
+}
+
+/* ==========================================================================
+   Group Block
+   ========================================================================== */
+
+.editor-styles-wrapper .wp-block-group {
+    padding: var(--spacing-lg);
+}
+
+.editor-styles-wrapper .wp-block-group.has-background {
+    border-radius: var(--radius-lg);
+}
+
+/* ==========================================================================
+   Media & Text
+   ========================================================================== */
+
+.editor-styles-wrapper .wp-block-media-text {
+    margin: var(--spacing-lg) 0;
+}
+
+.editor-styles-wrapper .wp-block-media-text .wp-block-media-text__content {
+    padding: var(--spacing-lg);
+}
+
+/* ==========================================================================
+   Gallery
+   ========================================================================== */
+
+.editor-styles-wrapper .wp-block-gallery {
+    margin: var(--spacing-lg) 0;
+}
+
+.editor-styles-wrapper .wp-block-gallery .blocks-gallery-item {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Embed
+   ========================================================================== */
+
+.editor-styles-wrapper .wp-block-embed {
+    margin: var(--spacing-lg) 0;
+}
+
+.editor-styles-wrapper .wp-block-embed__wrapper {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Color Palette Classes
+   ========================================================================== */
+
+.editor-styles-wrapper .has-primary-color { color: var(--color-primary); }
+.editor-styles-wrapper .has-secondary-color { color: var(--color-secondary); }
+.editor-styles-wrapper .has-accent-color { color: var(--color-accent); }
+.editor-styles-wrapper .has-dark-color { color: var(--color-dark); }
+.editor-styles-wrapper .has-light-color { color: var(--color-light); }
+.editor-styles-wrapper .has-white-color { color: var(--color-white); }
+.editor-styles-wrapper .has-success-color { color: var(--color-success); }
+.editor-styles-wrapper .has-warning-color { color: var(--color-warning); }
+.editor-styles-wrapper .has-error-color { color: var(--color-error); }
+
+.editor-styles-wrapper .has-primary-background-color { background-color: var(--color-primary); }
+.editor-styles-wrapper .has-secondary-background-color { background-color: var(--color-secondary); }
+.editor-styles-wrapper .has-accent-background-color { background-color: var(--color-accent); }
+.editor-styles-wrapper .has-dark-background-color { background-color: var(--color-dark); }
+.editor-styles-wrapper .has-light-background-color { background-color: var(--color-light); }
+.editor-styles-wrapper .has-white-background-color { background-color: var(--color-white); }
+.editor-styles-wrapper .has-success-background-color { background-color: var(--color-success); }
+.editor-styles-wrapper .has-warning-background-color { background-color: var(--color-warning); }
+.editor-styles-wrapper .has-error-background-color { background-color: var(--color-error); }
+
+/* ==========================================================================
+   Wide and Full Width Alignment
+   ========================================================================== */
+
+.editor-styles-wrapper .alignwide {
+    max-width: 1400px;
+}
+
+.editor-styles-wrapper .alignfull {
+    max-width: none;
+}

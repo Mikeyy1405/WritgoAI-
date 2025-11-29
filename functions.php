@@ -92,6 +92,7 @@ function writgocms_setup() {
 
     // Add support for editor styles
     add_theme_support( 'editor-styles' );
+    add_editor_style( 'assets/css/editor-style.css' );
 
     // Add support for Block Styles
     add_theme_support( 'wp-block-styles' );
