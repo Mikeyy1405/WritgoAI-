@@ -3,6 +3,7 @@
  * AIML Admin Settings Panel
  *
  * Admin interface for AIMLAPI configuration.
+ * Nederlandse versie - Dutch interface for WritgoAI.
  *
  * @package WritgoCMS
  */
@@ -53,13 +54,13 @@ class WritgoCMS_AIML_Admin_Settings {
     }
 
     /**
-     * Add admin menu
+     * Add admin menu - Dutch menu structure
      */
     public function add_admin_menu() {
         // Add main menu item.
         add_menu_page(
-            __( 'WritgoAI Dashboard', 'writgocms' ),
-            __( 'WritgoAI', 'writgocms' ),
+            'WritgoAI Dashboard',
+            'WritgoAI',
             'manage_options',
             'writgocms-aiml',
             array( $this, 'render_dashboard_page' ),
@@ -67,51 +68,61 @@ class WritgoCMS_AIML_Admin_Settings {
             26 // Position after Pages.
         );
 
-        // Add Dashboard submenu.
+        // Add Dashboard submenu (Dutch: Dashboard).
         add_submenu_page(
             'writgocms-aiml',
-            __( 'Dashboard', 'writgocms' ),
-            __( 'Dashboard', 'writgocms' ),
+            'Dashboard',
+            '📊 Dashboard',
             'manage_options',
             'writgocms-aiml',
             array( $this, 'render_dashboard_page' )
         );
 
-        // Add Content Planner submenu.
+        // Add Website Analysis submenu (Dutch: Website Analyse).
         add_submenu_page(
             'writgocms-aiml',
-            __( 'Content Planner', 'writgocms' ),
-            __( 'Content Planner', 'writgocms' ),
+            'Website Analyse',
+            '🔍 Website Analyse',
             'manage_options',
-            'writgocms-aiml-content-planner',
-            array( $this, 'render_content_planner_page' )
+            'writgocms-aiml-analyse',
+            array( $this, 'render_analyse_page' )
         );
 
-        // Add Test & Preview submenu.
+        // Add Content Plan submenu (Dutch: Contentplan).
         add_submenu_page(
             'writgocms-aiml',
-            __( 'Test & Preview', 'writgocms' ),
-            __( 'Test & Preview', 'writgocms' ),
+            'Contentplan',
+            '📋 Contentplan',
             'manage_options',
-            'writgocms-aiml-test',
-            array( $this, 'render_test_page' )
+            'writgocms-aiml-contentplan',
+            array( $this, 'render_contentplan_page' )
         );
 
-        // Add Usage Statistics submenu.
+        // Add Generated Content submenu (Dutch: Gegenereerde Content).
         add_submenu_page(
             'writgocms-aiml',
-            __( 'Usage Statistics', 'writgocms' ),
-            __( 'Usage Statistics', 'writgocms' ),
+            'Gegenereerde Content',
+            '✍️ Gegenereerde Content',
+            'manage_options',
+            'writgocms-aiml-generated',
+            array( $this, 'render_generated_content_page' )
+        );
+
+        // Add Usage Statistics submenu (Dutch: Statistieken).
+        add_submenu_page(
+            'writgocms-aiml',
+            'Statistieken',
+            '📈 Statistieken',
             'manage_options',
             'writgocms-aiml-stats',
             array( $this, 'render_stats_page' )
         );
 
-        // Add Settings submenu.
+        // Add Settings submenu (Dutch: Instellingen).
         add_submenu_page(
             'writgocms-aiml',
-            __( 'Settings', 'writgocms' ),
-            __( 'Settings', 'writgocms' ),
+            'Instellingen',
+            '⚙️ Instellingen',
             'manage_options',
             'writgocms-aiml-settings',
             array( $this, 'render_settings_page' )
@@ -130,6 +141,27 @@ class WritgoCMS_AIML_Admin_Settings {
         register_setting( 'writgocms_aiml_settings', 'writgocms_text_max_tokens', array( 'sanitize_callback' => 'absint' ) );
         register_setting( 'writgocms_aiml_settings', 'writgocms_image_size', array( 'sanitize_callback' => 'sanitize_text_field' ) );
         register_setting( 'writgocms_aiml_settings', 'writgocms_image_quality', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        // New Dutch settings
+        register_setting( 'writgocms_aiml_settings', 'writgocms_website_theme', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_target_audience', array( 'sanitize_callback' => 'sanitize_textarea_field' ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_content_tone', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_content_categories', array( 'sanitize_callback' => array( $this, 'sanitize_categories' ) ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_items_per_analysis', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_weekly_updates', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_notifications', array( 'sanitize_callback' => 'absint' ) );
+    }
+
+    /**
+     * Sanitize categories array
+     *
+     * @param array $input Categories input.
+     * @return array
+     */
+    public function sanitize_categories( $input ) {
+        if ( ! is_array( $input ) ) {
+            return array( 'informatief', 'reviews', 'top_lijstjes', 'vergelijkingen' );
+        }
+        return array_map( 'sanitize_text_field', $input );
     }
 
     /**
@@ -141,13 +173,15 @@ class WritgoCMS_AIML_Admin_Settings {
         // Check if we're on any WritgoAI admin page.
         $allowed_hooks = array(
             'toplevel_page_writgocms-aiml',
-            'writgocms-aiml_page_writgocms-aiml-content-planner',
-            'writgocms-aiml_page_writgocms-aiml-test',
-            'writgocms-aiml_page_writgocms-aiml-stats',
-            'writgocms-aiml_page_writgocms-aiml-settings',
+            'writgoai_page_writgocms-aiml-analyse',
+            'writgoai_page_writgocms-aiml-contentplan',
+            'writgoai_page_writgocms-aiml-generated',
+            'writgoai_page_writgocms-aiml-stats',
+            'writgoai_page_writgocms-aiml-settings',
         );
 
-        if ( ! in_array( $hook, $allowed_hooks, true ) ) {
+        // Also check for alternative hook formats
+        if ( strpos( $hook, 'writgocms-aiml' ) === false ) {
             return;
         }
 
@@ -173,39 +207,63 @@ class WritgoCMS_AIML_Admin_Settings {
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'writgocms_aiml_nonce' ),
                 'i18n'    => array(
-                    'validating'              => __( 'Validating...', 'writgocms' ),
-                    'valid'                   => __( 'Valid!', 'writgocms' ),
-                    'invalid'                 => __( 'Invalid', 'writgocms' ),
-                    'error'                   => __( 'Error', 'writgocms' ),
-                    'generating'              => __( 'Generating...', 'writgocms' ),
-                    'success'                 => __( 'Success!', 'writgocms' ),
-                    'testPrompt'              => __( 'Write a short paragraph about artificial intelligence.', 'writgocms' ),
-                    'imagePrompt'             => __( 'A beautiful sunset over mountains', 'writgocms' ),
-                    'generatingMap'           => __( 'Generating topical authority map...', 'writgocms' ),
-                    'generatingPlan'          => __( 'Generating content plan...', 'writgocms' ),
-                    'savePlan'                => __( 'Save Plan', 'writgocms' ),
-                    'planSaved'               => __( 'Content plan saved successfully!', 'writgocms' ),
-                    'planDeleted'             => __( 'Content plan deleted.', 'writgocms' ),
-                    'confirmDelete'           => __( 'Are you sure you want to delete this content plan?', 'writgocms' ),
-                    'noNiche'                 => __( 'Please enter a niche/topic.', 'writgocms' ),
-                    'noPlanName'              => __( 'Please enter a plan name.', 'writgocms' ),
-                    'pillarContent'           => __( 'Pillar Content', 'writgocms' ),
-                    'clusterArticles'         => __( 'Cluster Articles', 'writgocms' ),
-                    'keywords'                => __( 'Keywords', 'writgocms' ),
-                    'priority'                => __( 'Priority', 'writgocms' ),
-                    'contentGaps'             => __( 'Content Gaps to Address', 'writgocms' ),
-                    'recommendedOrder'        => __( 'Recommended Publishing Order', 'writgocms' ),
-                    'generateDetailedPlan'    => __( 'Generate Detailed Plan', 'writgocms' ),
-                    'high'                    => __( 'High', 'writgocms' ),
-                    'medium'                  => __( 'Medium', 'writgocms' ),
-                    'low'                     => __( 'Low', 'writgocms' ),
+                    // Dutch translations
+                    'validating'              => 'Valideren...',
+                    'valid'                   => 'Geldig!',
+                    'invalid'                 => 'Ongeldig',
+                    'error'                   => 'Fout',
+                    'generating'              => 'Genereren...',
+                    'success'                 => 'Gelukt!',
+                    'testPrompt'              => 'Schrijf een korte paragraaf over kunstmatige intelligentie.',
+                    'imagePrompt'             => 'Een mooie zonsondergang boven de bergen',
+                    'generatingMap'           => 'Contentplan wordt gegenereerd...',
+                    'generatingPlan'          => 'Gedetailleerd plan wordt gegenereerd...',
+                    'savePlan'                => 'Plan Opslaan',
+                    'planSaved'               => 'Contentplan succesvol opgeslagen!',
+                    'planDeleted'             => 'Contentplan verwijderd.',
+                    'confirmDelete'           => 'Weet je zeker dat je dit contentplan wilt verwijderen?',
+                    'noNiche'                 => 'Voer een niche/onderwerp in.',
+                    'noPlanName'              => 'Voer een plannaam in.',
+                    'pillarContent'           => 'Hoofdonderwerpen',
+                    'clusterArticles'         => 'Gerelateerde Artikelen',
+                    'keywords'                => 'Zoekwoorden',
+                    'priority'                => 'Prioriteit',
+                    'contentGaps'             => 'Ontbrekende Content',
+                    'recommendedOrder'        => 'Aanbevolen Publicatievolgorde',
+                    'generateDetailedPlan'    => 'Genereer Gedetailleerd Plan',
+                    'generateContent'         => 'Genereer Content',
+                    'high'                    => 'Hoog',
+                    'medium'                  => 'Gemiddeld',
+                    'low'                     => 'Laag',
+                    // Sitemap analysis translations
+                    'analyzing'               => 'Analyseren...',
+                    'analysisComplete'        => 'Analyse voltooid!',
+                    'analysisError'           => 'Fout bij analyse',
+                    'startAnalysis'           => 'Start Website Analyse',
+                    'refreshAnalysis'         => 'Ververs Analyse',
+                    'noSitemap'               => 'Geen sitemap gevonden. Zorg ervoor dat WordPress sitemaps zijn ingeschakeld.',
+                    // Content categories
+                    'informatief'             => 'Informatieve Content',
+                    'reviews'                 => 'Reviews',
+                    'topLijstjes'             => 'Top Lijstjes',
+                    'vergelijkingen'          => 'Vergelijkingen',
+                    // Actions
+                    'publishDraft'            => 'Publiceer als concept',
+                    'publishNow'              => 'Direct publiceren',
+                    'preview'                 => 'Voorbeeld',
+                    'edit'                    => 'Bewerken',
+                    'delete'                  => 'Verwijderen',
+                    'load'                    => 'Laden',
+                    'export'                  => 'Exporteren',
+                    'save'                    => 'Opslaan',
+                    'cancel'                  => 'Annuleren',
                 ),
             )
         );
     }
 
     /**
-     * Render dashboard page
+     * Render dashboard page - Dutch interface with site analysis
      */
     public function render_dashboard_page() {
         $stats = get_option( 'writgocms_aiml_usage_stats', array() );
@@ -230,19 +288,159 @@ class WritgoCMS_AIML_Admin_Settings {
         $saved_plans = get_option( 'writgocms_saved_content_plans', array() );
         $plans_count = count( $saved_plans );
         $has_api_key = ! empty( get_option( 'writgocms_aimlapi_key' ) );
+        $site_analysis = get_option( 'writgocms_site_analysis', array() );
+        $has_analysis = ! empty( $site_analysis );
+        $content_plan = get_option( 'writgocms_content_plan', array() );
         ?>
         <div class="wrap writgocms-aiml-settings writgocms-dashboard">
             <h1 class="aiml-header">
                 <span class="aiml-logo">🤖</span>
-                <?php esc_html_e( 'WritgoAI Dashboard', 'writgocms' ); ?>
+                Welkom bij WritgoAI
             </h1>
 
             <div class="aiml-tab-content">
-                <!-- Welcome Section -->
-                <div class="dashboard-welcome">
-                    <h2><?php esc_html_e( 'Welcome to WritgoAI', 'writgocms' ); ?></h2>
-                    <p><?php esc_html_e( 'Your AI-powered content creation assistant. Generate text, images, and plan your content strategy with ease.', 'writgocms' ); ?></p>
+                <?php if ( ! $has_api_key ) : ?>
+                <!-- API Key Warning -->
+                <div class="notice notice-warning inline" style="margin-bottom: 20px;">
+                    <p><strong>⚠️ API Sleutel Vereist:</strong> Configureer je API sleutel in de <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-settings' ) ); ?>">Instellingen</a> om WritgoAI te gebruiken.</p>
                 </div>
+                <?php endif; ?>
+
+                <?php if ( ! $has_analysis ) : ?>
+                <!-- Welcome Screen - First Time -->
+                <div class="dashboard-welcome writgoai-welcome-box">
+                    <h2>🤖 Welkom bij WritgoAI</h2>
+                    <p>Jouw AI-gestuurde Content Marketing Assistent</p>
+                    <p class="welcome-subtitle">Laat WritgoAI je website analyseren en een gepersonaliseerd contentplan genereren op basis van je bestaande content.</p>
+                    <div class="welcome-action">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button button-primary button-hero">
+                            🔍 Start Website Analyse
+                        </a>
+                    </div>
+                </div>
+                <?php else : ?>
+                <!-- Dashboard with Analysis Results -->
+                <div class="dashboard-analysis-results">
+                    <div class="analysis-header-card">
+                        <h2>📊 Website Analyse Resultaat</h2>
+                        <div class="analysis-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">Website thema:</span>
+                                <span class="summary-value"><?php echo esc_html( isset( $site_analysis['theme'] ) ? $site_analysis['theme'] : 'Onbekend' ); ?></span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Bestaande content:</span>
+                                <span class="summary-value"><?php echo esc_html( isset( $site_analysis['total_posts'] ) ? $site_analysis['total_posts'] : 0 ); ?> artikelen</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Gevonden content gaps:</span>
+                                <span class="summary-value"><?php echo esc_html( isset( $content_plan['total_items'] ) ? $content_plan['total_items'] : 0 ); ?> onderwerpen</span>
+                            </div>
+                        </div>
+                        <div class="analysis-actions">
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button">🔄 Ververs Analyse</a>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-settings' ) ); ?>" class="button">⚙️ Instellingen</a>
+                        </div>
+                    </div>
+
+                    <!-- Content Plan Categories -->
+                    <?php if ( ! empty( $content_plan ) && isset( $content_plan['categories'] ) ) : ?>
+                    <div class="content-plan-overview">
+                        <h3>📋 Nieuw Contentplan (<?php echo esc_html( isset( $content_plan['total_items'] ) ? $content_plan['total_items'] : 0 ); ?> items)</h3>
+                        
+                        <div class="content-categories-grid">
+                            <!-- Informatieve Content -->
+                            <?php if ( ! empty( $content_plan['categories']['informatief'] ) ) : ?>
+                            <div class="content-category category-informatief">
+                                <div class="category-header">
+                                    <span class="category-icon">📚</span>
+                                    <h4>Informatieve Content</h4>
+                                    <span class="category-count"><?php echo count( $content_plan['categories']['informatief'] ); ?> items</span>
+                                </div>
+                                <ul class="category-items">
+                                    <?php foreach ( array_slice( $content_plan['categories']['informatief'], 0, 3 ) as $item ) : ?>
+                                    <li>
+                                        <span class="item-title"><?php echo esc_html( $item['title'] ); ?></span>
+                                        <button type="button" class="button button-small generate-content-btn" data-item="<?php echo esc_attr( wp_json_encode( $item ) ); ?>">Genereer</button>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <?php if ( count( $content_plan['categories']['informatief'] ) > 3 ) : ?>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=informatief' ) ); ?>" class="see-more">Bekijk alle →</a>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+
+                            <!-- Reviews -->
+                            <?php if ( ! empty( $content_plan['categories']['reviews'] ) ) : ?>
+                            <div class="content-category category-reviews">
+                                <div class="category-header">
+                                    <span class="category-icon">⭐</span>
+                                    <h4>Reviews</h4>
+                                    <span class="category-count"><?php echo count( $content_plan['categories']['reviews'] ); ?> items</span>
+                                </div>
+                                <ul class="category-items">
+                                    <?php foreach ( array_slice( $content_plan['categories']['reviews'], 0, 3 ) as $item ) : ?>
+                                    <li>
+                                        <span class="item-title"><?php echo esc_html( $item['title'] ); ?></span>
+                                        <button type="button" class="button button-small generate-content-btn" data-item="<?php echo esc_attr( wp_json_encode( $item ) ); ?>">Genereer</button>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <?php if ( count( $content_plan['categories']['reviews'] ) > 3 ) : ?>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=reviews' ) ); ?>" class="see-more">Bekijk alle →</a>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+
+                            <!-- Top Lijstjes -->
+                            <?php if ( ! empty( $content_plan['categories']['top_lijstjes'] ) ) : ?>
+                            <div class="content-category category-top-lijstjes">
+                                <div class="category-header">
+                                    <span class="category-icon">🏆</span>
+                                    <h4>Top Lijstjes</h4>
+                                    <span class="category-count"><?php echo count( $content_plan['categories']['top_lijstjes'] ); ?> items</span>
+                                </div>
+                                <ul class="category-items">
+                                    <?php foreach ( array_slice( $content_plan['categories']['top_lijstjes'], 0, 3 ) as $item ) : ?>
+                                    <li>
+                                        <span class="item-title"><?php echo esc_html( $item['title'] ); ?></span>
+                                        <button type="button" class="button button-small generate-content-btn" data-item="<?php echo esc_attr( wp_json_encode( $item ) ); ?>">Genereer</button>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <?php if ( count( $content_plan['categories']['top_lijstjes'] ) > 3 ) : ?>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=top_lijstjes' ) ); ?>" class="see-more">Bekijk alle →</a>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+
+                            <!-- Vergelijkingen -->
+                            <?php if ( ! empty( $content_plan['categories']['vergelijkingen'] ) ) : ?>
+                            <div class="content-category category-vergelijkingen">
+                                <div class="category-header">
+                                    <span class="category-icon">⚖️</span>
+                                    <h4>Vergelijkingen</h4>
+                                    <span class="category-count"><?php echo count( $content_plan['categories']['vergelijkingen'] ); ?> items</span>
+                                </div>
+                                <ul class="category-items">
+                                    <?php foreach ( array_slice( $content_plan['categories']['vergelijkingen'], 0, 3 ) as $item ) : ?>
+                                    <li>
+                                        <span class="item-title"><?php echo esc_html( $item['title'] ); ?></span>
+                                        <button type="button" class="button button-small generate-content-btn" data-item="<?php echo esc_attr( wp_json_encode( $item ) ); ?>">Genereer</button>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <?php if ( count( $content_plan['categories']['vergelijkingen'] ) > 3 ) : ?>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=vergelijkingen' ) ); ?>" class="see-more">Bekijk alle →</a>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
 
                 <!-- Quick Stats -->
                 <div class="dashboard-stats">
@@ -250,28 +448,28 @@ class WritgoCMS_AIML_Admin_Settings {
                         <span class="stat-icon">📝</span>
                         <div class="stat-content">
                             <span class="stat-number"><?php echo esc_html( $totals['text'] ); ?></span>
-                            <span class="stat-label"><?php esc_html_e( 'Text Generations', 'writgocms' ); ?></span>
+                            <span class="stat-label">Tekst Generaties</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <span class="stat-icon">🖼️</span>
                         <div class="stat-content">
                             <span class="stat-number"><?php echo esc_html( $totals['image'] ); ?></span>
-                            <span class="stat-label"><?php esc_html_e( 'Image Generations', 'writgocms' ); ?></span>
+                            <span class="stat-label">Afbeelding Generaties</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <span class="stat-icon">📊</span>
                         <div class="stat-content">
                             <span class="stat-number"><?php echo esc_html( $totals['text'] + $totals['image'] ); ?></span>
-                            <span class="stat-label"><?php esc_html_e( 'Total Requests', 'writgocms' ); ?></span>
+                            <span class="stat-label">Totaal Verzoeken</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <span class="stat-icon">📁</span>
                         <div class="stat-content">
                             <span class="stat-number"><?php echo esc_html( $plans_count ); ?></span>
-                            <span class="stat-label"><?php esc_html_e( 'Saved Plans', 'writgocms' ); ?></span>
+                            <span class="stat-label">Opgeslagen Plannen</span>
                         </div>
                     </div>
                 </div>
@@ -282,76 +480,62 @@ class WritgoCMS_AIML_Admin_Settings {
                     <div class="dashboard-widget widget-primary">
                         <div class="widget-icon">⚙️</div>
                         <div class="widget-content">
-                            <h3><?php esc_html_e( 'Settings', 'writgocms' ); ?></h3>
-                            <p><?php esc_html_e( 'Configure your API key and AI model preferences.', 'writgocms' ); ?></p>
+                            <h3>Instellingen</h3>
+                            <p>Configureer je API sleutel en AI model voorkeuren.</p>
                             <?php if ( ! $has_api_key ) : ?>
-                                <span class="widget-badge warning"><?php esc_html_e( 'API Key Required', 'writgocms' ); ?></span>
+                                <span class="widget-badge warning">API Sleutel Vereist</span>
                             <?php else : ?>
-                                <span class="widget-badge success"><?php esc_html_e( 'Configured', 'writgocms' ); ?></span>
+                                <span class="widget-badge success">Geconfigureerd</span>
                             <?php endif; ?>
                         </div>
                         <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-settings' ) ); ?>" class="widget-button">
-                            <?php esc_html_e( 'Open Settings', 'writgocms' ); ?>
+                            Open Instellingen
                         </a>
                     </div>
 
-                    <!-- Content Planner Widget -->
+                    <!-- Website Analysis Widget -->
                     <div class="dashboard-widget widget-primary">
-                        <div class="widget-icon">🗺️</div>
+                        <div class="widget-icon">🔍</div>
                         <div class="widget-content">
-                            <h3><?php esc_html_e( 'Content Planner', 'writgocms' ); ?></h3>
-                            <p><?php esc_html_e( 'Generate AI-powered topical authority maps for your content strategy.', 'writgocms' ); ?></p>
-                            <?php if ( $plans_count > 0 ) : ?>
-                                <span class="widget-badge info"><?php echo esc_html( sprintf( __( '%d Saved Plans', 'writgocms' ), $plans_count ) ); ?></span>
+                            <h3>Website Analyse</h3>
+                            <p>Analyseer je website en ontdek content mogelijkheden.</p>
+                            <?php if ( $has_analysis ) : ?>
+                                <span class="widget-badge info">Laatste analyse: <?php echo esc_html( isset( $site_analysis['date'] ) ? $site_analysis['date'] : 'Onbekend' ); ?></span>
                             <?php endif; ?>
                         </div>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-content-planner' ) ); ?>" class="widget-button">
-                            <?php esc_html_e( 'Plan Content', 'writgocms' ); ?>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="widget-button">
+                            <?php echo $has_analysis ? 'Ververs Analyse' : 'Start Analyse'; ?>
                         </a>
                     </div>
 
-                    <!-- Test & Preview Widget -->
+                    <!-- Content Plan Widget -->
                     <div class="dashboard-widget widget-secondary">
-                        <div class="widget-icon">🧪</div>
+                        <div class="widget-icon">📋</div>
                         <div class="widget-content">
-                            <h3><?php esc_html_e( 'Test & Preview', 'writgocms' ); ?></h3>
-                            <p><?php esc_html_e( 'Test AI text and image generation with different models.', 'writgocms' ); ?></p>
+                            <h3>Contentplan</h3>
+                            <p>Bekijk en beheer je gegenereerde contentplan items.</p>
                         </div>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-test' ) ); ?>" class="widget-button">
-                            <?php esc_html_e( 'Test Now', 'writgocms' ); ?>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="widget-button">
+                            Bekijk Contentplan
                         </a>
                     </div>
 
-                    <!-- Usage Statistics Widget -->
+                    <!-- Statistics Widget -->
                     <div class="dashboard-widget widget-secondary">
-                        <div class="widget-icon">📊</div>
+                        <div class="widget-icon">📈</div>
                         <div class="widget-content">
-                            <h3><?php esc_html_e( 'Usage Statistics', 'writgocms' ); ?></h3>
-                            <p><?php esc_html_e( 'View detailed usage statistics and activity history.', 'writgocms' ); ?></p>
+                            <h3>Statistieken</h3>
+                            <p>Bekijk gedetailleerde gebruiksstatistieken en activiteit.</p>
                         </div>
                         <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-stats' ) ); ?>" class="widget-button">
-                            <?php esc_html_e( 'View Stats', 'writgocms' ); ?>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Topical Authority Map Generator Quick Access -->
-                <div class="dashboard-feature-card">
-                    <div class="feature-header">
-                        <span class="feature-icon">🎯</span>
-                        <h3><?php esc_html_e( 'Topical Authority Map Generator', 'writgocms' ); ?></h3>
-                    </div>
-                    <p><?php esc_html_e( 'Build comprehensive content strategies with AI-generated topical authority maps. Define your niche, target audience, and let AI create a structured content plan with pillar articles and cluster content.', 'writgocms' ); ?></p>
-                    <div class="feature-actions">
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-content-planner' ) ); ?>" class="button button-primary button-hero">
-                            ✨ <?php esc_html_e( 'Generate Content Map', 'writgocms' ); ?>
+                            Bekijk Statistieken
                         </a>
                     </div>
                 </div>
 
                 <!-- Recent Activity -->
                 <div class="dashboard-section">
-                    <h3><?php esc_html_e( 'Recent Activity', 'writgocms' ); ?></h3>
+                    <h3>Recente Activiteit</h3>
                     <?php
                     $rows = array();
                     foreach ( $stats as $date => $date_stats ) {
@@ -378,24 +562,24 @@ class WritgoCMS_AIML_Admin_Settings {
 
                     if ( empty( $rows ) ) :
                         ?>
-                        <p class="no-activity"><?php esc_html_e( 'No activity yet. Start generating content to see your usage history.', 'writgocms' ); ?></p>
+                        <p class="no-activity">Nog geen activiteit. Begin met content genereren om je gebruiksgeschiedenis te zien.</p>
                         <?php
                     else :
                         ?>
                         <table class="wp-list-table widefat fixed striped">
                             <thead>
                                 <tr>
-                                    <th><?php esc_html_e( 'Date', 'writgocms' ); ?></th>
-                                    <th><?php esc_html_e( 'Type', 'writgocms' ); ?></th>
-                                    <th><?php esc_html_e( 'Model', 'writgocms' ); ?></th>
-                                    <th><?php esc_html_e( 'Count', 'writgocms' ); ?></th>
+                                    <th>Datum</th>
+                                    <th>Type</th>
+                                    <th>Model</th>
+                                    <th>Aantal</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ( array_slice( $rows, 0, 5 ) as $row ) : ?>
                                 <tr>
                                     <td><?php echo esc_html( $row['date'] ); ?></td>
-                                    <td><?php echo 'text' === $row['type'] ? esc_html( '📝 Text' ) : esc_html( '🖼️ Image' ); ?></td>
+                                    <td><?php echo 'text' === $row['type'] ? esc_html( '📝 Tekst' ) : esc_html( '🖼️ Afbeelding' ); ?></td>
                                     <td><?php echo esc_html( $row['model'] ); ?></td>
                                     <td><?php echo esc_html( $row['count'] ); ?></td>
                                 </tr>
@@ -403,7 +587,7 @@ class WritgoCMS_AIML_Admin_Settings {
                             </tbody>
                         </table>
                         <p style="margin-top: 15px;">
-                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-stats' ) ); ?>"><?php esc_html_e( 'View all activity →', 'writgocms' ); ?></a>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-stats' ) ); ?>">Bekijk alle activiteit →</a>
                         </p>
                         <?php
                     endif;
@@ -415,50 +599,315 @@ class WritgoCMS_AIML_Admin_Settings {
     }
 
     /**
-     * Render content planner page
+     * Render website analysis page (Dutch: Website Analyse)
      */
-    public function render_content_planner_page() {
+    public function render_analyse_page() {
+        $site_analysis = get_option( 'writgocms_site_analysis', array() );
+        $has_analysis = ! empty( $site_analysis );
         ?>
         <div class="wrap writgocms-aiml-settings">
             <h1 class="aiml-header">
-                <span class="aiml-logo">🗺️</span>
-                <?php esc_html_e( 'Content Planner', 'writgocms' ); ?>
+                <span class="aiml-logo">🔍</span>
+                Website Analyse
             </h1>
 
             <div class="aiml-tab-content">
-                <?php $this->render_content_planner_tab(); ?>
+                <div class="analysis-dashboard">
+                    <!-- Analysis Input -->
+                    <div class="analysis-input-section">
+                        <div class="planner-card">
+                            <h3>🔍 Website Analyse Starten</h3>
+                            <p class="description">
+                                WritgoAI analyseert automatisch je WordPress sitemap om bestaande content te identificeren en nieuwe content mogelijkheden te vinden.
+                            </p>
+                            
+                            <div class="analysis-options">
+                                <div class="planner-field">
+                                    <label for="manual-theme">Website Thema (optioneel)</label>
+                                    <input type="text" id="manual-theme" class="regular-text" placeholder="Bijv. Auto's, Gezondheid, Technologie..." value="<?php echo esc_attr( isset( $site_analysis['theme'] ) ? $site_analysis['theme'] : '' ); ?>">
+                                    <p class="description">Laat leeg voor automatische detectie of voer handmatig je hoofdthema in.</p>
+                                </div>
+                            </div>
+
+                            <div class="planner-actions">
+                                <button type="button" id="start-site-analysis" class="button button-primary button-hero">
+                                    🔍 <?php echo $has_analysis ? 'Ververs Analyse' : 'Start Website Analyse'; ?>
+                                </button>
+                                <span class="analysis-status"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Results -->
+                    <?php if ( $has_analysis ) : ?>
+                    <div class="analysis-results-section">
+                        <div class="planner-card">
+                            <h3>📊 Analyse Resultaten</h3>
+                            
+                            <div class="analysis-summary-grid">
+                                <div class="summary-card">
+                                    <span class="summary-icon">📄</span>
+                                    <div class="summary-data">
+                                        <span class="summary-number"><?php echo esc_html( isset( $site_analysis['total_posts'] ) ? $site_analysis['total_posts'] : 0 ); ?></span>
+                                        <span class="summary-label">Totaal Artikelen</span>
+                                    </div>
+                                </div>
+                                <div class="summary-card">
+                                    <span class="summary-icon">📁</span>
+                                    <div class="summary-data">
+                                        <span class="summary-number"><?php echo esc_html( isset( $site_analysis['total_pages'] ) ? $site_analysis['total_pages'] : 0 ); ?></span>
+                                        <span class="summary-label">Pagina's</span>
+                                    </div>
+                                </div>
+                                <div class="summary-card">
+                                    <span class="summary-icon">🏷️</span>
+                                    <div class="summary-data">
+                                        <span class="summary-number"><?php echo esc_html( isset( $site_analysis['categories_count'] ) ? $site_analysis['categories_count'] : 0 ); ?></span>
+                                        <span class="summary-label">Categorieën</span>
+                                    </div>
+                                </div>
+                                <div class="summary-card">
+                                    <span class="summary-icon">🎯</span>
+                                    <div class="summary-data">
+                                        <span class="summary-value"><?php echo esc_html( isset( $site_analysis['theme'] ) ? $site_analysis['theme'] : 'Onbekend' ); ?></span>
+                                        <span class="summary-label">Gedetecteerd Thema</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php if ( isset( $site_analysis['top_categories'] ) && ! empty( $site_analysis['top_categories'] ) ) : ?>
+                            <div class="top-categories">
+                                <h4>Top Categorieën</h4>
+                                <div class="categories-list">
+                                    <?php foreach ( $site_analysis['top_categories'] as $cat ) : ?>
+                                    <span class="category-tag"><?php echo esc_html( $cat['name'] ); ?> (<?php echo esc_html( $cat['count'] ); ?>)</span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+
+                            <div class="analysis-meta">
+                                <p><strong>Laatste analyse:</strong> <?php echo esc_html( isset( $site_analysis['date'] ) ? $site_analysis['date'] : 'Onbekend' ); ?></p>
+                            </div>
+                        </div>
+
+                        <!-- Generate Content Plan Button -->
+                        <div class="planner-card">
+                            <h3>📋 Contentplan Genereren</h3>
+                            <p class="description">
+                                Op basis van de analyse kan WritgoAI een contentplan genereren met nieuwe artikel ideeën, verdeeld over 4 categorieën.
+                            </p>
+                            
+                            <div class="content-categories-preview">
+                                <div class="category-preview">
+                                    <span class="category-icon">📚</span>
+                                    <span class="category-name">Informatief</span>
+                                </div>
+                                <div class="category-preview">
+                                    <span class="category-icon">⭐</span>
+                                    <span class="category-name">Reviews</span>
+                                </div>
+                                <div class="category-preview">
+                                    <span class="category-icon">🏆</span>
+                                    <span class="category-name">Top Lijstjes</span>
+                                </div>
+                                <div class="category-preview">
+                                    <span class="category-icon">⚖️</span>
+                                    <span class="category-name">Vergelijkingen</span>
+                                </div>
+                            </div>
+
+                            <div class="planner-actions">
+                                <button type="button" id="generate-content-plan" class="button button-primary button-hero">
+                                    ✨ Genereer Contentplan
+                                </button>
+                                <span class="content-plan-status"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
         <?php
     }
 
     /**
-     * Render test page
+     * Render content plan page (Dutch: Contentplan)
      */
-    public function render_test_page() {
+    public function render_contentplan_page() {
+        $content_plan = get_option( 'writgocms_content_plan', array() );
+        $filter_category = isset( $_GET['category'] ) ? sanitize_text_field( wp_unslash( $_GET['category'] ) ) : '';
         ?>
         <div class="wrap writgocms-aiml-settings">
             <h1 class="aiml-header">
-                <span class="aiml-logo">🧪</span>
-                <?php esc_html_e( 'Test & Preview', 'writgocms' ); ?>
+                <span class="aiml-logo">📋</span>
+                Contentplan
             </h1>
 
             <div class="aiml-tab-content">
-                <?php $this->render_test_tab(); ?>
+                <?php if ( empty( $content_plan ) || ! isset( $content_plan['categories'] ) ) : ?>
+                <div class="no-content-plan">
+                    <div class="empty-state">
+                        <span class="empty-icon">📋</span>
+                        <h3>Nog geen contentplan</h3>
+                        <p>Start een website analyse om je eerste contentplan te genereren.</p>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button button-primary button-hero">
+                            🔍 Start Website Analyse
+                        </a>
+                    </div>
+                </div>
+                <?php else : ?>
+                
+                <!-- Category Filters -->
+                <div class="content-plan-filters">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="filter-btn <?php echo empty( $filter_category ) ? 'active' : ''; ?>">
+                        Alle (<?php echo esc_html( $content_plan['total_items'] ); ?>)
+                    </a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=informatief' ) ); ?>" class="filter-btn filter-informatief <?php echo 'informatief' === $filter_category ? 'active' : ''; ?>">
+                        📚 Informatief (<?php echo isset( $content_plan['categories']['informatief'] ) ? count( $content_plan['categories']['informatief'] ) : 0; ?>)
+                    </a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=reviews' ) ); ?>" class="filter-btn filter-reviews <?php echo 'reviews' === $filter_category ? 'active' : ''; ?>">
+                        ⭐ Reviews (<?php echo isset( $content_plan['categories']['reviews'] ) ? count( $content_plan['categories']['reviews'] ) : 0; ?>)
+                    </a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=top_lijstjes' ) ); ?>" class="filter-btn filter-top-lijstjes <?php echo 'top_lijstjes' === $filter_category ? 'active' : ''; ?>">
+                        🏆 Top Lijstjes (<?php echo isset( $content_plan['categories']['top_lijstjes'] ) ? count( $content_plan['categories']['top_lijstjes'] ) : 0; ?>)
+                    </a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=vergelijkingen' ) ); ?>" class="filter-btn filter-vergelijkingen <?php echo 'vergelijkingen' === $filter_category ? 'active' : ''; ?>">
+                        ⚖️ Vergelijkingen (<?php echo isset( $content_plan['categories']['vergelijkingen'] ) ? count( $content_plan['categories']['vergelijkingen'] ) : 0; ?>)
+                    </a>
+                </div>
+
+                <!-- Content Plan Items -->
+                <div class="content-plan-items">
+                    <?php
+                    $categories_to_show = array( 'informatief', 'reviews', 'top_lijstjes', 'vergelijkingen' );
+                    if ( ! empty( $filter_category ) && in_array( $filter_category, $categories_to_show, true ) ) {
+                        $categories_to_show = array( $filter_category );
+                    }
+
+                    foreach ( $categories_to_show as $category ) :
+                        if ( empty( $content_plan['categories'][ $category ] ) ) {
+                            continue;
+                        }
+                        
+                        $category_labels = array(
+                            'informatief'    => array( 'icon' => '📚', 'label' => 'Informatieve Content', 'color' => 'blue' ),
+                            'reviews'        => array( 'icon' => '⭐', 'label' => 'Reviews', 'color' => 'gold' ),
+                            'top_lijstjes'   => array( 'icon' => '🏆', 'label' => 'Top Lijstjes', 'color' => 'green' ),
+                            'vergelijkingen' => array( 'icon' => '⚖️', 'label' => 'Vergelijkingen', 'color' => 'purple' ),
+                        );
+                        $cat_info = $category_labels[ $category ];
+                    ?>
+                    <div class="content-category-section category-<?php echo esc_attr( $category ); ?>">
+                        <div class="category-section-header">
+                            <span class="category-icon"><?php echo esc_html( $cat_info['icon'] ); ?></span>
+                            <h3><?php echo esc_html( $cat_info['label'] ); ?></h3>
+                            <span class="category-count"><?php echo count( $content_plan['categories'][ $category ] ); ?> items</span>
+                        </div>
+                        
+                        <div class="content-items-list">
+                            <?php foreach ( $content_plan['categories'][ $category ] as $item ) : ?>
+                            <div class="content-item" data-item="<?php echo esc_attr( wp_json_encode( $item ) ); ?>">
+                                <div class="item-main">
+                                    <h4 class="item-title"><?php echo esc_html( $item['title'] ); ?></h4>
+                                    <?php if ( ! empty( $item['description'] ) ) : ?>
+                                    <p class="item-description"><?php echo esc_html( $item['description'] ); ?></p>
+                                    <?php endif; ?>
+                                    <?php if ( ! empty( $item['keywords'] ) ) : ?>
+                                    <div class="item-keywords">
+                                        <?php foreach ( $item['keywords'] as $keyword ) : ?>
+                                        <span class="keyword-tag"><?php echo esc_html( $keyword ); ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="item-actions">
+                                    <button type="button" class="button button-primary generate-content-btn" data-item="<?php echo esc_attr( wp_json_encode( $item ) ); ?>">
+                                        ✨ Genereer Content
+                                    </button>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
         <?php
     }
 
     /**
-     * Render stats page
+     * Render generated content page (Dutch: Gegenereerde Content)
+     */
+    public function render_generated_content_page() {
+        $generated_content = get_option( 'writgocms_generated_content', array() );
+        ?>
+        <div class="wrap writgocms-aiml-settings">
+            <h1 class="aiml-header">
+                <span class="aiml-logo">✍️</span>
+                Gegenereerde Content
+            </h1>
+
+            <div class="aiml-tab-content">
+                <?php if ( empty( $generated_content ) ) : ?>
+                <div class="no-generated-content">
+                    <div class="empty-state">
+                        <span class="empty-icon">✍️</span>
+                        <h3>Nog geen gegenereerde content</h3>
+                        <p>Ga naar je contentplan en klik op "Genereer Content" bij een onderwerp.</p>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="button button-primary button-hero">
+                            📋 Bekijk Contentplan
+                        </a>
+                    </div>
+                </div>
+                <?php else : ?>
+                <div class="generated-content-list">
+                    <?php foreach ( array_reverse( $generated_content ) as $index => $content ) : ?>
+                    <div class="generated-content-item">
+                        <div class="content-header">
+                            <h3><?php echo esc_html( $content['title'] ); ?></h3>
+                            <span class="content-date"><?php echo esc_html( $content['generated_date'] ); ?></span>
+                        </div>
+                        <div class="content-meta">
+                            <span class="content-category"><?php echo esc_html( $content['category'] ); ?></span>
+                            <?php if ( isset( $content['post_id'] ) && $content['post_id'] > 0 ) : ?>
+                            <span class="content-status published">Gepubliceerd</span>
+                            <?php else : ?>
+                            <span class="content-status draft">Concept</span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="content-preview">
+                            <?php echo wp_kses_post( wp_trim_words( $content['content'], 50, '...' ) ); ?>
+                        </div>
+                        <div class="content-actions">
+                            <?php if ( isset( $content['post_id'] ) && $content['post_id'] > 0 ) : ?>
+                            <a href="<?php echo esc_url( get_edit_post_link( $content['post_id'] ) ); ?>" class="button">Bewerken</a>
+                            <a href="<?php echo esc_url( get_permalink( $content['post_id'] ) ); ?>" class="button" target="_blank">Bekijken</a>
+                            <?php else : ?>
+                            <button type="button" class="button button-primary publish-content-btn" data-index="<?php echo esc_attr( $index ); ?>">Publiceer als Concept</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render stats page (Dutch: Statistieken)
      */
     public function render_stats_page() {
         ?>
         <div class="wrap writgocms-aiml-settings">
             <h1 class="aiml-header">
-                <span class="aiml-logo">📊</span>
-                <?php esc_html_e( 'Usage Statistics', 'writgocms' ); ?>
+                <span class="aiml-logo">📈</span>
+                Statistieken
             </h1>
 
             <div class="aiml-tab-content">
@@ -469,14 +918,14 @@ class WritgoCMS_AIML_Admin_Settings {
     }
 
     /**
-     * Render settings page
+     * Render settings page (Dutch: Instellingen)
      */
     public function render_settings_page() {
         ?>
         <div class="wrap writgocms-aiml-settings">
             <h1 class="aiml-header">
                 <span class="aiml-logo">⚙️</span>
-                <?php esc_html_e( 'WritgoAI Settings', 'writgocms' ); ?>
+                WritgoAI Instellingen
             </h1>
 
             <div class="aiml-tab-content">
@@ -487,47 +936,42 @@ class WritgoCMS_AIML_Admin_Settings {
     }
 
     /**
-     * Render settings tab
+     * Render settings tab (Dutch translations)
      */
     private function render_settings_tab() {
         $text_models  = $this->provider->get_text_models();
         $image_models = $this->provider->get_image_models();
+        $content_categories = get_option( 'writgocms_content_categories', array( 'informatief', 'reviews', 'top_lijstjes', 'vergelijkingen' ) );
         ?>
         <form method="post" action="options.php">
             <?php settings_fields( 'writgocms_aiml_settings' ); ?>
 
+            <!-- API Settings Section -->
             <div class="aiml-settings-section">
-                <h2><?php esc_html_e( 'AIMLAPI Configuration', 'writgocms' ); ?></h2>
+                <h2>📡 API Instellingen</h2>
                 <p class="description">
-                    <?php esc_html_e( 'Configure your AIMLAPI key to access AI models. Get your API key from', 'writgocms' ); ?>
+                    Configureer je AIMLAPI sleutel voor toegang tot AI modellen. Verkrijg je API sleutel via
                     <a href="https://aimlapi.com" target="_blank" rel="noopener noreferrer">aimlapi.com</a>
                 </p>
 
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_aimlapi_key"><?php esc_html_e( 'AIMLAPI Key', 'writgocms' ); ?></label>
+                            <label for="writgocms_aimlapi_key">API Sleutel</label>
                         </th>
                         <td>
                             <div class="api-key-field">
                                 <input type="password" id="writgocms_aimlapi_key" name="writgocms_aimlapi_key" value="<?php echo esc_attr( get_option( 'writgocms_aimlapi_key' ) ); ?>" class="regular-text">
                                 <button type="button" class="button toggle-password">👁️</button>
-                                <button type="button" class="button validate-api" id="validate-aimlapi-key"><?php esc_html_e( 'Validate', 'writgocms' ); ?></button>
+                                <button type="button" class="button validate-api" id="validate-aimlapi-key">Valideren</button>
                                 <span class="validation-status"></span>
                             </div>
-                            <p class="description"><?php esc_html_e( 'Your AIMLAPI key for accessing all AI models.', 'writgocms' ); ?></p>
+                            <p class="description">Je AIMLAPI sleutel voor toegang tot alle AI modellen.</p>
                         </td>
                     </tr>
-                </table>
-            </div>
-
-            <div class="aiml-settings-section">
-                <h2><?php esc_html_e( 'Text Generation Settings', 'writgocms' ); ?></h2>
-
-                <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_default_model"><?php esc_html_e( 'Default Text Model', 'writgocms' ); ?></label>
+                            <label for="writgocms_default_model">AI Model</label>
                         </th>
                         <td>
                             <select id="writgocms_default_model" name="writgocms_default_model">
@@ -537,38 +981,161 @@ class WritgoCMS_AIML_Admin_Settings {
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <p class="description"><?php esc_html_e( 'Select the default AI model for text generation.', 'writgocms' ); ?></p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <label for="writgocms_text_temperature"><?php esc_html_e( 'Temperature', 'writgocms' ); ?></label>
-                        </th>
-                        <td>
-                            <input type="range" id="writgocms_text_temperature" name="writgocms_text_temperature" min="0" max="2" step="0.1" value="<?php echo esc_attr( get_option( 'writgocms_text_temperature', '0.7' ) ); ?>" class="range-input">
-                            <span class="range-value"><?php echo esc_html( get_option( 'writgocms_text_temperature', '0.7' ) ); ?></span>
-                            <p class="description"><?php esc_html_e( 'Higher values make output more random, lower values more deterministic.', 'writgocms' ); ?></p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">
-                            <label for="writgocms_text_max_tokens"><?php esc_html_e( 'Max Tokens', 'writgocms' ); ?></label>
-                        </th>
-                        <td>
-                            <input type="number" id="writgocms_text_max_tokens" name="writgocms_text_max_tokens" value="<?php echo esc_attr( get_option( 'writgocms_text_max_tokens', '1000' ) ); ?>" min="100" max="4000" class="small-text">
-                            <p class="description"><?php esc_html_e( 'Maximum number of tokens to generate.', 'writgocms' ); ?></p>
+                            <p class="description">Selecteer het standaard AI model voor tekstgeneratie.</p>
                         </td>
                     </tr>
                 </table>
             </div>
 
+            <!-- Website Settings Section -->
             <div class="aiml-settings-section">
-                <h2><?php esc_html_e( 'Image Generation Settings', 'writgocms' ); ?></h2>
+                <h2>🌐 Website Instellingen</h2>
 
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_default_image_model"><?php esc_html_e( 'Default Image Model', 'writgocms' ); ?></label>
+                            <label for="writgocms_website_theme">Hoofdthema</label>
+                        </th>
+                        <td>
+                            <input type="text" id="writgocms_website_theme" name="writgocms_website_theme" value="<?php echo esc_attr( get_option( 'writgocms_website_theme', '' ) ); ?>" class="regular-text" placeholder="Automatisch detecteren of handmatig invoeren">
+                            <p class="description">Laat leeg voor automatische detectie of voer je hoofdthema handmatig in.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_target_audience">Doelgroep</label>
+                        </th>
+                        <td>
+                            <textarea id="writgocms_target_audience" name="writgocms_target_audience" rows="2" class="large-text" placeholder="Bijv. Ondernemers tussen 30-50 jaar die geïnteresseerd zijn in..."><?php echo esc_textarea( get_option( 'writgocms_target_audience', '' ) ); ?></textarea>
+                            <p class="description">Beschrijf je doelgroep voor betere content suggesties.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_content_tone">Toon</label>
+                        </th>
+                        <td>
+                            <select id="writgocms_content_tone" name="writgocms_content_tone">
+                                <option value="professioneel" <?php selected( get_option( 'writgocms_content_tone', 'professioneel' ), 'professioneel' ); ?>>Professioneel</option>
+                                <option value="informeel" <?php selected( get_option( 'writgocms_content_tone' ), 'informeel' ); ?>>Informeel</option>
+                                <option value="vriendelijk" <?php selected( get_option( 'writgocms_content_tone' ), 'vriendelijk' ); ?>>Vriendelijk</option>
+                                <option value="zakelijk" <?php selected( get_option( 'writgocms_content_tone' ), 'zakelijk' ); ?>>Zakelijk</option>
+                                <option value="enthousiast" <?php selected( get_option( 'writgocms_content_tone' ), 'enthousiast' ); ?>>Enthousiast</option>
+                            </select>
+                            <p class="description">De schrijfstijl voor gegenereerde content.</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Content Plan Preferences Section -->
+            <div class="aiml-settings-section">
+                <h2>📋 Contentplan Voorkeuren</h2>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            Content Categorieën
+                        </th>
+                        <td>
+                            <fieldset>
+                                <label>
+                                    <input type="checkbox" name="writgocms_content_categories[]" value="informatief" <?php checked( in_array( 'informatief', $content_categories, true ) ); ?>>
+                                    📚 Informatieve Content (How-to guides, uitleg artikelen, tutorials)
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="writgocms_content_categories[]" value="reviews" <?php checked( in_array( 'reviews', $content_categories, true ) ); ?>>
+                                    ⭐ Reviews (Product reviews, service reviews, voor- en nadelen)
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="writgocms_content_categories[]" value="top_lijstjes" <?php checked( in_array( 'top_lijstjes', $content_categories, true ) ); ?>>
+                                    🏆 Top Lijstjes (Beste X van 2025, Top 10, rankings)
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="writgocms_content_categories[]" value="vergelijkingen" <?php checked( in_array( 'vergelijkingen', $content_categories, true ) ); ?>>
+                                    ⚖️ Vergelijkingen (X vs Y, feature comparisons, alternatieven)
+                                </label>
+                            </fieldset>
+                            <p class="description">Selecteer welke content categorieën je in je contentplan wilt opnemen.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_items_per_analysis">Items per Analyse</label>
+                        </th>
+                        <td>
+                            <select id="writgocms_items_per_analysis" name="writgocms_items_per_analysis">
+                                <option value="10" <?php selected( get_option( 'writgocms_items_per_analysis', 20 ), 10 ); ?>>10</option>
+                                <option value="20" <?php selected( get_option( 'writgocms_items_per_analysis', 20 ), 20 ); ?>>20</option>
+                                <option value="30" <?php selected( get_option( 'writgocms_items_per_analysis', 20 ), 30 ); ?>>30</option>
+                                <option value="50" <?php selected( get_option( 'writgocms_items_per_analysis', 20 ), 50 ); ?>>50</option>
+                            </select>
+                            <p class="description">Aantal contentplan items per analyse.</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Automatic Updates Section -->
+            <div class="aiml-settings-section">
+                <h2>🔄 Automatische Updates</h2>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            Updates
+                        </th>
+                        <td>
+                            <fieldset>
+                                <label>
+                                    <input type="checkbox" name="writgocms_weekly_updates" value="1" <?php checked( get_option( 'writgocms_weekly_updates', 0 ), 1 ); ?>>
+                                    Wekelijks nieuwe contentplan items genereren
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="writgocms_notifications" value="1" <?php checked( get_option( 'writgocms_notifications', 0 ), 1 ); ?>>
+                                    Notificaties bij nieuwe suggesties
+                                </label>
+                            </fieldset>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Text Generation Settings -->
+            <div class="aiml-settings-section">
+                <h2>📝 Tekst Generatie Instellingen</h2>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_text_temperature">Temperatuur</label>
+                        </th>
+                        <td>
+                            <input type="range" id="writgocms_text_temperature" name="writgocms_text_temperature" min="0" max="2" step="0.1" value="<?php echo esc_attr( get_option( 'writgocms_text_temperature', '0.7' ) ); ?>" class="range-input">
+                            <span class="range-value"><?php echo esc_html( get_option( 'writgocms_text_temperature', '0.7' ) ); ?></span>
+                            <p class="description">Hogere waarden maken output meer willekeurig, lagere waarden meer deterministisch.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_text_max_tokens">Maximale Tokens</label>
+                        </th>
+                        <td>
+                            <input type="number" id="writgocms_text_max_tokens" name="writgocms_text_max_tokens" value="<?php echo esc_attr( get_option( 'writgocms_text_max_tokens', '1000' ) ); ?>" min="100" max="4000" class="small-text">
+                            <p class="description">Maximum aantal tokens om te genereren.</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Image Generation Settings -->
+            <div class="aiml-settings-section">
+                <h2>🖼️ Afbeelding Generatie Instellingen</h2>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_default_image_model">Standaard Afbeelding Model</label>
                         </th>
                         <td>
                             <select id="writgocms_default_image_model" name="writgocms_default_image_model">
@@ -578,12 +1145,12 @@ class WritgoCMS_AIML_Admin_Settings {
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <p class="description"><?php esc_html_e( 'Select the default AI model for image generation.', 'writgocms' ); ?></p>
+                            <p class="description">Selecteer het standaard AI model voor afbeeldingsgeneratie.</p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_image_size"><?php esc_html_e( 'Image Size', 'writgocms' ); ?></label>
+                            <label for="writgocms_image_size">Afbeelding Grootte</label>
                         </th>
                         <td>
                             <select id="writgocms_image_size" name="writgocms_image_size">
@@ -596,48 +1163,50 @@ class WritgoCMS_AIML_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_image_quality"><?php esc_html_e( 'Image Quality (DALL-E 3)', 'writgocms' ); ?></label>
+                            <label for="writgocms_image_quality">Afbeelding Kwaliteit (DALL-E 3)</label>
                         </th>
                         <td>
                             <select id="writgocms_image_quality" name="writgocms_image_quality">
-                                <option value="standard" <?php selected( get_option( 'writgocms_image_quality', 'standard' ), 'standard' ); ?>><?php esc_html_e( 'Standard', 'writgocms' ); ?></option>
-                                <option value="hd" <?php selected( get_option( 'writgocms_image_quality', 'standard' ), 'hd' ); ?>><?php esc_html_e( 'HD', 'writgocms' ); ?></option>
+                                <option value="standard" <?php selected( get_option( 'writgocms_image_quality', 'standard' ), 'standard' ); ?>>Standaard</option>
+                                <option value="hd" <?php selected( get_option( 'writgocms_image_quality', 'standard' ), 'hd' ); ?>>HD</option>
                             </select>
                         </td>
                     </tr>
                 </table>
             </div>
 
-            <?php submit_button(); ?>
+            <p class="submit">
+                <input type="submit" name="submit" id="submit" class="button button-primary" value="💾 Opslaan">
+            </p>
         </form>
         <?php
     }
 
     /**
-     * Render test tab
+     * Render test tab (kept for backward compatibility - redirects to content generation)
      */
     private function render_test_tab() {
         $text_models  = $this->provider->get_text_models();
         $image_models = $this->provider->get_image_models();
         ?>
         <div class="test-interface">
-            <h2><?php esc_html_e( 'Test AI Generation', 'writgocms' ); ?></h2>
+            <h2>Test AI Generatie</h2>
 
             <div class="test-type-toggle">
-                <button type="button" class="button test-type-btn active" data-type="text">📝 <?php esc_html_e( 'Text Generation', 'writgocms' ); ?></button>
-                <button type="button" class="button test-type-btn" data-type="image">🖼️ <?php esc_html_e( 'Image Generation', 'writgocms' ); ?></button>
+                <button type="button" class="button test-type-btn active" data-type="text">📝 Tekst Generatie</button>
+                <button type="button" class="button test-type-btn" data-type="image">🖼️ Afbeelding Generatie</button>
             </div>
 
             <div class="test-form">
                 <div class="test-input-group">
-                    <label for="test-model"><?php esc_html_e( 'Model', 'writgocms' ); ?></label>
+                    <label for="test-model">Model</label>
                     <select id="test-model" class="test-model-select">
-                        <optgroup label="<?php esc_attr_e( 'Text Models', 'writgocms' ); ?>" class="text-models">
+                        <optgroup label="Tekst Modellen" class="text-models">
                             <?php foreach ( $text_models as $model_key => $model_name ) : ?>
                                 <option value="<?php echo esc_attr( $model_key ); ?>"><?php echo esc_html( $model_name ); ?></option>
                             <?php endforeach; ?>
                         </optgroup>
-                        <optgroup label="<?php esc_attr_e( 'Image Models', 'writgocms' ); ?>" class="image-models" style="display:none;">
+                        <optgroup label="Afbeelding Modellen" class="image-models" style="display:none;">
                             <?php foreach ( $image_models as $model_key => $model_name ) : ?>
                                 <option value="<?php echo esc_attr( $model_key ); ?>"><?php echo esc_html( $model_name ); ?></option>
                             <?php endforeach; ?>
@@ -646,20 +1215,20 @@ class WritgoCMS_AIML_Admin_Settings {
                 </div>
 
                 <div class="test-input-group">
-                    <label for="test-prompt"><?php esc_html_e( 'Prompt', 'writgocms' ); ?></label>
-                    <textarea id="test-prompt" rows="3" placeholder="<?php esc_attr_e( 'Enter your prompt here...', 'writgocms' ); ?>"></textarea>
+                    <label for="test-prompt">Prompt</label>
+                    <textarea id="test-prompt" rows="3" placeholder="Voer hier je prompt in..."></textarea>
                 </div>
 
                 <div class="test-actions">
                     <button type="button" id="test-generate" class="button button-primary">
-                        ✨ <?php esc_html_e( 'Generate', 'writgocms' ); ?>
+                        ✨ Genereer
                     </button>
                     <span class="test-status"></span>
                 </div>
             </div>
 
             <div class="test-result" style="display: none;">
-                <h3><?php esc_html_e( 'Result', 'writgocms' ); ?></h3>
+                <h3>Resultaat</h3>
                 <div class="test-result-content"></div>
             </div>
         </div>
@@ -667,7 +1236,7 @@ class WritgoCMS_AIML_Admin_Settings {
     }
 
     /**
-     * Render statistics tab
+     * Render statistics tab (Dutch: Statistieken)
      */
     private function render_stats_tab() {
         $stats = get_option( 'writgocms_aiml_usage_stats', array() );
@@ -690,40 +1259,40 @@ class WritgoCMS_AIML_Admin_Settings {
         }
         ?>
         <div class="stats-dashboard">
-            <h2><?php esc_html_e( 'Usage Statistics (Last 30 Days)', 'writgocms' ); ?></h2>
+            <h2>Gebruiksstatistieken (Laatste 30 Dagen)</h2>
 
             <div class="stats-cards">
                 <div class="stat-card">
                     <span class="stat-icon">📝</span>
                     <div class="stat-content">
                         <span class="stat-number"><?php echo esc_html( $totals['text'] ); ?></span>
-                        <span class="stat-label"><?php esc_html_e( 'Text Generations', 'writgocms' ); ?></span>
+                        <span class="stat-label">Tekst Generaties</span>
                     </div>
                 </div>
                 <div class="stat-card">
                     <span class="stat-icon">🖼️</span>
                     <div class="stat-content">
                         <span class="stat-number"><?php echo esc_html( $totals['image'] ); ?></span>
-                        <span class="stat-label"><?php esc_html_e( 'Image Generations', 'writgocms' ); ?></span>
+                        <span class="stat-label">Afbeelding Generaties</span>
                     </div>
                 </div>
                 <div class="stat-card">
                     <span class="stat-icon">📊</span>
                     <div class="stat-content">
                         <span class="stat-number"><?php echo esc_html( $totals['text'] + $totals['image'] ); ?></span>
-                        <span class="stat-label"><?php esc_html_e( 'Total Requests', 'writgocms' ); ?></span>
+                        <span class="stat-label">Totaal Verzoeken</span>
                     </div>
                 </div>
             </div>
 
-            <h3><?php esc_html_e( 'Recent Activity', 'writgocms' ); ?></h3>
+            <h3>Recente Activiteit</h3>
             <table class="wp-list-table widefat fixed striped">
                 <thead>
                     <tr>
-                        <th><?php esc_html_e( 'Date', 'writgocms' ); ?></th>
-                        <th><?php esc_html_e( 'Type', 'writgocms' ); ?></th>
-                        <th><?php esc_html_e( 'Model', 'writgocms' ); ?></th>
-                        <th><?php esc_html_e( 'Count', 'writgocms' ); ?></th>
+                        <th>Datum</th>
+                        <th>Type</th>
+                        <th>Model</th>
+                        <th>Aantal</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -754,7 +1323,7 @@ class WritgoCMS_AIML_Admin_Settings {
                     if ( empty( $rows ) ) :
                         ?>
                         <tr>
-                            <td colspan="4"><?php esc_html_e( 'No usage data yet.', 'writgocms' ); ?></td>
+                            <td colspan="4">Nog geen gebruiksdata.</td>
                         </tr>
                         <?php
                     else :
@@ -762,7 +1331,7 @@ class WritgoCMS_AIML_Admin_Settings {
                             ?>
                         <tr>
                             <td><?php echo esc_html( $row['date'] ); ?></td>
-                            <td><?php echo 'text' === $row['type'] ? '📝 Text' : '🖼️ Image'; ?></td>
+                            <td><?php echo 'text' === $row['type'] ? '📝 Tekst' : '🖼️ Afbeelding'; ?></td>
                             <td><?php echo esc_html( $row['model'] ); ?></td>
                             <td><?php echo esc_html( $row['count'] ); ?></td>
                         </tr>
@@ -777,48 +1346,48 @@ class WritgoCMS_AIML_Admin_Settings {
     }
 
     /**
-     * Render content planner tab
+     * Render content planner tab (kept for backward compatibility)
      */
     private function render_content_planner_tab() {
         ?>
         <div class="content-planner-dashboard">
-            <h2><?php esc_html_e( 'Topical Authority Map Generator', 'writgocms' ); ?></h2>
+            <h2>Topical Authority Map Generator</h2>
             <p class="description">
-                <?php esc_html_e( 'Generate an AI-powered content plan for your website. Enter your niche and let AI create a comprehensive topical authority map with pillar content and cluster articles.', 'writgocms' ); ?>
+                Genereer een AI-gestuurd contentplan voor je website. Voer je niche in en laat AI een uitgebreide topical authority map maken met hoofdonderwerpen en cluster artikelen.
             </p>
 
             <div class="content-planner-grid">
                 <!-- Input Section -->
                 <div class="content-planner-input">
                     <div class="planner-card">
-                        <h3>🎯 <?php esc_html_e( 'Define Your Niche', 'writgocms' ); ?></h3>
+                        <h3>🎯 Definieer je Niche</h3>
                         
                         <div class="planner-field">
-                            <label for="planner-niche"><?php esc_html_e( 'Main Niche/Topic', 'writgocms' ); ?></label>
-                            <input type="text" id="planner-niche" class="regular-text" placeholder="<?php esc_attr_e( 'e.g., Digital Marketing, Home Fitness, Sustainable Living', 'writgocms' ); ?>">
-                            <p class="description"><?php esc_html_e( 'Enter the main topic or niche for your content strategy.', 'writgocms' ); ?></p>
+                            <label for="planner-niche">Hoofd Niche/Onderwerp</label>
+                            <input type="text" id="planner-niche" class="regular-text" placeholder="bijv. Digitale Marketing, Fitness, Duurzaam Leven">
+                            <p class="description">Voer het hoofdonderwerp of niche in voor je contentstrategie.</p>
                         </div>
 
                         <div class="planner-field">
-                            <label for="planner-website-type"><?php esc_html_e( 'Website Type', 'writgocms' ); ?></label>
+                            <label for="planner-website-type">Website Type</label>
                             <select id="planner-website-type">
-                                <option value="blog"><?php esc_html_e( 'Blog / Content Site', 'writgocms' ); ?></option>
-                                <option value="ecommerce"><?php esc_html_e( 'E-commerce / Online Store', 'writgocms' ); ?></option>
-                                <option value="saas"><?php esc_html_e( 'SaaS / Software Company', 'writgocms' ); ?></option>
-                                <option value="agency"><?php esc_html_e( 'Agency / Service Provider', 'writgocms' ); ?></option>
-                                <option value="portfolio"><?php esc_html_e( 'Portfolio / Personal Brand', 'writgocms' ); ?></option>
-                                <option value="news"><?php esc_html_e( 'News / Media Site', 'writgocms' ); ?></option>
+                                <option value="blog">Blog / Content Website</option>
+                                <option value="ecommerce">E-commerce / Webshop</option>
+                                <option value="saas">SaaS / Software Bedrijf</option>
+                                <option value="agency">Bureau / Dienstverlener</option>
+                                <option value="portfolio">Portfolio / Persoonlijk Merk</option>
+                                <option value="news">Nieuws / Media Website</option>
                             </select>
                         </div>
 
                         <div class="planner-field">
-                            <label for="planner-audience"><?php esc_html_e( 'Target Audience (Optional)', 'writgocms' ); ?></label>
-                            <textarea id="planner-audience" rows="2" placeholder="<?php esc_attr_e( 'e.g., Small business owners aged 30-50 looking to grow their online presence', 'writgocms' ); ?>"></textarea>
+                            <label for="planner-audience">Doelgroep (Optioneel)</label>
+                            <textarea id="planner-audience" rows="2" placeholder="bijv. Ondernemers tussen 30-50 jaar die hun online aanwezigheid willen vergroten"></textarea>
                         </div>
 
                         <div class="planner-actions">
                             <button type="button" id="generate-topical-map" class="button button-primary button-hero">
-                                ✨ <?php esc_html_e( 'Generate Topical Authority Map', 'writgocms' ); ?>
+                                ✨ Genereer Topical Authority Map
                             </button>
                             <span class="planner-status"></span>
                         </div>
@@ -826,9 +1395,9 @@ class WritgoCMS_AIML_Admin_Settings {
 
                     <!-- Saved Plans Section -->
                     <div class="planner-card">
-                        <h3>📁 <?php esc_html_e( 'Saved Content Plans', 'writgocms' ); ?></h3>
+                        <h3>📁 Opgeslagen Contentplannen</h3>
                         <div id="saved-plans-list">
-                            <p class="no-plans"><?php esc_html_e( 'No saved content plans yet. Generate a topical map to get started!', 'writgocms' ); ?></p>
+                            <p class="no-plans">Nog geen opgeslagen contentplannen. Genereer een topical map om te beginnen!</p>
                         </div>
                     </div>
                 </div>
@@ -837,13 +1406,13 @@ class WritgoCMS_AIML_Admin_Settings {
                 <div class="content-planner-results" style="display: none;">
                     <div class="planner-card">
                         <div class="results-header">
-                            <h3>🗺️ <?php esc_html_e( 'Your Topical Authority Map', 'writgocms' ); ?></h3>
+                            <h3>🗺️ Jouw Topical Authority Map</h3>
                             <div class="results-actions">
                                 <button type="button" id="save-content-plan" class="button button-secondary">
-                                    💾 <?php esc_html_e( 'Save Plan', 'writgocms' ); ?>
+                                    💾 Plan Opslaan
                                 </button>
                                 <button type="button" id="export-content-plan" class="button button-secondary">
-                                    📤 <?php esc_html_e( 'Export JSON', 'writgocms' ); ?>
+                                    📤 Exporteer JSON
                                 </button>
                             </div>
                         </div>
@@ -855,7 +1424,7 @@ class WritgoCMS_AIML_Admin_Settings {
 
                     <!-- Content Detail Panel -->
                     <div class="planner-card" id="content-detail-panel" style="display: none;">
-                        <h3>📝 <?php esc_html_e( 'Article Content Plan', 'writgocms' ); ?></h3>
+                        <h3>📝 Artikel Content Plan</h3>
                         <div id="content-detail-result">
                             <!-- Dynamically populated -->
                         </div>
@@ -866,14 +1435,14 @@ class WritgoCMS_AIML_Admin_Settings {
             <!-- Save Plan Modal -->
             <div id="save-plan-modal" class="planner-modal" style="display: none;">
                 <div class="planner-modal-content">
-                    <h3><?php esc_html_e( 'Save Content Plan', 'writgocms' ); ?></h3>
+                    <h3>Contentplan Opslaan</h3>
                     <div class="planner-field">
-                        <label for="plan-name"><?php esc_html_e( 'Plan Name', 'writgocms' ); ?></label>
-                        <input type="text" id="plan-name" class="regular-text" placeholder="<?php esc_attr_e( 'e.g., Q1 2024 Content Strategy', 'writgocms' ); ?>">
+                        <label for="plan-name">Plan Naam</label>
+                        <input type="text" id="plan-name" class="regular-text" placeholder="bijv. Q1 2024 Contentstrategie">
                     </div>
                     <div class="modal-actions">
-                        <button type="button" id="confirm-save-plan" class="button button-primary"><?php esc_html_e( 'Save', 'writgocms' ); ?></button>
-                        <button type="button" id="cancel-save-plan" class="button"><?php esc_html_e( 'Cancel', 'writgocms' ); ?></button>
+                        <button type="button" id="confirm-save-plan" class="button button-primary">Opslaan</button>
+                        <button type="button" id="cancel-save-plan" class="button">Annuleren</button>
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@
  * AIML Admin JavaScript
  *
  * Admin interface for AIMLAPI integration.
+ * Nederlandse versie - Dutch interface for WritgoAI.
  *
  * @package WritgoCMS
  */
@@ -20,6 +21,8 @@
             this.bindTestInterface();
             this.bindContentPlanner();
             this.loadSavedPlans();
+            this.bindSiteAnalysis();
+            this.bindContentGeneration();
         },
 
         /**
@@ -53,7 +56,7 @@
                 var apiKey = $input.val();
 
                 if (!apiKey) {
-                    self.showNotification(writgocmsAiml.i18n.error + ': API key is required', 'error');
+                    self.showNotification(writgocmsAiml.i18n.error + ': API sleutel is vereist', 'error');
                     return;
                 }
 
@@ -71,7 +74,7 @@
                     success: function(response) {
                         if (response.success) {
                             $status.text(writgocmsAiml.i18n.valid).removeClass('validating invalid').addClass('valid');
-                            self.showNotification(writgocmsAiml.i18n.success + ' AIMLAPI key validated!', 'success');
+                            self.showNotification(writgocmsAiml.i18n.success + ' API sleutel gevalideerd!', 'success');
                         } else {
                             $status.text(writgocmsAiml.i18n.invalid).removeClass('validating valid').addClass('invalid');
                             self.showNotification(response.data.message, 'error');
@@ -79,7 +82,7 @@
                     },
                     error: function() {
                         $status.text(writgocmsAiml.i18n.error).removeClass('validating valid').addClass('invalid');
-                        self.showNotification('Connection error', 'error');
+                        self.showNotification('Verbindingsfout', 'error');
                     },
                     complete: function() {
                         $button.prop('disabled', false);
@@ -96,6 +99,248 @@
                 var $input = $(this);
                 var $value = $input.siblings('.range-value');
                 $value.text($input.val());
+            });
+        },
+
+        /**
+         * Bind site analysis functionality
+         */
+        bindSiteAnalysis: function() {
+            var self = this;
+
+            // Start site analysis button
+            $('#start-site-analysis').on('click', function() {
+                var $button = $(this);
+                var $status = $('.analysis-status');
+                var manualTheme = $('#manual-theme').val();
+
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsAiml.i18n.analyzing);
+                $status.text('').removeClass('error success');
+
+                $.ajax({
+                    url: writgocmsAiml.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'writgocms_analyze_sitemap',
+                        nonce: writgocmsAiml.nonce,
+                        manual_theme: manualTheme
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $status.text(writgocmsAiml.i18n.analysisComplete).addClass('success');
+                            self.showNotification(writgocmsAiml.i18n.analysisComplete, 'success');
+                            // Reload page to show results
+                            location.reload();
+                        } else {
+                            $status.text(response.data.message).addClass('error');
+                            self.showNotification(response.data.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        $status.text(writgocmsAiml.i18n.analysisError).addClass('error');
+                        self.showNotification('Verbindingsfout', 'error');
+                    },
+                    complete: function() {
+                        $button.prop('disabled', false).html('🔍 ' + writgocmsAiml.i18n.refreshAnalysis);
+                    }
+                });
+            });
+
+            // Generate content plan button
+            $('#generate-content-plan').on('click', function() {
+                var $button = $(this);
+                var $status = $('.content-plan-status');
+
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsAiml.i18n.generatingMap);
+                $status.text('').removeClass('error success');
+
+                $.ajax({
+                    url: writgocmsAiml.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'writgocms_generate_categorized_plan',
+                        nonce: writgocmsAiml.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $status.text(writgocmsAiml.i18n.success).addClass('success');
+                            self.showNotification('Contentplan succesvol gegenereerd!', 'success');
+                            // Redirect to content plan page
+                            window.location.href = writgocmsAiml.ajaxUrl.replace('admin-ajax.php', 'admin.php?page=writgocms-aiml-contentplan');
+                        } else {
+                            $status.text(response.data.message).addClass('error');
+                            self.showNotification(response.data.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        $status.text('Verbindingsfout').addClass('error');
+                        self.showNotification('Verbindingsfout', 'error');
+                    },
+                    complete: function() {
+                        $button.prop('disabled', false).html('✨ Genereer Contentplan');
+                    }
+                });
+            });
+        },
+
+        /**
+         * Bind content generation functionality
+         */
+        bindContentGeneration: function() {
+            var self = this;
+
+            // Generate content button click
+            $(document).on('click', '.generate-content-btn', function() {
+                var $button = $(this);
+                var itemData = $button.data('item');
+
+                if (!itemData) {
+                    self.showNotification('Geen artikel data gevonden', 'error');
+                    return;
+                }
+
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsAiml.i18n.generating);
+
+                $.ajax({
+                    url: writgocmsAiml.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'writgocms_generate_article_content',
+                        nonce: writgocmsAiml.nonce,
+                        item: JSON.stringify(itemData)
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            self.showNotification('Content succesvol gegenereerd!', 'success');
+                            self.showContentPreview(response.data.content);
+                        } else {
+                            self.showNotification(response.data.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        self.showNotification('Verbindingsfout', 'error');
+                    },
+                    complete: function() {
+                        $button.prop('disabled', false).html('✨ Genereer Content');
+                    }
+                });
+            });
+
+            // Publish content button
+            $(document).on('click', '.publish-content-btn', function() {
+                var $button = $(this);
+                var contentIndex = $button.data('index');
+                var status = $button.data('status') || 'draft';
+
+                // Get content from stored data
+                var contentData = $button.closest('.generated-content-item').data('content');
+
+                if (!contentData) {
+                    self.showNotification('Geen content data gevonden', 'error');
+                    return;
+                }
+
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> Publiceren...');
+
+                $.ajax({
+                    url: writgocmsAiml.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'writgocms_publish_content',
+                        nonce: writgocmsAiml.nonce,
+                        content: JSON.stringify(contentData),
+                        status: status
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            self.showNotification(response.data.message, 'success');
+                            // Redirect to edit post
+                            if (response.data.edit_url) {
+                                window.location.href = response.data.edit_url;
+                            }
+                        } else {
+                            self.showNotification(response.data.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        self.showNotification('Verbindingsfout', 'error');
+                    },
+                    complete: function() {
+                        $button.prop('disabled', false).html('Publiceer als Concept');
+                    }
+                });
+            });
+        },
+
+        /**
+         * Show content preview modal
+         */
+        showContentPreview: function(content) {
+            var html = '<div class="content-preview-modal" style="display:block;">';
+            html += '<div class="content-preview-overlay"></div>';
+            html += '<div class="content-preview-content">';
+            html += '<div class="preview-header">';
+            html += '<h3>' + this.escapeHtml(content.title) + '</h3>';
+            html += '<button type="button" class="close-preview">&times;</button>';
+            html += '</div>';
+            html += '<div class="preview-body">';
+            html += content.content;
+            html += '</div>';
+            html += '<div class="preview-footer">';
+            html += '<button type="button" class="button button-primary publish-preview-btn" data-status="draft">📝 Publiceer als Concept</button>';
+            html += '<button type="button" class="button publish-preview-btn" data-status="publish">🚀 Direct Publiceren</button>';
+            html += '<button type="button" class="button close-preview">Annuleren</button>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+
+            var $modal = $(html);
+            $modal.data('content', content);
+            $('body').append($modal);
+
+            // Bind close button
+            $modal.find('.close-preview, .content-preview-overlay').on('click', function() {
+                $modal.remove();
+            });
+
+            // Bind publish buttons
+            var self = this;
+            $modal.find('.publish-preview-btn').on('click', function() {
+                var status = $(this).data('status');
+                self.publishContent(content, status, $modal);
+            });
+        },
+
+        /**
+         * Publish content from preview
+         */
+        publishContent: function(content, status, $modal) {
+            var self = this;
+
+            $.ajax({
+                url: writgocmsAiml.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'writgocms_publish_content',
+                    nonce: writgocmsAiml.nonce,
+                    content: JSON.stringify(content),
+                    status: status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        self.showNotification(response.data.message, 'success');
+                        $modal.remove();
+                        // Redirect to edit post
+                        if (response.data.edit_url) {
+                            window.location.href = response.data.edit_url;
+                        }
+                    } else {
+                        self.showNotification(response.data.message, 'error');
+                    }
+                },
+                error: function() {
+                    self.showNotification('Verbindingsfout', 'error');
+                }
             });
         },
 
@@ -138,7 +383,7 @@
                 var model = $('#test-model').val();
 
                 if (!prompt) {
-                    self.showNotification('Please enter a prompt', 'error');
+                    self.showNotification('Voer een prompt in', 'error');
                     return;
                 }
 
@@ -163,22 +408,22 @@
                             if (self.testType === 'text') {
                                 $resultContent.text(response.data.content);
                             } else {
-                                $resultContent.html('<img src="' + response.data.image_url + '" alt="Generated Image">');
+                                $resultContent.html('<img src="' + response.data.image_url + '" alt="Gegenereerde Afbeelding">');
                             }
 
                             $result.show();
-                            self.showNotification('Generation completed!', 'success');
+                            self.showNotification('Generatie voltooid!', 'success');
                         } else {
                             $status.text(response.data.message).addClass('error');
                             self.showNotification(response.data.message, 'error');
                         }
                     },
                     error: function() {
-                        $status.text('Connection error').addClass('error');
-                        self.showNotification('Connection error', 'error');
+                        $status.text('Verbindingsfout').addClass('error');
+                        self.showNotification('Verbindingsfout', 'error');
                     },
                     complete: function() {
-                        $button.prop('disabled', false).removeClass('loading').html('✨ Generate');
+                        $button.prop('disabled', false).removeClass('loading').html('✨ Genereer');
                     }
                 });
             });
@@ -227,11 +472,11 @@
                         }
                     },
                     error: function() {
-                        $('.planner-status').text('Connection error').addClass('error');
-                        self.showNotification('Connection error', 'error');
+                        $('.planner-status').text('Verbindingsfout').addClass('error');
+                        self.showNotification('Verbindingsfout', 'error');
                     },
                     complete: function() {
-                        $button.prop('disabled', false).html('✨ ' + 'Generate Topical Authority Map');
+                        $button.prop('disabled', false).html('✨ Genereer Topical Authority Map');
                     }
                 });
             });
@@ -257,7 +502,7 @@
                 }
 
                 if (!self.currentTopicalMap) {
-                    self.showNotification('No content plan to save', 'error');
+                    self.showNotification('Geen contentplan om op te slaan', 'error');
                     return;
                 }
 
@@ -281,7 +526,7 @@
                         }
                     },
                     error: function() {
-                        self.showNotification('Connection error', 'error');
+                        self.showNotification('Verbindingsfout', 'error');
                     }
                 });
             });
@@ -289,7 +534,7 @@
             // Export plan button
             $('#export-content-plan').on('click', function() {
                 if (!self.currentTopicalMap) {
-                    self.showNotification('No content plan to export', 'error');
+                    self.showNotification('Geen contentplan om te exporteren', 'error');
                     return;
                 }
 
