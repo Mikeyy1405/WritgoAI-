@@ -141,10 +141,10 @@ class WritgoCMS_AIML_Admin_Settings {
         // Check if we're on any WritgoAI admin page.
         $allowed_hooks = array(
             'toplevel_page_writgocms-aiml',
-            'writgoai_page_writgocms-aiml-content-planner',
-            'writgoai_page_writgocms-aiml-test',
-            'writgoai_page_writgocms-aiml-stats',
-            'writgoai_page_writgocms-aiml-settings',
+            'writgocms-aiml_page_writgocms-aiml-content-planner',
+            'writgocms-aiml_page_writgocms-aiml-test',
+            'writgocms-aiml_page_writgocms-aiml-stats',
+            'writgocms-aiml_page_writgocms-aiml-settings',
         );
 
         if ( ! in_array( $hook, $allowed_hooks, true ) ) {
@@ -395,7 +395,7 @@ class WritgoCMS_AIML_Admin_Settings {
                                 <?php foreach ( array_slice( $rows, 0, 5 ) as $row ) : ?>
                                 <tr>
                                     <td><?php echo esc_html( $row['date'] ); ?></td>
-                                    <td><?php echo 'text' === $row['type'] ? '📝 Text' : '🖼️ Image'; ?></td>
+                                    <td><?php echo 'text' === $row['type'] ? esc_html( '📝 Text' ) : esc_html( '🖼️ Image' ); ?></td>
                                     <td><?php echo esc_html( $row['model'] ); ?></td>
                                     <td><?php echo esc_html( $row['count'] ); ?></td>
                                 </tr>
