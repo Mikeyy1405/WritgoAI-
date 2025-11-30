@@ -64,7 +64,7 @@ class WritgoCMS_Classic_Editor_Button {
      * @return array
      */
     public function add_tinymce_plugin( $plugins ) {
-        $plugins['writgocms_aiml'] = WRITGOCMS_URI . '/assets/js/tinymce-aiml-plugin.js';
+        $plugins['writgocms_aiml'] = WRITGOCMS_URL . 'assets/js/tinymce-aiml-plugin.js';
         return $plugins;
     }
 
@@ -97,7 +97,7 @@ class WritgoCMS_Classic_Editor_Button {
 
         wp_enqueue_style(
             'writgocms-tinymce-aiml',
-            WRITGOCMS_URI . '/assets/css/tinymce-aiml.css',
+            WRITGOCMS_URL . 'assets/css/tinymce-aiml.css',
             array(),
             WRITGOCMS_VERSION
         );

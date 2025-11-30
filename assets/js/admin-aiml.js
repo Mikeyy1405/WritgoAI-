@@ -1,6 +1,8 @@
 /**
  * AIML Admin JavaScript
  *
+ * Admin interface for AIMLAPI integration.
+ *
  * @package WritgoCMS
  */
 
@@ -11,34 +13,10 @@
         testType: 'text',
 
         init: function() {
-            this.bindProviderCards();
             this.bindPasswordToggles();
             this.bindApiValidation();
             this.bindRangeInputs();
             this.bindTestInterface();
-        },
-
-        /**
-         * Bind provider card selection
-         */
-        bindProviderCards: function() {
-            $('.provider-card').on('click', function() {
-                var $card = $(this);
-                var $container = $card.closest('.provider-cards');
-                var provider = $card.data('provider');
-
-                // Update active state
-                $container.find('.provider-card').removeClass('active');
-                $card.addClass('active');
-
-                // Check the radio button
-                $card.find('input[type="radio"]').prop('checked', true);
-
-                // Show/hide provider settings
-                var $settingsContainer = $card.closest('form').find('.provider-settings');
-                $settingsContainer.find('.provider-setting-group').hide();
-                $settingsContainer.find('.provider-setting-group[data-provider="' + provider + '"]').show();
-            });
         },
 
         /**
@@ -65,11 +43,10 @@
         bindApiValidation: function() {
             var self = this;
 
-            $('.validate-api').on('click', function() {
+            $('#validate-aimlapi-key').on('click', function() {
                 var $button = $(this);
                 var $status = $button.siblings('.validation-status');
-                var $input = $button.siblings('input');
-                var provider = $button.data('provider');
+                var $input = $('#writgocms_aimlapi_key');
                 var apiKey = $input.val();
 
                 if (!apiKey) {
@@ -86,13 +63,12 @@
                     data: {
                         action: 'writgocms_validate_api_key',
                         nonce: writgocmsAiml.nonce,
-                        provider: provider,
                         api_key: apiKey
                     },
                     success: function(response) {
                         if (response.success) {
                             $status.text(writgocmsAiml.i18n.valid).removeClass('validating invalid').addClass('valid');
-                            self.showNotification(writgocmsAiml.i18n.success + ' API key validated!', 'success');
+                            self.showNotification(writgocmsAiml.i18n.success + ' AIMLAPI key validated!', 'success');
                         } else {
                             $status.text(writgocmsAiml.i18n.invalid).removeClass('validating valid').addClass('invalid');
                             self.showNotification(response.data.message, 'error');
@@ -134,11 +110,18 @@
                 $('.test-type-btn').removeClass('active');
                 $button.addClass('active');
 
-                // Update placeholder
+                // Update placeholder and model options
+                var $modelSelect = $('#test-model');
                 if (self.testType === 'text') {
                     $('#test-prompt').attr('placeholder', writgocmsAiml.i18n.testPrompt);
+                    $modelSelect.find('.text-models').show();
+                    $modelSelect.find('.image-models').hide();
+                    $modelSelect.find('.text-models option:first').prop('selected', true);
                 } else {
                     $('#test-prompt').attr('placeholder', writgocmsAiml.i18n.imagePrompt);
+                    $modelSelect.find('.text-models').hide();
+                    $modelSelect.find('.image-models').show();
+                    $modelSelect.find('.image-models option:first').prop('selected', true);
                 }
             });
 
@@ -149,6 +132,7 @@
                 var $result = $('.test-result');
                 var $resultContent = $('.test-result-content');
                 var prompt = $('#test-prompt').val();
+                var model = $('#test-model').val();
 
                 if (!prompt) {
                     self.showNotification('Please enter a prompt', 'error');
@@ -166,7 +150,8 @@
                         action: 'writgocms_test_generation',
                         nonce: writgocmsAiml.nonce,
                         type: self.testType,
-                        prompt: prompt
+                        prompt: prompt,
+                        model: model
                     },
                     success: function(response) {
                         if (response.success) {
