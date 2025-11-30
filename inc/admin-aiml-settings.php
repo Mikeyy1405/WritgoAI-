@@ -310,6 +310,39 @@ class WritgoCMS_AIML_Admin_Settings {
                         </a>
                     </div>
 
+                    <!-- Google Search Console Widget -->
+                    <?php
+                    $gsc_provider   = class_exists( 'WritgoCMS_GSC_Provider' ) ? WritgoCMS_GSC_Provider::get_instance() : null;
+                    $gsc_connected  = $gsc_provider && $gsc_provider->is_connected();
+                    ?>
+                    <div class="dashboard-widget widget-primary">
+                        <div class="widget-icon">📊</div>
+                        <div class="widget-content">
+                            <h3><?php esc_html_e( 'Search Console', 'writgocms' ); ?></h3>
+                            <p><?php esc_html_e( 'Bekijk Google Search Console data en ontdek keyword kansen.', 'writgocms' ); ?></p>
+                            <?php if ( $gsc_connected ) : ?>
+                                <span class="widget-badge success"><?php esc_html_e( 'Verbonden', 'writgocms' ); ?></span>
+                            <?php else : ?>
+                                <span class="widget-badge warning"><?php esc_html_e( 'Niet verbonden', 'writgocms' ); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-gsc' ) ); ?>" class="widget-button">
+                            <?php esc_html_e( 'Open GSC Dashboard', 'writgocms' ); ?>
+                        </a>
+                    </div>
+
+                    <!-- CTR Optimizer Widget -->
+                    <div class="dashboard-widget widget-primary">
+                        <div class="widget-icon">✨</div>
+                        <div class="widget-content">
+                            <h3><?php esc_html_e( 'CTR Optimalisatie', 'writgocms' ); ?></h3>
+                            <p><?php esc_html_e( 'Verbeter je meta titles en descriptions met AI suggesties.', 'writgocms' ); ?></p>
+                        </div>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-ctr-optimizer' ) ); ?>" class="widget-button">
+                            <?php esc_html_e( 'Optimaliseer CTR', 'writgocms' ); ?>
+                        </a>
+                    </div>
+
                     <!-- Test & Preview Widget -->
                     <div class="dashboard-widget widget-secondary">
                         <div class="widget-icon">🧪</div>
@@ -324,7 +357,7 @@ class WritgoCMS_AIML_Admin_Settings {
 
                     <!-- Usage Statistics Widget -->
                     <div class="dashboard-widget widget-secondary">
-                        <div class="widget-icon">📊</div>
+                        <div class="widget-icon">📈</div>
                         <div class="widget-content">
                             <h3><?php esc_html_e( 'Usage Statistics', 'writgocms' ); ?></h3>
                             <p><?php esc_html_e( 'View detailed usage statistics and activity history.', 'writgocms' ); ?></p>

@@ -50,5 +50,42 @@ function writgocms_init() {
 	require_once WRITGOCMS_DIR . 'inc/admin-aiml-settings.php';
 	require_once WRITGOCMS_DIR . 'inc/gutenberg-aiml-block.php';
 	require_once WRITGOCMS_DIR . 'inc/classic-editor-button.php';
+
+	// Load Google Search Console Integration files.
+	require_once WRITGOCMS_DIR . 'inc/class-gsc-provider.php';
+	require_once WRITGOCMS_DIR . 'inc/class-gsc-data-handler.php';
+	require_once WRITGOCMS_DIR . 'inc/class-ctr-optimizer.php';
+	require_once WRITGOCMS_DIR . 'inc/admin-gsc-settings.php';
 }
 add_action( 'plugins_loaded', 'writgocms_init' );
+
+/**
+ * Plugin activation hook.
+ *
+ * @return void
+ */
+function writgocms_activate() {
+	// Create GSC database tables.
+	require_once WRITGOCMS_DIR . 'inc/class-gsc-provider.php';
+	require_once WRITGOCMS_DIR . 'inc/class-gsc-data-handler.php';
+
+	$data_handler = WritgoCMS_GSC_Data_Handler::get_instance();
+	$data_handler->create_tables();
+	$data_handler->schedule_sync();
+}
+register_activation_hook( __FILE__, 'writgocms_activate' );
+
+/**
+ * Plugin deactivation hook.
+ *
+ * @return void
+ */
+function writgocms_deactivate() {
+	// Unschedule sync cron.
+	require_once WRITGOCMS_DIR . 'inc/class-gsc-provider.php';
+	require_once WRITGOCMS_DIR . 'inc/class-gsc-data-handler.php';
+
+	$data_handler = WritgoCMS_GSC_Data_Handler::get_instance();
+	$data_handler->unschedule_sync();
+}
+register_deactivation_hook( __FILE__, 'writgocms_deactivate' );
