@@ -52,6 +52,10 @@ function writgocms_init() {
 	require_once WRITGOCMS_DIR . 'inc/gutenberg-aiml-block.php';
 	require_once WRITGOCMS_DIR . 'inc/classic-editor-button.php';
 
+	// Load Social Media Manager files.
+	require_once WRITGOCMS_DIR . 'inc/class-social-media-manager.php';
+	require_once WRITGOCMS_DIR . 'inc/admin-social-media-settings.php';
+
 	// Load Google Search Console Integration files.
 	require_once WRITGOCMS_DIR . 'inc/class-gsc-provider.php';
 	require_once WRITGOCMS_DIR . 'inc/class-gsc-data-handler.php';
@@ -73,6 +77,13 @@ function writgocms_activate() {
 	$data_handler = WritgoCMS_GSC_Data_Handler::get_instance();
 	$data_handler->create_tables();
 	$data_handler->schedule_sync();
+
+	// Create Social Media database tables.
+	require_once WRITGOCMS_DIR . 'inc/class-aiml-provider.php';
+	require_once WRITGOCMS_DIR . 'inc/class-social-media-manager.php';
+
+	$social_media_manager = WritgoCMS_Social_Media_Manager::get_instance();
+	$social_media_manager->create_tables();
 }
 register_activation_hook( __FILE__, 'writgocms_activate' );
 
