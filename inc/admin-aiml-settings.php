@@ -56,9 +56,62 @@ class WritgoCMS_AIML_Admin_Settings {
      * Add admin menu
      */
     public function add_admin_menu() {
-        add_options_page(
-            __( 'AIML Settings', 'writgocms' ),
-            __( 'WritgoCMS AIML', 'writgocms' ),
+        // Add main menu item.
+        add_menu_page(
+            __( 'WritgoAI Dashboard', 'writgocms' ),
+            __( 'WritgoAI', 'writgocms' ),
+            'manage_options',
+            'writgocms-aiml',
+            array( $this, 'render_dashboard_page' ),
+            'dashicons-welcome-widgets-menus',
+            26 // Position after Pages.
+        );
+
+        // Add Dashboard submenu.
+        add_submenu_page(
+            'writgocms-aiml',
+            __( 'Dashboard', 'writgocms' ),
+            __( 'Dashboard', 'writgocms' ),
+            'manage_options',
+            'writgocms-aiml',
+            array( $this, 'render_dashboard_page' )
+        );
+
+        // Add Content Planner submenu.
+        add_submenu_page(
+            'writgocms-aiml',
+            __( 'Content Planner', 'writgocms' ),
+            __( 'Content Planner', 'writgocms' ),
+            'manage_options',
+            'writgocms-aiml-content-planner',
+            array( $this, 'render_content_planner_page' )
+        );
+
+        // Add Test & Preview submenu.
+        add_submenu_page(
+            'writgocms-aiml',
+            __( 'Test & Preview', 'writgocms' ),
+            __( 'Test & Preview', 'writgocms' ),
+            'manage_options',
+            'writgocms-aiml-test',
+            array( $this, 'render_test_page' )
+        );
+
+        // Add Usage Statistics submenu.
+        add_submenu_page(
+            'writgocms-aiml',
+            __( 'Usage Statistics', 'writgocms' ),
+            __( 'Usage Statistics', 'writgocms' ),
+            'manage_options',
+            'writgocms-aiml-stats',
+            array( $this, 'render_stats_page' )
+        );
+
+        // Add Settings submenu.
+        add_submenu_page(
+            'writgocms-aiml',
+            __( 'Settings', 'writgocms' ),
+            __( 'Settings', 'writgocms' ),
             'manage_options',
             'writgocms-aiml-settings',
             array( $this, 'render_settings_page' )
@@ -85,7 +138,16 @@ class WritgoCMS_AIML_Admin_Settings {
      * @param string $hook Current admin page hook.
      */
     public function enqueue_admin_scripts( $hook ) {
-        if ( 'settings_page_writgocms-aiml-settings' !== $hook ) {
+        // Check if we're on any WritgoAI admin page.
+        $allowed_hooks = array(
+            'toplevel_page_writgocms-aiml',
+            'writgocms-aiml_page_writgocms-aiml-content-planner',
+            'writgocms-aiml_page_writgocms-aiml-test',
+            'writgocms-aiml_page_writgocms-aiml-stats',
+            'writgocms-aiml_page_writgocms-aiml-settings',
+        );
+
+        if ( ! in_array( $hook, $allowed_hooks, true ) ) {
             return;
         }
 
@@ -143,49 +205,282 @@ class WritgoCMS_AIML_Admin_Settings {
     }
 
     /**
-     * Render settings page
+     * Render dashboard page
      */
-    public function render_settings_page() {
-        $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'settings';
+    public function render_dashboard_page() {
+        $stats = get_option( 'writgocms_aiml_usage_stats', array() );
+        $totals = array(
+            'text'  => 0,
+            'image' => 0,
+        );
+
+        foreach ( $stats as $date_stats ) {
+            if ( isset( $date_stats['text'] ) ) {
+                foreach ( $date_stats['text'] as $count ) {
+                    $totals['text'] += $count;
+                }
+            }
+            if ( isset( $date_stats['image'] ) ) {
+                foreach ( $date_stats['image'] as $count ) {
+                    $totals['image'] += $count;
+                }
+            }
+        }
+
+        $saved_plans = get_option( 'writgocms_saved_content_plans', array() );
+        $plans_count = count( $saved_plans );
+        $has_api_key = ! empty( get_option( 'writgocms_aimlapi_key' ) );
+        ?>
+        <div class="wrap writgocms-aiml-settings writgocms-dashboard">
+            <h1 class="aiml-header">
+                <span class="aiml-logo">🤖</span>
+                <?php esc_html_e( 'WritgoAI Dashboard', 'writgocms' ); ?>
+            </h1>
+
+            <div class="aiml-tab-content">
+                <!-- Welcome Section -->
+                <div class="dashboard-welcome">
+                    <h2><?php esc_html_e( 'Welcome to WritgoAI', 'writgocms' ); ?></h2>
+                    <p><?php esc_html_e( 'Your AI-powered content creation assistant. Generate text, images, and plan your content strategy with ease.', 'writgocms' ); ?></p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <span class="stat-icon">📝</span>
+                        <div class="stat-content">
+                            <span class="stat-number"><?php echo esc_html( $totals['text'] ); ?></span>
+                            <span class="stat-label"><?php esc_html_e( 'Text Generations', 'writgocms' ); ?></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🖼️</span>
+                        <div class="stat-content">
+                            <span class="stat-number"><?php echo esc_html( $totals['image'] ); ?></span>
+                            <span class="stat-label"><?php esc_html_e( 'Image Generations', 'writgocms' ); ?></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">📊</span>
+                        <div class="stat-content">
+                            <span class="stat-number"><?php echo esc_html( $totals['text'] + $totals['image'] ); ?></span>
+                            <span class="stat-label"><?php esc_html_e( 'Total Requests', 'writgocms' ); ?></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">📁</span>
+                        <div class="stat-content">
+                            <span class="stat-number"><?php echo esc_html( $plans_count ); ?></span>
+                            <span class="stat-label"><?php esc_html_e( 'Saved Plans', 'writgocms' ); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Widgets Grid -->
+                <div class="dashboard-widgets">
+                    <!-- Settings Widget -->
+                    <div class="dashboard-widget widget-primary">
+                        <div class="widget-icon">⚙️</div>
+                        <div class="widget-content">
+                            <h3><?php esc_html_e( 'Settings', 'writgocms' ); ?></h3>
+                            <p><?php esc_html_e( 'Configure your API key and AI model preferences.', 'writgocms' ); ?></p>
+                            <?php if ( ! $has_api_key ) : ?>
+                                <span class="widget-badge warning"><?php esc_html_e( 'API Key Required', 'writgocms' ); ?></span>
+                            <?php else : ?>
+                                <span class="widget-badge success"><?php esc_html_e( 'Configured', 'writgocms' ); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-settings' ) ); ?>" class="widget-button">
+                            <?php esc_html_e( 'Open Settings', 'writgocms' ); ?>
+                        </a>
+                    </div>
+
+                    <!-- Content Planner Widget -->
+                    <div class="dashboard-widget widget-primary">
+                        <div class="widget-icon">🗺️</div>
+                        <div class="widget-content">
+                            <h3><?php esc_html_e( 'Content Planner', 'writgocms' ); ?></h3>
+                            <p><?php esc_html_e( 'Generate AI-powered topical authority maps for your content strategy.', 'writgocms' ); ?></p>
+                            <?php if ( $plans_count > 0 ) : ?>
+                                <span class="widget-badge info"><?php echo esc_html( sprintf( __( '%d Saved Plans', 'writgocms' ), $plans_count ) ); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-content-planner' ) ); ?>" class="widget-button">
+                            <?php esc_html_e( 'Plan Content', 'writgocms' ); ?>
+                        </a>
+                    </div>
+
+                    <!-- Test & Preview Widget -->
+                    <div class="dashboard-widget widget-secondary">
+                        <div class="widget-icon">🧪</div>
+                        <div class="widget-content">
+                            <h3><?php esc_html_e( 'Test & Preview', 'writgocms' ); ?></h3>
+                            <p><?php esc_html_e( 'Test AI text and image generation with different models.', 'writgocms' ); ?></p>
+                        </div>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-test' ) ); ?>" class="widget-button">
+                            <?php esc_html_e( 'Test Now', 'writgocms' ); ?>
+                        </a>
+                    </div>
+
+                    <!-- Usage Statistics Widget -->
+                    <div class="dashboard-widget widget-secondary">
+                        <div class="widget-icon">📊</div>
+                        <div class="widget-content">
+                            <h3><?php esc_html_e( 'Usage Statistics', 'writgocms' ); ?></h3>
+                            <p><?php esc_html_e( 'View detailed usage statistics and activity history.', 'writgocms' ); ?></p>
+                        </div>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-stats' ) ); ?>" class="widget-button">
+                            <?php esc_html_e( 'View Stats', 'writgocms' ); ?>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Topical Authority Map Generator Quick Access -->
+                <div class="dashboard-feature-card">
+                    <div class="feature-header">
+                        <span class="feature-icon">🎯</span>
+                        <h3><?php esc_html_e( 'Topical Authority Map Generator', 'writgocms' ); ?></h3>
+                    </div>
+                    <p><?php esc_html_e( 'Build comprehensive content strategies with AI-generated topical authority maps. Define your niche, target audience, and let AI create a structured content plan with pillar articles and cluster content.', 'writgocms' ); ?></p>
+                    <div class="feature-actions">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-content-planner' ) ); ?>" class="button button-primary button-hero">
+                            ✨ <?php esc_html_e( 'Generate Content Map', 'writgocms' ); ?>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="dashboard-section">
+                    <h3><?php esc_html_e( 'Recent Activity', 'writgocms' ); ?></h3>
+                    <?php
+                    $rows = array();
+                    foreach ( $stats as $date => $date_stats ) {
+                        foreach ( array( 'text', 'image' ) as $type ) {
+                            if ( isset( $date_stats[ $type ] ) ) {
+                                foreach ( $date_stats[ $type ] as $model => $count ) {
+                                    $rows[] = array(
+                                        'date'  => $date,
+                                        'type'  => $type,
+                                        'model' => $model,
+                                        'count' => $count,
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    usort(
+                        $rows,
+                        function( $a, $b ) {
+                            return strcmp( $b['date'], $a['date'] );
+                        }
+                    );
+
+                    if ( empty( $rows ) ) :
+                        ?>
+                        <p class="no-activity"><?php esc_html_e( 'No activity yet. Start generating content to see your usage history.', 'writgocms' ); ?></p>
+                        <?php
+                    else :
+                        ?>
+                        <table class="wp-list-table widefat fixed striped">
+                            <thead>
+                                <tr>
+                                    <th><?php esc_html_e( 'Date', 'writgocms' ); ?></th>
+                                    <th><?php esc_html_e( 'Type', 'writgocms' ); ?></th>
+                                    <th><?php esc_html_e( 'Model', 'writgocms' ); ?></th>
+                                    <th><?php esc_html_e( 'Count', 'writgocms' ); ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ( array_slice( $rows, 0, 5 ) as $row ) : ?>
+                                <tr>
+                                    <td><?php echo esc_html( $row['date'] ); ?></td>
+                                    <td><?php echo 'text' === $row['type'] ? esc_html( '📝 Text' ) : esc_html( '🖼️ Image' ); ?></td>
+                                    <td><?php echo esc_html( $row['model'] ); ?></td>
+                                    <td><?php echo esc_html( $row['count'] ); ?></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                        <p style="margin-top: 15px;">
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-stats' ) ); ?>"><?php esc_html_e( 'View all activity →', 'writgocms' ); ?></a>
+                        </p>
+                        <?php
+                    endif;
+                    ?>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render content planner page
+     */
+    public function render_content_planner_page() {
         ?>
         <div class="wrap writgocms-aiml-settings">
             <h1 class="aiml-header">
-                <span class="aiml-logo">🤖</span>
-                <?php esc_html_e( 'WritgoCMS AI - AIMLAPI Settings', 'writgocms' ); ?>
+                <span class="aiml-logo">🗺️</span>
+                <?php esc_html_e( 'Content Planner', 'writgocms' ); ?>
             </h1>
 
-            <nav class="nav-tab-wrapper">
-                <a href="?page=writgocms-aiml-settings&tab=settings" class="nav-tab <?php echo 'settings' === $active_tab ? 'nav-tab-active' : ''; ?>">
-                    ⚙️ <?php esc_html_e( 'Settings', 'writgocms' ); ?>
-                </a>
-                <a href="?page=writgocms-aiml-settings&tab=content-planner" class="nav-tab <?php echo 'content-planner' === $active_tab ? 'nav-tab-active' : ''; ?>">
-                    🗺️ <?php esc_html_e( 'Content Planner', 'writgocms' ); ?>
-                </a>
-                <a href="?page=writgocms-aiml-settings&tab=test" class="nav-tab <?php echo 'test' === $active_tab ? 'nav-tab-active' : ''; ?>">
-                    🧪 <?php esc_html_e( 'Test & Preview', 'writgocms' ); ?>
-                </a>
-                <a href="?page=writgocms-aiml-settings&tab=stats" class="nav-tab <?php echo 'stats' === $active_tab ? 'nav-tab-active' : ''; ?>">
-                    📊 <?php esc_html_e( 'Usage Statistics', 'writgocms' ); ?>
-                </a>
-            </nav>
+            <div class="aiml-tab-content">
+                <?php $this->render_content_planner_tab(); ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render test page
+     */
+    public function render_test_page() {
+        ?>
+        <div class="wrap writgocms-aiml-settings">
+            <h1 class="aiml-header">
+                <span class="aiml-logo">🧪</span>
+                <?php esc_html_e( 'Test & Preview', 'writgocms' ); ?>
+            </h1>
 
             <div class="aiml-tab-content">
-                <?php
-                switch ( $active_tab ) {
-                    case 'settings':
-                        $this->render_settings_tab();
-                        break;
-                    case 'content-planner':
-                        $this->render_content_planner_tab();
-                        break;
-                    case 'test':
-                        $this->render_test_tab();
-                        break;
-                    case 'stats':
-                        $this->render_stats_tab();
-                        break;
-                }
-                ?>
+                <?php $this->render_test_tab(); ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render stats page
+     */
+    public function render_stats_page() {
+        ?>
+        <div class="wrap writgocms-aiml-settings">
+            <h1 class="aiml-header">
+                <span class="aiml-logo">📊</span>
+                <?php esc_html_e( 'Usage Statistics', 'writgocms' ); ?>
+            </h1>
+
+            <div class="aiml-tab-content">
+                <?php $this->render_stats_tab(); ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render settings page
+     */
+    public function render_settings_page() {
+        ?>
+        <div class="wrap writgocms-aiml-settings">
+            <h1 class="aiml-header">
+                <span class="aiml-logo">⚙️</span>
+                <?php esc_html_e( 'WritgoAI Settings', 'writgocms' ); ?>
+            </h1>
+
+            <div class="aiml-tab-content">
+                <?php $this->render_settings_tab(); ?>
             </div>
         </div>
         <?php
