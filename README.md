@@ -32,6 +32,27 @@ The Content Planner is an AI-powered tool that helps you create comprehensive co
 - **Internal Linking Suggestions**: Get recommendations for internal link opportunities
 - **CTA Suggestions**: Receive call-to-action ideas for each piece of content
 
+### 📊 Google Search Console Integration
+Complete GSC integration for data-driven content decisions:
+
+- **OAuth 2.0 Authentication**: Secure connection with Google Search Console
+- **Automatic Data Sync**: Daily synchronization of search data (6 months historical data)
+- **Metrics Dashboard**: View impressions, clicks, CTR, and average position
+- **Keyword Opportunity Detection**:
+  - **Quick Wins**: Keywords on position 11-20 that can reach page 1
+  - **Low CTR**: Pages with high impressions but below benchmark CTR
+  - **Declining Rankings**: Keywords losing positions (-3 or more)
+  - **Content Gaps**: High-volume keywords without strong rankings
+
+### ✨ CTR Optimization Tool
+AI-powered meta content optimization:
+
+- **Meta Analysis**: Analyze current meta titles and descriptions
+- **CTR Benchmarking**: Compare your CTR with industry benchmarks by position
+- **AI Suggestions**: Generate improved meta titles and descriptions with AI
+- **Expected Improvement**: See estimated CTR improvement for each suggestion
+- **One-Click Copy**: Copy suggestions directly to your clipboard
+
 ## 📋 Installation
 
 ### Method 1: Upload ZIP via WordPress Admin
@@ -73,6 +94,36 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 7. Click "Generate Detailed Plan" on any article to get a full content outline
 8. Save your plan or export it as JSON for reference
 
+### Setting Up Google Search Console
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Create a new OAuth 2.0 Client ID
+3. Add the redirect URI from WritgoAI → GSC Settings
+4. Copy the Client ID and Client Secret
+5. Go to WritgoAI → GSC Instellingen
+6. Enter your Client ID and Client Secret
+7. Click "Verbind met Google" to authorize
+8. Select your website from the available sites
+9. Click "Synchroniseer Nu" to fetch initial data
+
+### Using the GSC Dashboard
+1. Go to WritgoAI → Search Console
+2. View your metrics overview (clicks, impressions, CTR, position)
+3. Browse keyword opportunities by type:
+   - Quick Wins: Keywords close to page 1
+   - Lage CTR: Underperforming CTR
+   - Dalende Rankings: Declining positions
+   - Content Gaps: Untapped keywords
+4. View top keywords and top pages
+5. Data syncs automatically every day
+
+### Using the CTR Optimizer
+1. Go to WritgoAI → CTR Optimalisatie
+2. Select a post from the list
+3. View the current meta title and description analysis
+4. Optionally enter a target keyword
+5. Click "Genereer AI Suggesties" to get improvement suggestions
+6. Copy the suggested meta content to your SEO plugin
+
 ### Using the Gutenberg Block
 1. Create or edit a post/page
 2. Add a new block and search for "AI Content Generator"
@@ -98,10 +149,24 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 | `writgo-cms.php` | Main plugin file with headers and initialization |
 | `inc/class-aiml-provider.php` | Core AIMLAPI provider class with API integrations |
 | `inc/class-content-planner.php` | Content Planner with Topical Authority Map generation |
+| `inc/class-gsc-provider.php` | Google Search Console OAuth 2.0 provider |
+| `inc/class-gsc-data-handler.php` | GSC data storage, sync, and opportunity detection |
+| `inc/class-ctr-optimizer.php` | CTR analysis and AI-powered optimization |
 | `inc/admin-aiml-settings.php` | Admin settings panel for AIMLAPI configuration |
+| `inc/admin-gsc-settings.php` | Admin settings panel for GSC configuration |
 | `inc/gutenberg-aiml-block.php` | Gutenberg block registration |
 | `inc/classic-editor-button.php` | TinyMCE button for Classic Editor |
 | `assets/` | CSS and JavaScript assets |
+
+## 🗄️ Database Tables
+
+The plugin creates the following database tables for GSC data:
+
+| Table | Description |
+|-------|-------------|
+| `wp_writgoai_gsc_queries` | Search query data (query, clicks, impressions, CTR, position, date) |
+| `wp_writgoai_gsc_pages` | Page performance data (url, post_id, clicks, impressions, CTR, position, date) |
+| `wp_writgoai_gsc_opportunities` | Keyword opportunities (keyword, type, score, suggested_action) |
 
 ## 🔧 Available Models
 
@@ -133,6 +198,7 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 - PHP 7.4 or higher
 - MySQL 5.7 or MariaDB 10.3
 - AIMLAPI account and API key
+- Google Cloud Console project (for GSC integration)
 
 ## 🔒 Security
 
@@ -142,6 +208,14 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 - Secure API key storage in WordPress options
 
 ## 📝 Changelog
+
+### Version 1.1.0
+- Google Search Console integration with OAuth 2.0
+- Keyword opportunity detection (Quick Wins, Low CTR, Declining, Content Gaps)
+- CTR optimization tool with AI-powered suggestions
+- GSC Dashboard with metrics overview
+- Automatic daily data synchronization
+- Dutch language support for GSC interface
 
 ### Version 1.0.0
 - Initial release as WordPress Plugin
