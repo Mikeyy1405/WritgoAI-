@@ -717,8 +717,466 @@
         }
     };
 
+    /**
+     * Post Updater Module
+     */
+    var PostUpdater = {
+        currentPostId: null,
+        improvedData: null,
+        selectedPosts: [],
+        currentPage: 1,
+
+        init: function() {
+            if (!$('.writgocms-post-updater').length) {
+                return;
+            }
+
+            this.bindEvents();
+            this.loadPosts();
+        },
+
+        bindEvents: function() {
+            var self = this;
+
+            // Filter changes
+            $('#filter-months, #filter-seo, #filter-category').on('change', function() {
+                self.currentPage = 1;
+                self.loadPosts();
+            });
+
+            // Search
+            $('#btn-search').on('click', function() {
+                self.currentPage = 1;
+                self.loadPosts();
+            });
+
+            $('#filter-search').on('keypress', function(e) {
+                if (e.which === 13) {
+                    self.currentPage = 1;
+                    self.loadPosts();
+                }
+            });
+
+            // Select all
+            $('#btn-select-all').on('click', function() {
+                var $checkboxes = $('.post-item-checkbox input');
+                var allChecked = $checkboxes.filter(':checked').length === $checkboxes.length;
+                $checkboxes.prop('checked', !allChecked);
+                self.updateSelectedCount();
+            });
+
+            // Individual checkbox
+            $(document).on('change', '.post-item-checkbox input', function() {
+                self.updateSelectedCount();
+            });
+
+            // Improve button
+            $(document).on('click', '.btn-improve', function() {
+                var postId = $(this).data('post-id');
+                var postTitle = $(this).data('post-title');
+                self.openImprovementModal(postId, postTitle);
+            });
+
+            // Modal close buttons
+            $('.modal-close, .modal-cancel, .modal-back').on('click', function() {
+                $(this).closest('.post-updater-modal').hide();
+            });
+
+            // Close modal on backdrop click
+            $('.post-updater-modal').on('click', function(e) {
+                if (e.target === this) {
+                    $(this).hide();
+                }
+            });
+
+            // Start improvement
+            $('#btn-start-improvement').on('click', function() {
+                self.startImprovement();
+            });
+
+            // Comparison tabs
+            $(document).on('click', '.tab-btn', function() {
+                var tab = $(this).data('tab');
+                $('.tab-btn').removeClass('active');
+                $(this).addClass('active');
+                $('.tab-panel').removeClass('active');
+                $('.tab-panel[data-panel="' + tab + '"]').addClass('active');
+            });
+
+            // Save as draft
+            $('#btn-save-draft').on('click', function() {
+                self.savePost('draft');
+            });
+
+            // Publish
+            $('#btn-publish').on('click', function() {
+                self.savePost('publish');
+            });
+
+            // Bulk improve button
+            $('#btn-bulk-improve').on('click', function() {
+                self.openBulkModal();
+            });
+
+            // Start bulk action
+            $('#btn-start-bulk').on('click', function() {
+                self.startBulkImprovement();
+            });
+        },
+
+        loadPosts: function() {
+            var self = this;
+            var $list = $('#posts-list');
+            var seoFilter = $('#filter-seo').val().split('-');
+
+            $list.html('<div class="loading-state"><span class="spinner is-active"></span><p>' + (writgocmsAiml.i18n.postUpdater ? writgocmsAiml.i18n.postUpdater.loading : 'Laden...') + '</p></div>');
+
+            $.ajax({
+                url: writgocmsAiml.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'writgocms_get_posts_for_update',
+                    nonce: writgocmsAiml.nonce,
+                    page: self.currentPage,
+                    per_page: 20,
+                    months_old: $('#filter-months').val(),
+                    min_seo_score: seoFilter[0],
+                    max_seo_score: seoFilter[1],
+                    category: $('#filter-category').val(),
+                    search: $('#filter-search').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        self.renderPosts(response.data);
+                    } else {
+                        $list.html('<div class="no-posts-message">' + (response.data.message || 'Error loading posts') + '</div>');
+                    }
+                },
+                error: function() {
+                    $list.html('<div class="no-posts-message">Connection error</div>');
+                }
+            });
+        },
+
+        renderPosts: function(data) {
+            var self = this;
+            var $list = $('#posts-list');
+            var $pagination = $('#posts-pagination');
+
+            $('#posts-count').text('(' + data.total + ')');
+
+            if (!data.posts || data.posts.length === 0) {
+                $list.html('<div class="no-posts-message">' + (writgocmsAiml.i18n.postUpdater ? writgocmsAiml.i18n.postUpdater.noPostsFound : 'Geen posts gevonden.') + '</div>');
+                $pagination.html('');
+                return;
+            }
+
+            var html = '';
+            data.posts.forEach(function(post) {
+                var scoreClass = 'score-red';
+                var seoScore = post.seo_data.score || 0;
+                if (seoScore > 70) scoreClass = 'score-green';
+                else if (seoScore > 40) scoreClass = 'score-orange';
+
+                var seoPlugin = post.seo_data.plugin === 'yoast' ? 'Yoast SEO' : (post.seo_data.plugin === 'rankmath' ? 'Rank Math' : 'SEO');
+
+                html += '<div class="post-item" data-post-id="' + post.id + '">';
+                html += '<div class="post-item-header">';
+                html += '<div class="post-item-checkbox"><input type="checkbox" value="' + post.id + '"></div>';
+                html += '<div class="post-item-info">';
+                html += '<h4 class="post-item-title">📄 ' + self.escapeHtml(post.title) + '</h4>';
+                html += '<div class="post-item-meta">';
+                html += '<span>📅 ' + post.date_display + ' (' + post.age_months + ' maanden oud)</span>';
+                html += '<span>📈 ' + post.word_count + ' woorden</span>';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+
+                html += '<div class="post-item-seo">';
+                html += '<div class="seo-status-row">';
+                html += '<span class="seo-score ' + scoreClass + '">';
+                if (scoreClass === 'score-red') html += '🔴 ';
+                else if (scoreClass === 'score-orange') html += '🟠 ';
+                else html += '🟢 ';
+                html += seoPlugin + ': ' + seoScore + '/100';
+                html += '</span>';
+                html += '</div>';
+
+                if (post.seo_data.issues && post.seo_data.issues.length > 0) {
+                    html += '<ul class="seo-issues">';
+                    post.seo_data.issues.forEach(function(issue) {
+                        html += '<li>⚠️ ' + self.escapeHtml(issue.message) + '</li>';
+                    });
+                    html += '</ul>';
+                }
+                html += '</div>';
+
+                html += '<div class="post-item-actions">';
+                html += '<button type="button" class="button btn-improve" data-post-id="' + post.id + '" data-post-title="' + self.escapeHtml(post.title) + '">🔄 Verbeter & Herschrijf</button>';
+                html += '<a href="' + post.view_link + '" target="_blank" class="button">👁️ Bekijk Post</a>';
+                html += '</div>';
+                html += '</div>';
+            });
+
+            $list.html(html);
+
+            // Render pagination
+            if (data.total_pages > 1) {
+                var pagHtml = '';
+                for (var i = 1; i <= data.total_pages; i++) {
+                    pagHtml += '<button type="button" class="button ' + (i === data.current ? 'current' : '') + '" data-page="' + i + '">' + i + '</button>';
+                }
+                $pagination.html(pagHtml);
+
+                $pagination.find('button').on('click', function() {
+                    self.currentPage = parseInt($(this).data('page'));
+                    self.loadPosts();
+                });
+            } else {
+                $pagination.html('');
+            }
+        },
+
+        updateSelectedCount: function() {
+            var count = $('.post-item-checkbox input:checked').length;
+            $('#selected-count').text(count);
+            $('#btn-bulk-improve').prop('disabled', count === 0);
+
+            this.selectedPosts = [];
+            var self = this;
+            $('.post-item-checkbox input:checked').each(function() {
+                self.selectedPosts.push(parseInt($(this).val()));
+            });
+        },
+
+        openImprovementModal: function(postId, postTitle) {
+            this.currentPostId = postId;
+            $('#modal-post-title').text(postTitle);
+            $('#improvement-modal').show();
+        },
+
+        startImprovement: function() {
+            var self = this;
+            var $btn = $('#btn-start-improvement');
+            var $modal = $('#improvement-modal');
+
+            var options = {
+                update_dates: $modal.find('input[name="update_dates"]').is(':checked'),
+                extend_content: $modal.find('input[name="extend_content"]').is(':checked'),
+                optimize_seo: $modal.find('input[name="optimize_seo"]').is(':checked'),
+                rewrite_intro: $modal.find('input[name="rewrite_intro"]').is(':checked'),
+                improve_readability: $modal.find('input[name="improve_readability"]').is(':checked'),
+                add_links: $modal.find('input[name="add_links"]').is(':checked'),
+                add_faq: $modal.find('input[name="add_faq"]').is(':checked'),
+                focus_keyword: $('#focus-keyword').val(),
+                tone: $('#writing-tone').val(),
+                target_audience: $('#target-audience').val(),
+                improvement_level: $modal.find('input[name="improvement_level"]:checked').val()
+            };
+
+            $btn.prop('disabled', true).html('<span class="loading-spinner"></span> Verbeteren...');
+
+            $.ajax({
+                url: writgocmsAiml.ajaxUrl,
+                type: 'POST',
+                data: $.extend({
+                    action: 'writgocms_improve_post',
+                    nonce: writgocmsAiml.nonce,
+                    post_id: self.currentPostId
+                }, options),
+                success: function(response) {
+                    if (response.success) {
+                        self.improvedData = response.data;
+                        $modal.hide();
+                        self.showPreview(response.data);
+                    } else {
+                        WritgoCMSAiml.showNotification(response.data.message, 'error');
+                    }
+                },
+                error: function() {
+                    WritgoCMSAiml.showNotification('Connection error', 'error');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html('🚀 Start Verbetering');
+                }
+            });
+        },
+
+        showPreview: function(data) {
+            var self = this;
+            var $modal = $('#preview-modal');
+
+            // Render stats
+            var wordDiff = data.improved.word_count - data.original.word_count;
+            var seoDiff = data.improved.seo_score - data.original.seo_score;
+
+            var statsHtml = '<div class="stat-item">';
+            statsHtml += '<div class="stat-label">Woorden</div>';
+            statsHtml += '<div class="stat-value">' + data.original.word_count + ' → ' + data.improved.word_count + '</div>';
+            statsHtml += '<div class="stat-change">' + (wordDiff >= 0 ? '+' : '') + wordDiff + '</div>';
+            statsHtml += '</div>';
+
+            statsHtml += '<div class="stat-item">';
+            statsHtml += '<div class="stat-label">SEO Score</div>';
+            statsHtml += '<div class="stat-value">' + data.original.seo_score + ' → ' + data.improved.seo_score + '</div>';
+            statsHtml += '<div class="stat-change">' + (seoDiff >= 0 ? '+' : '') + seoDiff + ' 🎉</div>';
+            statsHtml += '</div>';
+
+            $('#improvement-stats').html(statsHtml);
+
+            // Before tab
+            var beforeHtml = '<div class="comparison-section">';
+            beforeHtml += '<div class="comparison-label">Titel</div>';
+            beforeHtml += '<div class="comparison-old"><div class="comparison-value">' + self.escapeHtml(data.original.title) + '</div></div>';
+            beforeHtml += '</div>';
+
+            beforeHtml += '<div class="comparison-section">';
+            beforeHtml += '<div class="comparison-label">Meta Beschrijving</div>';
+            beforeHtml += '<div class="comparison-old"><div class="comparison-value">' + self.escapeHtml(data.original.meta_description || 'Geen meta beschrijving') + '</div>';
+            beforeHtml += '<div class="char-count">' + (data.original.meta_description ? data.original.meta_description.length : 0) + ' karakters</div></div>';
+            beforeHtml += '</div>';
+
+            $('.tab-panel[data-panel="before"]').html(beforeHtml);
+
+            // After tab
+            var afterHtml = '<div class="comparison-section">';
+            afterHtml += '<div class="comparison-label">Nieuwe Titel</div>';
+            afterHtml += '<div class="comparison-new"><div class="comparison-value">' + self.escapeHtml(data.improved.title) + '</div></div>';
+            afterHtml += '</div>';
+
+            afterHtml += '<div class="comparison-section">';
+            afterHtml += '<div class="comparison-label">Nieuwe Meta Beschrijving</div>';
+            afterHtml += '<div class="comparison-new"><div class="comparison-value">' + self.escapeHtml(data.improved.meta_description) + '</div>';
+            var charCount = data.improved.meta_description ? data.improved.meta_description.length : 0;
+            var charClass = (charCount >= 120 && charCount <= 160) ? 'valid' : 'invalid';
+            afterHtml += '<div class="char-count ' + charClass + '">' + charCount + ' karakters ' + (charClass === 'valid' ? '✅' : '❌') + '</div></div>';
+            afterHtml += '</div>';
+
+            $('.tab-panel[data-panel="after"]').html(afterHtml);
+
+            // Changes tab
+            var changesHtml = '<ul class="changes-list">';
+            if (data.improved.changes_summary && data.improved.changes_summary.length > 0) {
+                data.improved.changes_summary.forEach(function(change) {
+                    changesHtml += '<li><span class="change-icon">✅</span><span class="change-text">' + self.escapeHtml(change) + '</span></li>';
+                });
+            } else {
+                changesHtml += '<li><span class="change-icon">ℹ️</span><span class="change-text">Geen specifieke wijzigingen geregistreerd</span></li>';
+            }
+            changesHtml += '</ul>';
+            $('.tab-panel[data-panel="changes"]').html(changesHtml);
+
+            // Show first tab
+            $('.tab-btn').removeClass('active').first().addClass('active');
+            $('.tab-panel').removeClass('active').first().addClass('active');
+
+            $modal.show();
+        },
+
+        savePost: function(status) {
+            var self = this;
+            var $btnDraft = $('#btn-save-draft');
+            var $btnPublish = $('#btn-publish');
+
+            var $btn = status === 'publish' ? $btnPublish : $btnDraft;
+            $btn.prop('disabled', true).html('<span class="loading-spinner"></span> Opslaan...');
+
+            $.ajax({
+                url: writgocmsAiml.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'writgocms_save_improved_post',
+                    nonce: writgocmsAiml.nonce,
+                    post_id: self.currentPostId,
+                    improved_data: JSON.stringify(self.improvedData.improved),
+                    status: status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#preview-modal').hide();
+                        WritgoCMSAiml.showNotification(response.data.message, 'success');
+                        self.loadPosts();
+                    } else {
+                        WritgoCMSAiml.showNotification(response.data.message, 'error');
+                    }
+                },
+                error: function() {
+                    WritgoCMSAiml.showNotification('Connection error', 'error');
+                },
+                complete: function() {
+                    $btnDraft.prop('disabled', false).html('💾 Opslaan als Concept');
+                    $btnPublish.prop('disabled', false).html('🚀 Direct Publiceren');
+                }
+            });
+        },
+
+        openBulkModal: function() {
+            $('#bulk-selected-info').text(this.selectedPosts.length + ' posts geselecteerd voor verbetering');
+            $('#bulk-progress').hide();
+            $('#bulk-modal').show();
+        },
+
+        startBulkImprovement: function() {
+            var self = this;
+            var $btn = $('#btn-start-bulk');
+            var $progress = $('#bulk-progress');
+            var $progressFill = $progress.find('.progress-fill');
+            var $progressText = $progress.find('.progress-text');
+
+            var options = {
+                update_dates: $('#bulk-modal').find('input[name="bulk_update_dates"]').is(':checked'),
+                optimize_seo: $('#bulk-modal').find('input[name="bulk_optimize_seo"]').is(':checked'),
+                extend_content: $('#bulk-modal').find('input[name="bulk_extend_content"]').is(':checked'),
+                add_faq: $('#bulk-modal').find('input[name="bulk_add_faq"]').is(':checked')
+            };
+
+            $btn.prop('disabled', true).html('<span class="loading-spinner"></span> Bezig...');
+            $progress.show();
+            $progressFill.css('width', '0%');
+            $progressText.text('Verbeteren van posts...');
+
+            $.ajax({
+                url: writgocmsAiml.ajaxUrl,
+                type: 'POST',
+                data: $.extend({
+                    action: 'writgocms_bulk_improve_posts',
+                    nonce: writgocmsAiml.nonce,
+                    post_ids: self.selectedPosts
+                }, options),
+                success: function(response) {
+                    if (response.success) {
+                        $progressFill.css('width', '100%');
+                        $progressText.text('Voltooid! ' + response.data.success + ' succesvol, ' + response.data.failed + ' mislukt.');
+                        WritgoCMSAiml.showNotification('Bulk verbetering voltooid!', 'success');
+
+                        setTimeout(function() {
+                            $('#bulk-modal').hide();
+                            self.loadPosts();
+                        }, 2000);
+                    } else {
+                        WritgoCMSAiml.showNotification(response.data.message, 'error');
+                    }
+                },
+                error: function() {
+                    WritgoCMSAiml.showNotification('Connection error', 'error');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html('▶️ Start Bulk Actie');
+                }
+            });
+        },
+
+        escapeHtml: function(text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(text));
+            return div.innerHTML;
+        }
+    };
+
     $(document).ready(function() {
         WritgoCMSAiml.init();
+        PostUpdater.init();
     });
 
 })(jQuery);

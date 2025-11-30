@@ -87,6 +87,16 @@ class WritgoCMS_AIML_Admin_Settings {
             array( $this, 'render_content_planner_page' )
         );
 
+        // Add Post Updater submenu.
+        add_submenu_page(
+            'writgocms-aiml',
+            __( 'Post Updater', 'writgocms' ),
+            '📝 ' . __( 'Post Updater', 'writgocms' ),
+            'manage_options',
+            'writgocms-aiml-post-updater',
+            array( $this, 'render_post_updater_page' )
+        );
+
         // Add Test & Preview submenu.
         add_submenu_page(
             'writgocms-aiml',
@@ -142,6 +152,7 @@ class WritgoCMS_AIML_Admin_Settings {
         $allowed_hooks = array(
             'toplevel_page_writgocms-aiml',
             'writgocms-aiml_page_writgocms-aiml-content-planner',
+            'writgocms-aiml_page_writgocms-aiml-post-updater',
             'writgocms-aiml_page_writgocms-aiml-test',
             'writgocms-aiml_page_writgocms-aiml-stats',
             'writgocms-aiml_page_writgocms-aiml-settings',
@@ -199,6 +210,34 @@ class WritgoCMS_AIML_Admin_Settings {
                     'high'                    => __( 'High', 'writgocms' ),
                     'medium'                  => __( 'Medium', 'writgocms' ),
                     'low'                     => __( 'Low', 'writgocms' ),
+                    // Post Updater translations (Dutch).
+                    'postUpdater' => array(
+                        'loading'              => __( 'Laden...', 'writgocms' ),
+                        'analyzing'            => __( 'Analyseren...', 'writgocms' ),
+                        'improving'            => __( 'Verbeteren...', 'writgocms' ),
+                        'saving'               => __( 'Opslaan...', 'writgocms' ),
+                        'noPostsFound'         => __( 'Geen posts gevonden die verbetering nodig hebben.', 'writgocms' ),
+                        'selectPost'           => __( 'Selecteer een post om te verbeteren', 'writgocms' ),
+                        'confirmBulk'          => __( 'Weet je zeker dat je deze posts wilt verbeteren?', 'writgocms' ),
+                        'bulkComplete'         => __( 'Bulk verbetering voltooid!', 'writgocms' ),
+                        'improvementComplete'  => __( 'Verbetering voltooid!', 'writgocms' ),
+                        'savedAsDraft'         => __( 'Opgeslagen als concept', 'writgocms' ),
+                        'published'            => __( 'Gepubliceerd', 'writgocms' ),
+                        'errorOccurred'        => __( 'Er is een fout opgetreden', 'writgocms' ),
+                        'monthsOld'            => __( 'maanden oud', 'writgocms' ),
+                        'words'                => __( 'woorden', 'writgocms' ),
+                        'seoScore'             => __( 'SEO Score', 'writgocms' ),
+                        'viewPost'             => __( 'Bekijk Post', 'writgocms' ),
+                        'improvePost'          => __( 'Verbeter & Herschrijf', 'writgocms' ),
+                        'startImprovement'     => __( 'Start Verbetering', 'writgocms' ),
+                        'cancel'               => __( 'Annuleer', 'writgocms' ),
+                        'saveAsDraft'          => __( 'Opslaan als Concept', 'writgocms' ),
+                        'publishNow'           => __( 'Direct Publiceren', 'writgocms' ),
+                        'preview'              => __( 'Preview', 'writgocms' ),
+                        'before'               => __( 'VOOR', 'writgocms' ),
+                        'after'                => __( 'NA', 'writgocms' ),
+                        'differences'          => __( 'VERSCHILLEN', 'writgocms' ),
+                    ),
                 ),
             )
         );
@@ -445,6 +484,270 @@ class WritgoCMS_AIML_Admin_Settings {
 
             <div class="aiml-tab-content">
                 <?php $this->render_test_tab(); ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render Post Updater page
+     */
+    public function render_post_updater_page() {
+        $post_updater = WritgoCMS_Post_Updater::get_instance();
+        $seo_plugin   = $post_updater->get_active_seo_plugin();
+        $categories   = get_categories( array( 'hide_empty' => false ) );
+        ?>
+        <div class="wrap writgocms-aiml-settings writgocms-post-updater">
+            <h1 class="aiml-header">
+                <span class="aiml-logo">📝</span>
+                <?php esc_html_e( 'Post Updater', 'writgocms' ); ?>
+            </h1>
+            <p class="header-subtitle"><?php esc_html_e( 'Verbeter en optimaliseer je bestaande content', 'writgocms' ); ?></p>
+
+            <div class="aiml-tab-content">
+                <!-- Filter Section -->
+                <div class="post-updater-filters">
+                    <h3>🔍 <?php esc_html_e( 'Filter Opties', 'writgocms' ); ?></h3>
+                    <div class="filter-row">
+                        <div class="filter-item">
+                            <label for="filter-months"><?php esc_html_e( 'Datum:', 'writgocms' ); ?></label>
+                            <select id="filter-months">
+                                <option value="3"><?php esc_html_e( 'Ouder dan 3 maanden', 'writgocms' ); ?></option>
+                                <option value="6" selected><?php esc_html_e( 'Ouder dan 6 maanden', 'writgocms' ); ?></option>
+                                <option value="12"><?php esc_html_e( 'Ouder dan 12 maanden', 'writgocms' ); ?></option>
+                                <option value="24"><?php esc_html_e( 'Ouder dan 24 maanden', 'writgocms' ); ?></option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="filter-seo"><?php esc_html_e( 'SEO Score:', 'writgocms' ); ?></label>
+                            <select id="filter-seo">
+                                <option value="0-100"><?php esc_html_e( 'Alle scores', 'writgocms' ); ?></option>
+                                <option value="0-40"><?php esc_html_e( 'Rood (0-40)', 'writgocms' ); ?></option>
+                                <option value="41-70"><?php esc_html_e( 'Oranje (41-70)', 'writgocms' ); ?></option>
+                                <option value="71-100"><?php esc_html_e( 'Groen (71-100)', 'writgocms' ); ?></option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="filter-category"><?php esc_html_e( 'Categorie:', 'writgocms' ); ?></label>
+                            <select id="filter-category">
+                                <option value=""><?php esc_html_e( 'Alle categorieën', 'writgocms' ); ?></option>
+                                <?php foreach ( $categories as $cat ) : ?>
+                                    <option value="<?php echo esc_attr( $cat->term_id ); ?>"><?php echo esc_html( $cat->name ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="filter-item filter-search">
+                            <label for="filter-search"><?php esc_html_e( 'Zoeken:', 'writgocms' ); ?></label>
+                            <input type="text" id="filter-search" placeholder="<?php esc_attr_e( 'Zoek op titel...', 'writgocms' ); ?>">
+                            <button type="button" id="btn-search" class="button">🔍</button>
+                        </div>
+                    </div>
+                    <?php if ( $seo_plugin ) : ?>
+                    <p class="seo-plugin-notice">
+                        <?php
+                        printf(
+                            /* translators: %s: SEO plugin name */
+                            esc_html__( '✅ Gedetecteerde SEO plugin: %s', 'writgocms' ),
+                            '<strong>' . esc_html( 'yoast' === $seo_plugin ? 'Yoast SEO' : 'Rank Math' ) . '</strong>'
+                        );
+                        ?>
+                    </p>
+                    <?php else : ?>
+                    <p class="seo-plugin-notice warning">
+                        <?php esc_html_e( '⚠️ Geen SEO plugin gedetecteerd. Installeer Yoast SEO of Rank Math voor volledige functionaliteit.', 'writgocms' ); ?>
+                    </p>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Posts List Section -->
+                <div class="post-updater-list-section">
+                    <div class="section-header">
+                        <h3>📊 <?php esc_html_e( 'Posts die Verbetering Nodig Hebben', 'writgocms' ); ?> <span id="posts-count">(0)</span></h3>
+                        <div class="bulk-actions">
+                            <button type="button" id="btn-select-all" class="button"><?php esc_html_e( 'Selecteer Alles', 'writgocms' ); ?></button>
+                            <button type="button" id="btn-bulk-improve" class="button button-primary" disabled>🔄 <?php esc_html_e( 'Bulk Verbeteren', 'writgocms' ); ?> (<span id="selected-count">0</span>)</button>
+                        </div>
+                    </div>
+                    <div id="posts-list" class="posts-list">
+                        <div class="loading-state">
+                            <span class="spinner is-active"></span>
+                            <p><?php esc_html_e( 'Posts laden...', 'writgocms' ); ?></p>
+                        </div>
+                    </div>
+                    <div id="posts-pagination" class="posts-pagination"></div>
+                </div>
+
+                <!-- Improvement Modal -->
+                <div id="improvement-modal" class="post-updater-modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>🔄 <?php esc_html_e( 'Post Verbeteren', 'writgocms' ); ?></h3>
+                            <button type="button" class="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <h4 id="modal-post-title"></h4>
+
+                            <div class="improvement-options">
+                                <h5>📋 <?php esc_html_e( 'Selecteer Verbeteringen:', 'writgocms' ); ?></h5>
+                                <div class="options-grid">
+                                    <label class="option-item">
+                                        <input type="checkbox" name="update_dates" checked>
+                                        <span>🔄 <?php esc_html_e( 'Update verouderde informatie (jaartallen → 2025)', 'writgocms' ); ?></span>
+                                    </label>
+                                    <label class="option-item">
+                                        <input type="checkbox" name="extend_content" checked>
+                                        <span>📝 <?php esc_html_e( 'Verleng artikel naar 1500+ woorden', 'writgocms' ); ?></span>
+                                    </label>
+                                    <label class="option-item">
+                                        <input type="checkbox" name="optimize_seo" checked>
+                                        <span>🎯 <?php esc_html_e( 'Optimaliseer SEO score', 'writgocms' ); ?></span>
+                                    </label>
+                                    <label class="option-item">
+                                        <input type="checkbox" name="rewrite_intro" checked>
+                                        <span>✍️ <?php esc_html_e( 'Herschrijf introductie', 'writgocms' ); ?></span>
+                                    </label>
+                                    <label class="option-item">
+                                        <input type="checkbox" name="improve_readability" checked>
+                                        <span>📱 <?php esc_html_e( 'Verbeter leesbaarheid', 'writgocms' ); ?></span>
+                                    </label>
+                                    <label class="option-item">
+                                        <input type="checkbox" name="add_links" checked>
+                                        <span>🔗 <?php esc_html_e( 'Voeg relevante links toe', 'writgocms' ); ?></span>
+                                    </label>
+                                    <label class="option-item">
+                                        <input type="checkbox" name="add_faq">
+                                        <span>❓ <?php esc_html_e( 'Voeg FAQ sectie toe', 'writgocms' ); ?></span>
+                                    </label>
+                                </div>
+
+                                <div class="focus-keyword-field">
+                                    <label for="focus-keyword">🎯 <?php esc_html_e( 'Focus keyword:', 'writgocms' ); ?></label>
+                                    <input type="text" id="focus-keyword" placeholder="<?php esc_attr_e( 'Laat leeg om bestaande te behouden', 'writgocms' ); ?>">
+                                </div>
+
+                                <div class="style-options">
+                                    <div class="style-option">
+                                        <label for="writing-tone"><?php esc_html_e( 'Schrijfstijl:', 'writgocms' ); ?></label>
+                                        <select id="writing-tone">
+                                            <option value="professional"><?php esc_html_e( 'Professioneel', 'writgocms' ); ?></option>
+                                            <option value="casual"><?php esc_html_e( 'Informeel', 'writgocms' ); ?></option>
+                                            <option value="friendly"><?php esc_html_e( 'Vriendelijk', 'writgocms' ); ?></option>
+                                            <option value="expert"><?php esc_html_e( 'Expert', 'writgocms' ); ?></option>
+                                        </select>
+                                    </div>
+                                    <div class="style-option">
+                                        <label for="target-audience"><?php esc_html_e( 'Doelgroep:', 'writgocms' ); ?></label>
+                                        <select id="target-audience">
+                                            <option value="broad"><?php esc_html_e( 'Breed publiek', 'writgocms' ); ?></option>
+                                            <option value="beginners"><?php esc_html_e( 'Beginners', 'writgocms' ); ?></option>
+                                            <option value="professionals"><?php esc_html_e( 'Professionals', 'writgocms' ); ?></option>
+                                            <option value="experts"><?php esc_html_e( 'Experts', 'writgocms' ); ?></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="improvement-level">
+                                    <h5>🤖 <?php esc_html_e( 'AI Modus:', 'writgocms' ); ?></h5>
+                                    <div class="level-options">
+                                        <label class="level-option">
+                                            <input type="radio" name="improvement_level" value="light">
+                                            <span class="level-indicator light"></span>
+                                            <span class="level-text"><?php esc_html_e( 'Lichte aanpassingen (behoud 80% origineel)', 'writgocms' ); ?></span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="improvement_level" value="medium" checked>
+                                            <span class="level-indicator medium"></span>
+                                            <span class="level-text"><?php esc_html_e( 'Gemiddelde verbetering (behoud 50% origineel)', 'writgocms' ); ?></span>
+                                        </label>
+                                        <label class="level-option">
+                                            <input type="radio" name="improvement_level" value="heavy">
+                                            <span class="level-indicator heavy"></span>
+                                            <span class="level-text"><?php esc_html_e( 'Complete herschrijving (behoud structuur)', 'writgocms' ); ?></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="button modal-cancel"><?php esc_html_e( 'Annuleer', 'writgocms' ); ?></button>
+                            <button type="button" id="btn-start-improvement" class="button button-primary">🚀 <?php esc_html_e( 'Start Verbetering', 'writgocms' ); ?></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Modal -->
+                <div id="preview-modal" class="post-updater-modal preview-modal" style="display: none;">
+                    <div class="modal-content large">
+                        <div class="modal-header">
+                            <h3>✅ <?php esc_html_e( 'Verbetering Voltooid!', 'writgocms' ); ?></h3>
+                            <button type="button" class="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Stats Overview -->
+                            <div id="improvement-stats" class="improvement-stats"></div>
+
+                            <!-- Comparison Tabs -->
+                            <div class="comparison-tabs">
+                                <button type="button" class="tab-btn active" data-tab="before"><?php esc_html_e( 'VOOR', 'writgocms' ); ?></button>
+                                <button type="button" class="tab-btn" data-tab="after"><?php esc_html_e( 'NA', 'writgocms' ); ?></button>
+                                <button type="button" class="tab-btn" data-tab="changes"><?php esc_html_e( 'WIJZIGINGEN', 'writgocms' ); ?></button>
+                            </div>
+
+                            <!-- Tab Content -->
+                            <div id="comparison-content" class="comparison-content">
+                                <div class="tab-panel active" data-panel="before"></div>
+                                <div class="tab-panel" data-panel="after"></div>
+                                <div class="tab-panel" data-panel="changes"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="button modal-back">↩️ <?php esc_html_e( 'Terug naar Lijst', 'writgocms' ); ?></button>
+                            <button type="button" id="btn-save-draft" class="button">💾 <?php esc_html_e( 'Opslaan als Concept', 'writgocms' ); ?></button>
+                            <button type="button" id="btn-publish" class="button button-primary">🚀 <?php esc_html_e( 'Direct Publiceren', 'writgocms' ); ?></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Improvement Modal -->
+                <div id="bulk-modal" class="post-updater-modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>🔄 <?php esc_html_e( 'Bulk Verbeteren', 'writgocms' ); ?></h3>
+                            <button type="button" class="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="bulk-selected-info"></p>
+                            <div class="bulk-options">
+                                <label class="option-item">
+                                    <input type="checkbox" name="bulk_update_dates" checked>
+                                    <span>🔄 <?php esc_html_e( 'Update jaartallen naar 2025', 'writgocms' ); ?></span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="checkbox" name="bulk_optimize_seo" checked>
+                                    <span>📊 <?php esc_html_e( 'Verbeter alle SEO scores', 'writgocms' ); ?></span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="checkbox" name="bulk_extend_content" checked>
+                                    <span>📝 <?php esc_html_e( 'Verleng artikelen naar 1500+ woorden', 'writgocms' ); ?></span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="checkbox" name="bulk_add_faq">
+                                    <span>❓ <?php esc_html_e( 'Voeg FAQ secties toe', 'writgocms' ); ?></span>
+                                </label>
+                            </div>
+                            <div id="bulk-progress" class="bulk-progress" style="display: none;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <p class="progress-text"></p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="button modal-cancel"><?php esc_html_e( 'Annuleer', 'writgocms' ); ?></button>
+                            <button type="button" id="btn-start-bulk" class="button button-primary">▶️ <?php esc_html_e( 'Start Bulk Actie', 'writgocms' ); ?></button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <?php

@@ -47,6 +47,7 @@ function writgocms_init() {
 	// Load AIML Integration files.
 	require_once WRITGOCMS_DIR . 'inc/class-aiml-provider.php';
 	require_once WRITGOCMS_DIR . 'inc/class-content-planner.php';
+	require_once WRITGOCMS_DIR . 'inc/class-post-updater.php';
 	require_once WRITGOCMS_DIR . 'inc/admin-aiml-settings.php';
 	require_once WRITGOCMS_DIR . 'inc/gutenberg-aiml-block.php';
 	require_once WRITGOCMS_DIR . 'inc/classic-editor-button.php';
