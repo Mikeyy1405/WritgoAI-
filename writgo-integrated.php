@@ -263,14 +263,14 @@ EOT;
     ]);
 
     if (is_wp_error($response)) {
-        wp_send_json_error('API Error: ' . $response->get_error_message());
+        wp_send_json_error('API Error: Er kon geen verbinding worden gemaakt met de Writgo server.');
     }
 
     $body = json_decode(wp_remote_retrieve_body($response), true);
 
     // Handle error response from API
     if (!empty($body['error'])) {
-        wp_send_json_error('API Error: ' . $body['error']);
+        wp_send_json_error('API Error: ' . sanitize_text_field($body['error']));
     }
 
     $content = $body['content'] ?? '';
