@@ -22,9 +22,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'WRITGOCMS_VERSION', '1.0.0' );
-define( 'WRITGOCMS_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WRITGOCMS_URI', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'WRITGOCMS_VERSION' ) ) {
+	define( 'WRITGOCMS_VERSION', '1.0.0' );
+}
+if ( ! defined( 'WRITGOCMS_DIR' ) ) {
+	define( 'WRITGOCMS_DIR', plugin_dir_path( __FILE__ ) );
+}
+if ( ! defined( 'WRITGOCMS_URI' ) ) {
+	define( 'WRITGOCMS_URI', plugin_dir_url( __FILE__ ) );
+}
 
 /**
  * Initialize the plugin.

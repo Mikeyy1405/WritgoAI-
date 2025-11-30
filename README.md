@@ -37,8 +37,9 @@ AI-Powered Multi-Provider WordPress Plugin with AIML Integration.
 ### Method 3: Git Clone
 ```bash
 cd /path/to/wordpress/wp-content/plugins/
-git clone https://github.com/Mikeyy1405/WritgoCMS.git
+git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 ```
+Note: The plugin directory should be named `WritgoCMS` to match the plugin slug.
 
 ## ⚙️ Configuration
 
