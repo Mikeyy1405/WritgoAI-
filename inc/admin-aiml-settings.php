@@ -592,7 +592,7 @@ class WritgoCMS_AIML_Admin_Settings {
                                 <div class="options-grid">
                                     <label class="option-item">
                                         <input type="checkbox" name="update_dates" checked>
-                                        <span>🔄 <?php esc_html_e( 'Update verouderde informatie (jaartallen → 2025)', 'writgocms' ); ?></span>
+                                        <span>🔄 <?php printf( esc_html__( 'Update verouderde informatie (jaartallen → %s)', 'writgocms' ), esc_html( gmdate( 'Y' ) ) ); ?></span>
                                     </label>
                                     <label class="option-item">
                                         <input type="checkbox" name="extend_content" checked>
@@ -720,7 +720,7 @@ class WritgoCMS_AIML_Admin_Settings {
                             <div class="bulk-options">
                                 <label class="option-item">
                                     <input type="checkbox" name="bulk_update_dates" checked>
-                                    <span>🔄 <?php esc_html_e( 'Update jaartallen naar 2025', 'writgocms' ); ?></span>
+                                    <span>🔄 <?php printf( esc_html__( 'Update jaartallen naar %s', 'writgocms' ), esc_html( gmdate( 'Y' ) ) ); ?></span>
                                 </label>
                                 <label class="option-item">
                                     <input type="checkbox" name="bulk_optimize_seo" checked>

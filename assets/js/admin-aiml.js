@@ -735,6 +735,16 @@
             this.loadPosts();
         },
 
+        /**
+         * Get translation string safely
+         */
+        getTranslation: function(key, fallback) {
+            if (writgocmsAiml && writgocmsAiml.i18n && writgocmsAiml.i18n.postUpdater && writgocmsAiml.i18n.postUpdater[key]) {
+                return writgocmsAiml.i18n.postUpdater[key];
+            }
+            return fallback || key;
+        },
+
         bindEvents: function() {
             var self = this;
 
@@ -829,7 +839,7 @@
             var $list = $('#posts-list');
             var seoFilter = $('#filter-seo').val().split('-');
 
-            $list.html('<div class="loading-state"><span class="spinner is-active"></span><p>' + (writgocmsAiml.i18n.postUpdater ? writgocmsAiml.i18n.postUpdater.loading : 'Laden...') + '</p></div>');
+            $list.html('<div class="loading-state"><span class="spinner is-active"></span><p>' + self.getTranslation('loading', 'Laden...') + '</p></div>');
 
             $.ajax({
                 url: writgocmsAiml.ajaxUrl,
@@ -866,7 +876,7 @@
             $('#posts-count').text('(' + data.total + ')');
 
             if (!data.posts || data.posts.length === 0) {
-                $list.html('<div class="no-posts-message">' + (writgocmsAiml.i18n.postUpdater ? writgocmsAiml.i18n.postUpdater.noPostsFound : 'Geen posts gevonden.') + '</div>');
+                $list.html('<div class="no-posts-message">' + self.getTranslation('noPostsFound', 'Geen posts gevonden.') + '</div>');
                 $pagination.html('');
                 return;
             }

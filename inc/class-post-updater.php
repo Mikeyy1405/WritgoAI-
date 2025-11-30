@@ -540,7 +540,8 @@ $word_count = str_word_count( wp_strip_all_tags( $post->post_content ) );
 $instructions = array();
 
 if ( $options['update_dates'] ) {
-$instructions[] = 'Update alle verouderde datums, jaren en statistieken naar 2025';
+$current_year   = gmdate( 'Y' );
+$instructions[] = sprintf( 'Update alle verouderde datums, jaren en statistieken naar %s', $current_year );
 }
 if ( $options['extend_content'] ) {
 $instructions[] = 'Verleng het artikel naar minimaal 1500 woorden met relevante, waardevolle content';
