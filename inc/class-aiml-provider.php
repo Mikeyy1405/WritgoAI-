@@ -37,16 +37,36 @@ class WritgoCMS_AIML_Provider {
      * @var array
      */
     private $text_models = array(
+        // OpenAI GPT Models
+        'gpt-5.1'                      => 'GPT-5.1 (Latest)',
+        'gpt-4.5-turbo'                => 'GPT-4.5 Turbo',
         'gpt-4o'                       => 'GPT-4o',
-        'gpt-4'                        => 'GPT-4',
+        'gpt-4o-mini'                  => 'GPT-4o Mini',
         'gpt-4-turbo'                  => 'GPT-4 Turbo',
+        'gpt-4'                        => 'GPT-4',
         'gpt-3.5-turbo'                => 'GPT-3.5 Turbo',
+        // Anthropic Claude Models
+        'claude-4.5-sonnet'            => 'Claude 4.5 Sonnet (Latest)',
+        'claude-4-opus'                => 'Claude 4 Opus',
+        'claude-4-sonnet'              => 'Claude 4 Sonnet',
+        'claude-3.5-sonnet'            => 'Claude 3.5 Sonnet',
         'claude-3-opus-20240229'       => 'Claude 3 Opus',
         'claude-3-sonnet-20240229'     => 'Claude 3 Sonnet',
         'claude-3-haiku-20240307'      => 'Claude 3 Haiku',
+        // Google Gemini Models
+        'gemini-3-pro'                 => 'Gemini 3 Pro (Latest)',
+        'gemini-2.5-pro'               => 'Gemini 2.5 Pro',
+        'gemini-2.0-flash'             => 'Gemini 2.0 Flash',
+        'gemini-1.5-pro'               => 'Gemini 1.5 Pro',
+        'gemini-1.5-flash'             => 'Gemini 1.5 Flash',
+        // Mistral Models
         'mistral-large-latest'         => 'Mistral Large',
         'mistral-medium-latest'        => 'Mistral Medium',
         'mistral-small-latest'         => 'Mistral Small',
+        // Meta Llama Models
+        'llama-3.2-90b'                => 'Llama 3.2 90B',
+        'llama-3.1-405b'               => 'Llama 3.1 405B',
+        'llama-3.1-70b'                => 'Llama 3.1 70B',
     );
 
     /**
@@ -55,10 +75,22 @@ class WritgoCMS_AIML_Provider {
      * @var array
      */
     private $image_models = array(
-        'dall-e-3'                          => 'DALL-E 3',
+        // OpenAI DALL-E Models
+        'dall-e-3'                          => 'DALL-E 3 (Latest)',
         'dall-e-2'                          => 'DALL-E 2',
+        // Stability AI Models
+        'stable-diffusion-3'                => 'Stable Diffusion 3',
         'stable-diffusion-xl-1024-v1-0'     => 'Stable Diffusion XL',
+        'stable-diffusion-xl-turbo'         => 'Stable Diffusion XL Turbo',
+        // Flux Models
+        'flux-1.1-pro'                      => 'Flux 1.1 Pro (Latest)',
+        'flux-pro'                          => 'Flux Pro',
         'flux-schnell'                      => 'Flux Schnell',
+        'flux-dev'                          => 'Flux Dev',
+        // Midjourney
+        'midjourney-v6'                     => 'Midjourney v6',
+        // Ideogram
+        'ideogram-v2'                       => 'Ideogram v2',
     );
 
     /**

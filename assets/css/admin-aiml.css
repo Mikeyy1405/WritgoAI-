@@ -4,6 +4,44 @@
  * @package WritgoCMS
  */
 
+/* Base Settings for Readability */
+.writgocms-aiml-settings {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1e293b;
+}
+
+.writgocms-aiml-settings h1,
+.writgocms-aiml-settings h2,
+.writgocms-aiml-settings h3 {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.writgocms-aiml-settings h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.writgocms-aiml-settings h3 {
+    font-size: 16px;
+}
+
+.writgocms-aiml-settings label {
+    font-weight: 500;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.writgocms-aiml-settings .description {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 6px;
+    line-height: 1.5;
+}
+
 /* Header */
 .aiml-header {
     display: flex;
@@ -14,6 +52,8 @@
     padding: 20px 25px;
     margin: -10px -20px 20px -20px;
     border-radius: 0 0 8px 8px;
+    font-size: 22px;
+    font-weight: 600;
 }
 
 .aiml-logo {
@@ -55,6 +95,29 @@
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+}
+
+/* Settings Sections */
+.aiml-settings-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.aiml-settings-section h2 {
+    margin-top: 0;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.aiml-settings-section p.description {
+    font-size: 14px;
+    color: #475569;
+    margin-bottom: 20px;
 }
 
 /* Provider Cards */
@@ -187,19 +250,22 @@
 
 /* Range Inputs */
 .range-input {
-    width: 200px;
+    width: 220px;
     vertical-align: middle;
-    margin-right: 10px;
+    margin-right: 12px;
+    cursor: pointer;
 }
 
 .range-value {
     display: inline-block;
-    min-width: 40px;
-    padding: 5px 10px;
-    background: #f3f4f6;
-    border-radius: 4px;
+    min-width: 50px;
+    padding: 6px 12px;
+    background: #f1f5f9;
+    border-radius: 6px;
     font-weight: 600;
     color: #1877F2;
+    text-align: center;
+    font-size: 14px;
 }
 
 /* Test Interface */
@@ -424,12 +490,53 @@
 
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-    .aiml-tab-content,
-    .provider-setting-group,
+    .writgocms-aiml-settings {
+        color: #e2e8f0;
+    }
+
+    .writgocms-aiml-settings h1,
+    .writgocms-aiml-settings h2,
+    .writgocms-aiml-settings h3 {
+        color: #f1f5f9;
+    }
+
+    .writgocms-aiml-settings label {
+        color: #e2e8f0;
+    }
+
+    .writgocms-aiml-settings .description {
+        color: #94a3b8;
+    }
+
+    .aiml-tab-content {
+        background: #1e293b;
+        border-color: #334155;
+        color: #e2e8f0;
+    }
+
+    .aiml-settings-section {
+        background: #0f172a;
+        border-color: #334155;
+    }
+
+    .aiml-settings-section h2 {
+        color: #f1f5f9;
+        border-bottom-color: #334155;
+    }
+
+    .aiml-settings-section p.description {
+        color: #94a3b8;
+    }
+
+    .provider-setting-group {
+        background: #1e293b;
+        border-color: #374151;
+    }
+
     .test-form,
     .test-result,
     .stat-card {
-        background: #1f2937;
+        background: #1e293b;
         border-color: #374151;
     }
 
@@ -446,12 +553,12 @@
     .provider-setting-group h3,
     .test-input-group label,
     .test-result h3 {
-        color: #f3f4f6;
+        color: #f1f5f9;
     }
 
     .test-result-content {
         background: #374151;
-        color: #f3f4f6;
+        color: #f1f5f9;
     }
 
     .stat-card {
@@ -459,13 +566,54 @@
     }
 
     .stat-label {
-        color: #9ca3af;
+        color: #94a3b8;
     }
 
     .test-input-group textarea {
         background: #374151;
         border-color: #4b5563;
-        color: #f3f4f6;
+        color: #f1f5f9;
+    }
+
+    .writgocms-aiml-settings .form-table th {
+        color: #e2e8f0;
+    }
+
+    .writgocms-aiml-settings .form-table td {
+        color: #cbd5e1;
+    }
+
+    .writgocms-aiml-settings .form-table td p.description {
+        color: #94a3b8;
+    }
+
+    .writgocms-aiml-settings .form-table select {
+        background-color: #334155;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+
+    .writgocms-aiml-settings .form-table select optgroup {
+        background-color: #1e293b;
+        color: #f1f5f9;
+    }
+
+    .writgocms-aiml-settings .form-table select option {
+        color: #e2e8f0;
+        background-color: #334155;
+    }
+
+    .writgocms-aiml-settings .form-table input[type="number"],
+    .writgocms-aiml-settings .form-table input[type="text"],
+    .writgocms-aiml-settings .form-table input[type="password"] {
+        background-color: #334155;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+
+    .range-value {
+        background: #334155;
+        color: #60a5fa;
     }
 }
 
@@ -516,18 +664,75 @@
 }
 
 /* Form Table Styling */
-.form-table th {
+.writgocms-aiml-settings .form-table th {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+    vertical-align: top;
+    width: 220px;
+}
+
+.writgocms-aiml-settings .form-table td {
     padding-top: 15px;
     padding-bottom: 15px;
+    color: #334155;
 }
 
-.form-table td {
-    padding-top: 10px;
-    padding-bottom: 10px;
+.writgocms-aiml-settings .form-table td p.description {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 8px;
+    line-height: 1.5;
 }
 
-.form-table select {
-    min-width: 200px;
+.writgocms-aiml-settings .form-table select {
+    min-width: 280px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #1e293b;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.writgocms-aiml-settings .form-table select:focus {
+    border-color: #1877F2;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
+}
+
+.writgocms-aiml-settings .form-table select optgroup {
+    font-weight: 600;
+    color: #0f172a;
+    background-color: #f1f5f9;
+}
+
+.writgocms-aiml-settings .form-table select option {
+    padding: 8px;
+    color: #334155;
+}
+
+.writgocms-aiml-settings .form-table input[type="number"],
+.writgocms-aiml-settings .form-table input[type="text"],
+.writgocms-aiml-settings .form-table input[type="password"] {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    color: #1e293b;
+    transition: border-color 0.2s ease;
+}
+
+.writgocms-aiml-settings .form-table input[type="number"]:focus,
+.writgocms-aiml-settings .form-table input[type="text"]:focus,
+.writgocms-aiml-settings .form-table input[type="password"]:focus {
+    border-color: #1877F2;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
 }
 
 /* Submit Button */
