@@ -612,23 +612,21 @@ Focus op een mix van populaire en niche hashtags.',
 		$where_clause = implode( ' AND ', $where );
 		$limit = absint( $args['limit'] );
 
+		// Build the query using the table name directly (prefix is WordPress-controlled).
+		$table_name = $wpdb->prefix . 'writgoai_social_posts';
+		$base_query = "SELECT * FROM {$table_name} WHERE {$where_clause} ORDER BY scheduled_time ASC LIMIT %d";
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( ! empty( $values ) ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is safely constructed with wpdb->prefix and prepared placeholders.
 			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT * FROM $table WHERE $where_clause ORDER BY scheduled_time ASC LIMIT %d",
-					array_merge( $values, array( $limit ) )
-				),
+				$wpdb->prepare( $base_query, array_merge( $values, array( $limit ) ) ),
 				ARRAY_A
 			);
 		} else {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is safely constructed with wpdb->prefix and prepared placeholders.
 			$results = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT * FROM $table WHERE $where_clause ORDER BY scheduled_time ASC LIMIT %d",
-					$limit
-				),
+				$wpdb->prepare( $base_query, $limit ),
 				ARRAY_A
 			);
 		}
@@ -691,20 +689,20 @@ Focus op een mix van populaire en niche hashtags.',
 	public function get_hashtag_sets( $category = '' ) {
 		global $wpdb;
 
-		$table = $wpdb->prefix . 'writgoai_hashtag_sets';
+		$table_name = $wpdb->prefix . 'writgoai_hashtag_sets';
 
 		if ( ! empty( $category ) ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Table name uses wpdb->prefix.
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT * FROM $table WHERE category = %s ORDER BY name ASC",
+					"SELECT * FROM {$table_name} WHERE category = %s ORDER BY name ASC",
 					$category
 				),
 				ARRAY_A
 			);
 		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$results = $wpdb->get_results( "SELECT * FROM $table ORDER BY name ASC", ARRAY_A );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Table name uses wpdb->prefix.
+			$results = $wpdb->get_results( "SELECT * FROM {$table_name} ORDER BY name ASC", ARRAY_A );
 		}
 
 		// Decode hashtags JSON.
@@ -726,14 +724,14 @@ Focus op een mix van populaire en niche hashtags.',
 	public function get_analytics_summary( $days = 30 ) {
 		global $wpdb;
 
-		$table = $wpdb->prefix . 'writgoai_social_posts';
+		$table_name = $wpdb->prefix . 'writgoai_social_posts';
 		$from_date = gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) );
 
 		// Get posts count by platform.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Table name uses wpdb->prefix.
 		$platform_stats = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT platform, COUNT(*) as count, status FROM $table WHERE created_at >= %s GROUP BY platform, status",
+				"SELECT platform, COUNT(*) as count, status FROM {$table_name} WHERE created_at >= %s GROUP BY platform, status",
 				$from_date
 			),
 			ARRAY_A

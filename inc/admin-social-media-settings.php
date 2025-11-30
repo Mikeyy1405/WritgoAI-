@@ -128,7 +128,11 @@ class WritgoCMS_Social_Media_Admin {
 	 * Render social media page
 	 */
 	public function render_social_media_page() {
+		// Whitelist valid tab values to prevent URL manipulation issues.
+		$valid_tabs = array( 'dashboard', 'create', 'calendar', 'hashtags', 'analytics' );
 		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'dashboard';
+		$active_tab = in_array( $active_tab, $valid_tabs, true ) ? $active_tab : 'dashboard';
+
 		$analytics  = $this->manager->get_analytics_summary( 7 );
 		$platforms  = $this->manager->get_platforms();
 		$tones      = $this->manager->get_content_tones();
@@ -442,7 +446,14 @@ class WritgoCMS_Social_Media_Admin {
 	 * @param array $best_times Best posting times.
 	 */
 	private function render_calendar_tab( $platforms, $best_times ) {
-		$current_month = isset( $_GET['month'] ) ? sanitize_text_field( wp_unslash( $_GET['month'] ) ) : gmdate( 'Y-m' );
+		$current_month = gmdate( 'Y-m' );
+		if ( isset( $_GET['month'] ) ) {
+			$month_input = sanitize_text_field( wp_unslash( $_GET['month'] ) );
+			// Validate month format (Y-m, e.g., 2025-11).
+			if ( preg_match( '/^\d{4}-(?:0[1-9]|1[0-2])$/', $month_input ) ) {
+				$current_month = $month_input;
+			}
+		}
 		?>
 		<div class="calendar-tab">
 			<div class="social-card calendar-card">
