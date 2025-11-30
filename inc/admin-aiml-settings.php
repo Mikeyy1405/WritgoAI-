@@ -111,14 +111,32 @@ class WritgoCMS_AIML_Admin_Settings {
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'writgocms_aiml_nonce' ),
                 'i18n'    => array(
-                    'validating'    => __( 'Validating...', 'writgocms' ),
-                    'valid'         => __( 'Valid!', 'writgocms' ),
-                    'invalid'       => __( 'Invalid', 'writgocms' ),
-                    'error'         => __( 'Error', 'writgocms' ),
-                    'generating'    => __( 'Generating...', 'writgocms' ),
-                    'success'       => __( 'Success!', 'writgocms' ),
-                    'testPrompt'    => __( 'Write a short paragraph about artificial intelligence.', 'writgocms' ),
-                    'imagePrompt'   => __( 'A beautiful sunset over mountains', 'writgocms' ),
+                    'validating'              => __( 'Validating...', 'writgocms' ),
+                    'valid'                   => __( 'Valid!', 'writgocms' ),
+                    'invalid'                 => __( 'Invalid', 'writgocms' ),
+                    'error'                   => __( 'Error', 'writgocms' ),
+                    'generating'              => __( 'Generating...', 'writgocms' ),
+                    'success'                 => __( 'Success!', 'writgocms' ),
+                    'testPrompt'              => __( 'Write a short paragraph about artificial intelligence.', 'writgocms' ),
+                    'imagePrompt'             => __( 'A beautiful sunset over mountains', 'writgocms' ),
+                    'generatingMap'           => __( 'Generating topical authority map...', 'writgocms' ),
+                    'generatingPlan'          => __( 'Generating content plan...', 'writgocms' ),
+                    'savePlan'                => __( 'Save Plan', 'writgocms' ),
+                    'planSaved'               => __( 'Content plan saved successfully!', 'writgocms' ),
+                    'planDeleted'             => __( 'Content plan deleted.', 'writgocms' ),
+                    'confirmDelete'           => __( 'Are you sure you want to delete this content plan?', 'writgocms' ),
+                    'noNiche'                 => __( 'Please enter a niche/topic.', 'writgocms' ),
+                    'noPlanName'              => __( 'Please enter a plan name.', 'writgocms' ),
+                    'pillarContent'           => __( 'Pillar Content', 'writgocms' ),
+                    'clusterArticles'         => __( 'Cluster Articles', 'writgocms' ),
+                    'keywords'                => __( 'Keywords', 'writgocms' ),
+                    'priority'                => __( 'Priority', 'writgocms' ),
+                    'contentGaps'             => __( 'Content Gaps to Address', 'writgocms' ),
+                    'recommendedOrder'        => __( 'Recommended Publishing Order', 'writgocms' ),
+                    'generateDetailedPlan'    => __( 'Generate Detailed Plan', 'writgocms' ),
+                    'high'                    => __( 'High', 'writgocms' ),
+                    'medium'                  => __( 'Medium', 'writgocms' ),
+                    'low'                     => __( 'Low', 'writgocms' ),
                 ),
             )
         );
@@ -140,6 +158,9 @@ class WritgoCMS_AIML_Admin_Settings {
                 <a href="?page=writgocms-aiml-settings&tab=settings" class="nav-tab <?php echo 'settings' === $active_tab ? 'nav-tab-active' : ''; ?>">
                     ⚙️ <?php esc_html_e( 'Settings', 'writgocms' ); ?>
                 </a>
+                <a href="?page=writgocms-aiml-settings&tab=content-planner" class="nav-tab <?php echo 'content-planner' === $active_tab ? 'nav-tab-active' : ''; ?>">
+                    🗺️ <?php esc_html_e( 'Content Planner', 'writgocms' ); ?>
+                </a>
                 <a href="?page=writgocms-aiml-settings&tab=test" class="nav-tab <?php echo 'test' === $active_tab ? 'nav-tab-active' : ''; ?>">
                     🧪 <?php esc_html_e( 'Test & Preview', 'writgocms' ); ?>
                 </a>
@@ -153,6 +174,9 @@ class WritgoCMS_AIML_Admin_Settings {
                 switch ( $active_tab ) {
                     case 'settings':
                         $this->render_settings_tab();
+                        break;
+                    case 'content-planner':
+                        $this->render_content_planner_tab();
                         break;
                     case 'test':
                         $this->render_test_tab();
@@ -453,6 +477,111 @@ class WritgoCMS_AIML_Admin_Settings {
                     ?>
                 </tbody>
             </table>
+        </div>
+        <?php
+    }
+
+    /**
+     * Render content planner tab
+     */
+    private function render_content_planner_tab() {
+        ?>
+        <div class="content-planner-dashboard">
+            <h2><?php esc_html_e( 'Topical Authority Map Generator', 'writgocms' ); ?></h2>
+            <p class="description">
+                <?php esc_html_e( 'Generate an AI-powered content plan for your website. Enter your niche and let AI create a comprehensive topical authority map with pillar content and cluster articles.', 'writgocms' ); ?>
+            </p>
+
+            <div class="content-planner-grid">
+                <!-- Input Section -->
+                <div class="content-planner-input">
+                    <div class="planner-card">
+                        <h3>🎯 <?php esc_html_e( 'Define Your Niche', 'writgocms' ); ?></h3>
+                        
+                        <div class="planner-field">
+                            <label for="planner-niche"><?php esc_html_e( 'Main Niche/Topic', 'writgocms' ); ?></label>
+                            <input type="text" id="planner-niche" class="regular-text" placeholder="<?php esc_attr_e( 'e.g., Digital Marketing, Home Fitness, Sustainable Living', 'writgocms' ); ?>">
+                            <p class="description"><?php esc_html_e( 'Enter the main topic or niche for your content strategy.', 'writgocms' ); ?></p>
+                        </div>
+
+                        <div class="planner-field">
+                            <label for="planner-website-type"><?php esc_html_e( 'Website Type', 'writgocms' ); ?></label>
+                            <select id="planner-website-type">
+                                <option value="blog"><?php esc_html_e( 'Blog / Content Site', 'writgocms' ); ?></option>
+                                <option value="ecommerce"><?php esc_html_e( 'E-commerce / Online Store', 'writgocms' ); ?></option>
+                                <option value="saas"><?php esc_html_e( 'SaaS / Software Company', 'writgocms' ); ?></option>
+                                <option value="agency"><?php esc_html_e( 'Agency / Service Provider', 'writgocms' ); ?></option>
+                                <option value="portfolio"><?php esc_html_e( 'Portfolio / Personal Brand', 'writgocms' ); ?></option>
+                                <option value="news"><?php esc_html_e( 'News / Media Site', 'writgocms' ); ?></option>
+                            </select>
+                        </div>
+
+                        <div class="planner-field">
+                            <label for="planner-audience"><?php esc_html_e( 'Target Audience (Optional)', 'writgocms' ); ?></label>
+                            <textarea id="planner-audience" rows="2" placeholder="<?php esc_attr_e( 'e.g., Small business owners aged 30-50 looking to grow their online presence', 'writgocms' ); ?>"></textarea>
+                        </div>
+
+                        <div class="planner-actions">
+                            <button type="button" id="generate-topical-map" class="button button-primary button-hero">
+                                ✨ <?php esc_html_e( 'Generate Topical Authority Map', 'writgocms' ); ?>
+                            </button>
+                            <span class="planner-status"></span>
+                        </div>
+                    </div>
+
+                    <!-- Saved Plans Section -->
+                    <div class="planner-card">
+                        <h3>📁 <?php esc_html_e( 'Saved Content Plans', 'writgocms' ); ?></h3>
+                        <div id="saved-plans-list">
+                            <p class="no-plans"><?php esc_html_e( 'No saved content plans yet. Generate a topical map to get started!', 'writgocms' ); ?></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="content-planner-results" style="display: none;">
+                    <div class="planner-card">
+                        <div class="results-header">
+                            <h3>🗺️ <?php esc_html_e( 'Your Topical Authority Map', 'writgocms' ); ?></h3>
+                            <div class="results-actions">
+                                <button type="button" id="save-content-plan" class="button button-secondary">
+                                    💾 <?php esc_html_e( 'Save Plan', 'writgocms' ); ?>
+                                </button>
+                                <button type="button" id="export-content-plan" class="button button-secondary">
+                                    📤 <?php esc_html_e( 'Export JSON', 'writgocms' ); ?>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="topical-map-content">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+
+                    <!-- Content Detail Panel -->
+                    <div class="planner-card" id="content-detail-panel" style="display: none;">
+                        <h3>📝 <?php esc_html_e( 'Article Content Plan', 'writgocms' ); ?></h3>
+                        <div id="content-detail-result">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Plan Modal -->
+            <div id="save-plan-modal" class="planner-modal" style="display: none;">
+                <div class="planner-modal-content">
+                    <h3><?php esc_html_e( 'Save Content Plan', 'writgocms' ); ?></h3>
+                    <div class="planner-field">
+                        <label for="plan-name"><?php esc_html_e( 'Plan Name', 'writgocms' ); ?></label>
+                        <input type="text" id="plan-name" class="regular-text" placeholder="<?php esc_attr_e( 'e.g., Q1 2024 Content Strategy', 'writgocms' ); ?>">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="confirm-save-plan" class="button button-primary"><?php esc_html_e( 'Save', 'writgocms' ); ?></button>
+                        <button type="button" id="cancel-save-plan" class="button"><?php esc_html_e( 'Cancel', 'writgocms' ); ?></button>
+                    </div>
+                </div>
+            </div>
         </div>
         <?php
     }

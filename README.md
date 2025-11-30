@@ -20,6 +20,18 @@ AI-Powered WordPress Plugin with AIMLAPI Integration.
 - **Caching**: Response caching for improved performance
 - **Media Library Integration**: Generated images are automatically saved to the Media Library
 
+### 🗺️ Content Planner - Topical Authority Map Generator
+The Content Planner is an AI-powered tool that helps you create comprehensive content strategies:
+
+- **Topical Authority Maps**: Generate complete content plans with pillar topics and cluster articles
+- **AI-Powered Planning**: Let AI do the strategic thinking for your content
+- **Keyword Suggestions**: Get relevant keywords for each article in your plan
+- **Priority Levels**: Articles are prioritized (high, medium, low) for publishing order
+- **Detailed Content Outlines**: Generate comprehensive article outlines with sections, subsections, and key points
+- **Save & Export**: Save your content plans for later or export them as JSON
+- **Internal Linking Suggestions**: Get recommendations for internal link opportunities
+- **CTA Suggestions**: Receive call-to-action ideas for each piece of content
+
 ## 📋 Installation
 
 ### Method 1: Upload ZIP via WordPress Admin
@@ -51,6 +63,16 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 5. Adjust temperature and max tokens settings if needed
 6. Save settings
 
+### Using the Content Planner
+1. Go to Settings → WritgoCMS AIML → Content Planner tab
+2. Enter your main niche/topic (e.g., "Digital Marketing", "Home Fitness")
+3. Select your website type (blog, e-commerce, SaaS, etc.)
+4. Optionally describe your target audience
+5. Click "Generate Topical Authority Map"
+6. Review your generated pillar content and cluster articles
+7. Click "Generate Detailed Plan" on any article to get a full content outline
+8. Save your plan or export it as JSON for reference
+
 ### Using the Gutenberg Block
 1. Create or edit a post/page
 2. Add a new block and search for "AI Content Generator"
@@ -75,6 +97,7 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 |----------------|-------------|
 | `writgo-cms.php` | Main plugin file with headers and initialization |
 | `inc/class-aiml-provider.php` | Core AIMLAPI provider class with API integrations |
+| `inc/class-content-planner.php` | Content Planner with Topical Authority Map generation |
 | `inc/admin-aiml-settings.php` | Admin settings panel for AIMLAPI configuration |
 | `inc/gutenberg-aiml-block.php` | Gutenberg block registration |
 | `inc/classic-editor-button.php` | TinyMCE button for Classic Editor |
