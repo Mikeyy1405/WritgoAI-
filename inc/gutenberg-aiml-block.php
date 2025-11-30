@@ -104,9 +104,11 @@ class WritgoCMS_Gutenberg_AIML_Block {
      * Enqueue editor assets
      */
     public function enqueue_editor_assets() {
+        $provider = WritgoCMS_AIML_Provider::get_instance();
+
         wp_enqueue_script(
             'writgocms-aiml-block',
-            WRITGOCMS_URI . '/assets/js/gutenberg-aiml-block.js',
+            WRITGOCMS_URL . 'assets/js/gutenberg-aiml-block.js',
             array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n', 'wp-compose', 'wp-data' ),
             WRITGOCMS_VERSION,
             true
@@ -114,7 +116,7 @@ class WritgoCMS_Gutenberg_AIML_Block {
 
         wp_enqueue_style(
             'writgocms-aiml-block-style',
-            WRITGOCMS_URI . '/assets/css/gutenberg-aiml-block.css',
+            WRITGOCMS_URL . 'assets/css/gutenberg-aiml-block.css',
             array(),
             WRITGOCMS_VERSION
         );
@@ -125,11 +127,13 @@ class WritgoCMS_Gutenberg_AIML_Block {
             array(
                 'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
                 'nonce'        => wp_create_nonce( 'writgocms_aiml_nonce' ),
-                'textProvider' => get_option( 'writgocms_text_provider', 'openai' ),
-                'imageProvider' => get_option( 'writgocms_image_provider', 'dalle' ),
+                'defaultModel' => $provider->get_default_text_model(),
+                'defaultImageModel' => $provider->get_default_image_model(),
+                'textModels'   => $provider->get_text_models(),
+                'imageModels'  => $provider->get_image_models(),
                 'i18n'         => array(
                     'blockTitle'       => __( 'AI Content Generator', 'writgocms' ),
-                    'blockDescription' => __( 'Generate text or images using AI', 'writgocms' ),
+                    'blockDescription' => __( 'Generate text or images using AIMLAPI', 'writgocms' ),
                     'textMode'         => __( 'Text', 'writgocms' ),
                     'imageMode'        => __( 'Image', 'writgocms' ),
                     'promptLabel'      => __( 'Enter your prompt', 'writgocms' ),

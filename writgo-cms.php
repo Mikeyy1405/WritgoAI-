@@ -28,8 +28,11 @@ if ( ! defined( 'WRITGOCMS_VERSION' ) ) {
 if ( ! defined( 'WRITGOCMS_DIR' ) ) {
 	define( 'WRITGOCMS_DIR', plugin_dir_path( __FILE__ ) );
 }
+if ( ! defined( 'WRITGOCMS_URL' ) ) {
+	define( 'WRITGOCMS_URL', plugin_dir_url( __FILE__ ) );
+}
 if ( ! defined( 'WRITGOCMS_URI' ) ) {
-	define( 'WRITGOCMS_URI', plugin_dir_url( __FILE__ ) );
+	define( 'WRITGOCMS_URI', WRITGOCMS_URL );
 }
 
 /**
