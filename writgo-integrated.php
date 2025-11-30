@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Writgo Integrated Writer
- * Description: Genereer volledige SEO artikelen direct binnen de 'Nieuw Bericht' editor.
- * Version: 3.0
+ * Description: Genereer volledige SEO artikelen direct binnen de 'Nieuw Bericht' editor via de Writgo SaaS API.
+ * Version: 4.0
  * Author: Mikeyy1405
  */
 
@@ -11,7 +11,68 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // ==========================================================================
 // 1. CONFIGURATIE
 // ==========================================================================
-define('WRITGO_API_KEY', 'sk-proj-...'); // <--- PLAK HIER JE OPENAI KEY
+define('WRITGO_API_ENDPOINT', 'https://api.writgo.nl/v1/generate');
+
+// ==========================================================================
+// 1.1 SETTINGS PAGE
+// ==========================================================================
+function writgo_register_settings() {
+    register_setting('writgo_settings_group', 'writgo_license_key', [
+        'type' => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default' => '',
+    ]);
+}
+add_action('admin_init', 'writgo_register_settings');
+
+function writgo_add_settings_page() {
+    add_options_page(
+        'Writgo Instellingen',    // Page title
+        'Writgo',                  // Menu title
+        'manage_options',          // Capability
+        'writgo-settings',         // Menu slug
+        'writgo_render_settings_page' // Callback function
+    );
+}
+add_action('admin_menu', 'writgo_add_settings_page');
+
+function writgo_render_settings_page() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    ?>
+    <div class="wrap">
+        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+        <form action="options.php" method="post">
+            <?php
+            settings_fields('writgo_settings_group');
+            do_settings_sections('writgo-settings');
+            ?>
+            <table class="form-table" role="presentation">
+                <tbody>
+                    <tr>
+                        <th scope="row">
+                            <label for="writgo_license_key">License Key</label>
+                        </th>
+                        <td>
+                            <input type="text" 
+                                   id="writgo_license_key" 
+                                   name="writgo_license_key" 
+                                   value="<?php echo esc_attr(get_option('writgo_license_key', '')); ?>" 
+                                   class="regular-text"
+                                   placeholder="Voer je Writgo license key in">
+                            <p class="description">
+                                Voer hier je Writgo license key in om gebruik te maken van de AI content generator.
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <?php submit_button('Opslaan'); ?>
+        </form>
+    </div>
+    <?php
+}
 
 
 // ==========================================================================
@@ -150,6 +211,12 @@ function writgo_handle_generation_integrated() {
 
     if(!$post_id) wp_send_json_error('Geen post ID gevonden.');
 
+    // Get license key from settings
+    $license_key = get_option('writgo_license_key', '');
+    if(empty($license_key)) {
+        wp_send_json_error('Geen license key geconfigureerd. Ga naar Instellingen -> Writgo om je license key in te voeren.');
+    }
+
     // Optioneel: Sla de inputs op in meta, zodat ze er nog staan na refresh
     update_post_meta($post_id, '_wg_brand', $brand);
     update_post_meta($post_id, '_wg_topic', $topic);
@@ -178,28 +245,37 @@ Structuur:
 6. Conclusie
 EOT;
 
-    // 3. Call OpenAI
-    $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
+    // 3. Call Writgo SaaS API
+    $response = wp_remote_post(WRITGO_API_ENDPOINT, [
         'timeout' => 120,
         'headers' => [
-            'Authorization' => 'Bearer ' . WRITGO_API_KEY,
             'Content-Type'  => 'application/json',
         ],
         'body' => json_encode([
-            'model' => 'gpt-4o',
-            'messages' => [
-                ['role' => 'system', 'content' => 'Je bent een expert copywriter.'],
-                ['role' => 'user', 'content' => $prompt]
-            ]
+            'license_key' => $license_key,
+            'brand' => $brand,
+            'topic' => $topic,
+            'keyword' => $keyword,
+            'audience' => $audience,
+            'products' => $products,
+            'prompt' => $prompt
         ])
     ]);
 
-    if (is_wp_error($response)) wp_send_json_error('OpenAI Error: ' . $response->get_error_message());
-    
-    $body = json_decode(wp_remote_retrieve_body($response), true);
-    $content = $body['choices'][0]['message']['content'] ?? '';
+    if (is_wp_error($response)) {
+        wp_send_json_error('API Error: Er kon geen verbinding worden gemaakt met de Writgo server.');
+    }
 
-    if(empty($content)) wp_send_json_error('Geen content ontvangen.');
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+
+    // Handle error response from API
+    if (!empty($body['error'])) {
+        wp_send_json_error('API Error: ' . sanitize_text_field($body['error']));
+    }
+
+    $content = $body['content'] ?? '';
+
+    if(empty($content)) wp_send_json_error('Geen content ontvangen van de API.');
 
     // 4. UPDATE HET HUIDIGE BERICHT
     
