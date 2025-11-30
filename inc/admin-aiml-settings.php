@@ -56,9 +56,9 @@ class WritgoCMS_AIML_Admin_Settings {
      * Add admin menu
      */
     public function add_admin_menu() {
-        add_theme_page(
+        add_options_page(
             __( 'AIML Settings', 'writgocms' ),
-            __( 'AIML Settings', 'writgocms' ),
+            __( 'WritgoCMS AIML', 'writgocms' ),
             'manage_options',
             'writgocms-aiml-settings',
             array( $this, 'render_settings_page' )
@@ -103,7 +103,7 @@ class WritgoCMS_AIML_Admin_Settings {
      * @param string $hook Current admin page hook.
      */
     public function enqueue_admin_scripts( $hook ) {
-        if ( 'appearance_page_writgocms-aiml-settings' !== $hook ) {
+        if ( 'settings_page_writgocms-aiml-settings' !== $hook ) {
             return;
         }
 

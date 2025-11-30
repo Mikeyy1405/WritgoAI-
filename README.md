@@ -1,46 +1,45 @@
-# WritgoCMS
+# WritgoCMS AI
 
-AI-Powered Multi-Purpose WordPress Theme with AIML Multi-Provider Integration.
+AI-Powered Multi-Provider WordPress Plugin with AIML Integration.
 
-![WritgoCMS Theme](screenshot.png)
+![WritgoCMS AI Plugin](screenshot.png)
 
 ## 🚀 Features
 
 ### AI Integration
 - **Text Generation**: OpenAI (GPT-4, GPT-3.5), Anthropic Claude, Google Gemini, Mistral AI
 - **Image Generation**: DALL-E, Stability AI, Leonardo.ai, Replicate
-- **Gutenberg Block Support**: AI-powered content generation directly in the editor
+- **Gutenberg Block Support**: AI-powered content generation directly in the block editor
 - **Classic Editor Integration**: AI button for traditional editing experience
 
-### Theme Features
-- **4 Professional Templates**: Shop, Blog, Business, Affiliate
-- **Fully Responsive Design**: Mobile-first approach with breakpoints for all devices
-- **Modern CSS Variables**: Easy customization of colors, fonts, and spacing
-- **Widget Areas**: Sidebar, 3 Footer columns, Hero section
-- **Navigation Menus**: Primary, Footer, and Social Links menus
-- **Block Editor Support**: Full support for Gutenberg with custom styles
-- **WooCommerce Compatible**: Ready for e-commerce integration
+### Plugin Features
+- **Multi-Provider Support**: Switch between AI providers easily
+- **Rate Limiting**: Built-in rate limiting to prevent API abuse
+- **Usage Statistics**: Track your AI generation usage
+- **Caching**: Response caching for improved performance
+- **Media Library Integration**: Generated images are automatically saved to the Media Library
 
 ## 📋 Installation
 
-### Method 1: Direct Upload
-1. Download the theme as a ZIP file
-2. Go to WordPress Admin → Appearance → Themes
-3. Click "Add New" → "Upload Theme"
+### Method 1: Upload ZIP via WordPress Admin
+1. Download the plugin as a ZIP file
+2. Go to WordPress Admin → Plugins → Add New
+3. Click "Upload Plugin"
 4. Choose the ZIP file and click "Install Now"
-5. Activate the theme
+5. Click "Activate Plugin"
 
 ### Method 2: FTP Upload
-1. Extract the theme ZIP file
-2. Upload the `WritgoCMS` folder to `/wp-content/themes/`
-3. Go to WordPress Admin → Appearance → Themes
-4. Find WritgoCMS and click "Activate"
+1. Extract the plugin ZIP file
+2. Upload the `WritgoCMS` folder to `/wp-content/plugins/`
+3. Go to WordPress Admin → Plugins
+4. Find "WritgoCMS AI" and click "Activate"
 
 ### Method 3: Git Clone
 ```bash
-cd /path/to/wordpress/wp-content/themes/
-git clone https://github.com/Mikeyy1405/WritgoCMS.git
+cd /path/to/wordpress/wp-content/plugins/
+git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 ```
+Note: The plugin directory should be named `WritgoCMS` to match the plugin slug.
 
 ## ⚙️ Configuration
 
@@ -57,99 +56,27 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git
 3. Select your preferred default text and image providers
 4. Save settings
 
-### Setting Up Menus
-1. Go to Appearance → Menus
-2. Create menus for:
-   - **Primary Menu**: Main navigation in header
-   - **Footer Menu**: Links in footer
-   - **Social Links Menu**: Social media icons in footer
+### Using the Gutenberg Block
+1. Create or edit a post/page
+2. Add a new block and search for "AI Content Generator"
+3. Enter your prompt and choose text or image generation
+4. Click "Generate" and insert the result
 
-### Setting Up Widget Areas
-Go to Appearance → Widgets to configure:
-- **Sidebar**: Main sidebar widgets
-- **Footer 1, 2, 3**: Three-column footer widget areas
-- **Hero Section**: Homepage hero section widgets
+### Using the Classic Editor Button
+1. Create or edit a post/page with the Classic Editor
+2. Click the AI button in the toolbar
+3. Enter your prompt and generate content
 
-## 🎨 Customization
+## 📁 Plugin Structure
 
-### CSS Variables
-The theme uses CSS custom properties for easy customization. Edit `style.css` to modify:
-
-```css
-:root {
-    /* Colors */
-    --color-primary: #1877F2;
-    --color-primary-dark: #1565c0;
-    --color-secondary: #f97316;
-    --color-accent: #fb923c;
-    
-    /* Typography */
-    --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-size-base: 1rem;
-    
-    /* Spacing */
-    --container-max-width: 1200px;
-    --spacing-md: 1rem;
-    
-    /* Border Radius */
-    --radius-md: 0.5rem;
-}
-```
-
-### theme.json
-The `theme.json` file provides block editor configuration:
-- Color palette for blocks
-- Typography settings
-- Spacing presets
-- Layout widths
-
-## 📁 Template Files
-
-| File | Description |
-|------|-------------|
-| `header.php` | Site header with logo and navigation |
-| `footer.php` | Site footer with widgets and copyright |
-| `index.php` | Main template for blog archives |
-| `front-page.php` | Homepage template with hero and features |
-| `page.php` | Single page template |
-| `single.php` | Single post template |
-| `sidebar.php` | Sidebar widget area |
-| `functions.php` | Theme setup and functionality |
-
-## 🔌 JavaScript Features
-
-The theme includes `assets/js/theme.js` with:
-- **Mobile Navigation Toggle**: Responsive hamburger menu
-- **Smooth Scrolling**: Smooth scroll to anchor links
-- **Lazy Loading**: Image lazy loading for performance
-- **Sticky Header**: Header behavior on scroll
-- **Back to Top Button**: Scroll-to-top functionality
-- **Form Validation**: Enhanced form validation
-- **Keyboard Navigation**: Improved accessibility
-
-## 📱 Responsive Breakpoints
-
-```css
-/* Mobile First */
-/* Default styles for mobile */
-
-/* Tablet */
-@media (min-width: 768px) { }
-
-/* Desktop */
-@media (min-width: 1024px) { }
-
-/* Large Desktop */
-@media (min-width: 1200px) { }
-```
-
-## 🌐 Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Opera (latest)
+| Directory/File | Description |
+|----------------|-------------|
+| `writgo-cms.php` | Main plugin file with headers and initialization |
+| `inc/class-aiml-provider.php` | Core AI provider class with API integrations |
+| `inc/admin-aiml-settings.php` | Admin settings panel for configuration |
+| `inc/gutenberg-aiml-block.php` | Gutenberg block registration |
+| `inc/classic-editor-button.php` | TinyMCE button for Classic Editor |
+| `assets/` | CSS and JavaScript assets |
 
 ## 📄 Requirements
 
@@ -167,12 +94,11 @@ The theme includes `assets/js/theme.js` with:
 ## 📝 Changelog
 
 ### Version 1.0.0
-- Initial release
+- Initial release as WordPress Plugin
 - AI integration with 4 text providers and 4 image providers
-- Responsive design with CSS variables
-- Block editor support
-- Widget areas and menu locations
-- JavaScript functionality for interactivity
+- Gutenberg block support
+- Classic Editor integration
+- Usage statistics dashboard
 
 ## 🤝 Contributing
 
@@ -184,7 +110,7 @@ The theme includes `assets/js/theme.js` with:
 
 ## 📜 License
 
-This theme is licensed under the GNU General Public License v2 or later.
+This plugin is licensed under the GNU General Public License v2 or later.
 See [LICENSE](http://www.gnu.org/licenses/gpl-2.0.html) for more information.
 
 ## 👨‍💻 Author
@@ -195,7 +121,6 @@ See [LICENSE](http://www.gnu.org/licenses/gpl-2.0.html) for more information.
 ## 🙏 Credits
 
 - Icons: [Lucide Icons](https://lucide.dev/)
-- Fonts: System font stack
 
 ---
 
