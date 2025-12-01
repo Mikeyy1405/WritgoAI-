@@ -200,7 +200,25 @@ class WritgoCMS_Credit_Manager {
      * @return array Credit information.
      */
     public function get_credit_info() {
-        // First try to get from local storage (WooCommerce generated).
+        // First try to get from API Client (new credit endpoints).
+        if ( class_exists( 'WritgoCMS_API_Client' ) ) {
+            $api_client = WritgoCMS_API_Client::get_instance();
+            $balance = $api_client->get_credit_balance();
+            
+            if ( ! is_wp_error( $balance ) ) {
+                return array(
+                    'credits_total'     => isset( $balance['credits_total'] ) ? (int) $balance['credits_total'] : 0,
+                    'credits_used'      => isset( $balance['credits_used'] ) ? (int) $balance['credits_used'] : 0,
+                    'credits_remaining' => isset( $balance['credits_remaining'] ) ? (int) $balance['credits_remaining'] : 0,
+                    'period_start'      => isset( $balance['period_start'] ) ? $balance['period_start'] : '',
+                    'period_end'        => isset( $balance['period_end'] ) ? $balance['period_end'] : '',
+                    'plan_name'         => isset( $balance['plan_name'] ) ? $balance['plan_name'] : '',
+                    'status'            => isset( $balance['status'] ) ? $balance['status'] : 'inactive',
+                );
+            }
+        }
+
+        // Try local storage (WooCommerce generated) as fallback.
         $license_key = $this->get_license_key();
         if ( ! empty( $license_key ) ) {
             $local_license = $this->get_local_license( $license_key );

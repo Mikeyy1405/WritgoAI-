@@ -290,6 +290,12 @@ class WritgoCMS_AIML_Provider {
             return $license_check;
         }
 
+        // Check credits before generation.
+        $credit_check = $this->check_credits_for_action( 'text_generation' );
+        if ( is_wp_error( $credit_check ) ) {
+            return $credit_check;
+        }
+
         $api_key = $this->get_api_key();
         if ( empty( $api_key ) ) {
             return new WP_Error( 'missing_api_key', __( 'AIMLAPI key is not configured. Please go to Settings > WritgoCMS AIML to configure your API key.', 'writgocms' ) );
@@ -360,6 +366,9 @@ class WritgoCMS_AIML_Provider {
                 'usage'   => isset( $body['usage'] ) ? $body['usage'] : array(),
             );
 
+            // Deduct credits after successful generation.
+            $this->deduct_credits_for_action( 'text_generation' );
+
             $this->set_cached( $cache_key, $result );
             $this->track_usage( 'text', $model );
 
@@ -382,6 +391,12 @@ class WritgoCMS_AIML_Provider {
         $license_check = $this->check_license_valid();
         if ( is_wp_error( $license_check ) ) {
             return $license_check;
+        }
+
+        // Check credits before generation.
+        $credit_check = $this->check_credits_for_action( 'image_generation' );
+        if ( is_wp_error( $credit_check ) ) {
+            return $credit_check;
         }
 
         $api_key = $this->get_api_key();
@@ -442,6 +457,9 @@ class WritgoCMS_AIML_Provider {
         if ( isset( $body['data'][0]['url'] ) ) {
             $image_url = $body['data'][0]['url'];
             $saved     = $this->save_image_to_media_library( $image_url, $prompt );
+
+            // Deduct credits after successful generation.
+            $this->deduct_credits_for_action( 'image_generation' );
 
             $this->track_usage( 'image', $model );
 
@@ -672,6 +690,76 @@ class WritgoCMS_AIML_Provider {
         }
 
         wp_send_json_success( $result );
+    }
+
+    /**
+     * Check credits for an action
+     *
+     * @param string $action_type Action type.
+     * @return bool|WP_Error True if sufficient, WP_Error if not.
+     */
+    private function check_credits_for_action( $action_type ) {
+        // Skip if API client is not available.
+        if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
+            return true;
+        }
+
+        $api_client = WritgoCMS_API_Client::get_instance();
+        $balance = $api_client->get_credit_balance();
+
+        // If API is unavailable, allow operation (fallback).
+        if ( is_wp_error( $balance ) ) {
+            // Log the error but don't block the operation.
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( 'WritgoAI Credit Check Failed: ' . $balance->get_error_message() );
+            }
+            return true;
+        }
+
+        // Check if user has sufficient credits.
+        $credits_remaining = isset( $balance['credits_remaining'] ) ? (int) $balance['credits_remaining'] : 0;
+        
+        // Get credit cost from credit manager if available.
+        $credit_cost = 10; // Default cost.
+        if ( class_exists( 'WritgoCMS_Credit_Manager' ) ) {
+            $credit_manager = WritgoCMS_Credit_Manager::get_instance();
+            $credit_cost = $credit_manager->get_credit_cost( $action_type );
+        }
+
+        if ( $credits_remaining < $credit_cost ) {
+            return new WP_Error(
+                'INSUFFICIENT_CREDITS',
+                sprintf(
+                    /* translators: 1: required credits, 2: remaining credits */
+                    __( 'Onvoldoende credits. Nodig: %1$d, Beschikbaar: %2$d. Upgrade je abonnement om door te gaan.', 'writgocms' ),
+                    $credit_cost,
+                    $credits_remaining
+                )
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * Deduct credits for an action
+     *
+     * @param string $action_type Action type.
+     * @return void
+     */
+    private function deduct_credits_for_action( $action_type ) {
+        // Skip if API client is not available.
+        if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
+            return;
+        }
+
+        $api_client = WritgoCMS_API_Client::get_instance();
+        $result = $api_client->deduct_credits( $action_type );
+
+        // Log any errors but don't block the operation.
+        if ( is_wp_error( $result ) && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+            error_log( 'WritgoAI Credit Deduction Failed: ' . $result->get_error_message() );
+        }
     }
 }
 

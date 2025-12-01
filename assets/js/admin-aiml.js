@@ -13,6 +13,7 @@
     var WritgoCMSAiml = {
         testType: 'text',
         currentTopicalMap: null,
+        creditRefreshInterval: null,
 
         init: function() {
             this.bindPasswordToggles();
@@ -23,6 +24,7 @@
             this.bindSiteAnalysis();
             this.bindContentGeneration();
             this.loadUsageStats();
+            this.initCreditAutoRefresh();
         },
 
         /**
@@ -1424,6 +1426,138 @@
             var div = document.createElement('div');
             div.appendChild(document.createTextNode(text));
             return div.innerHTML;
+        },
+
+        /**
+         * Initialize credit auto-refresh
+         */
+        initCreditAutoRefresh: function() {
+            var self = this;
+            
+            // Load credits immediately if on a page with credit display
+            if ($('.writgoai-credits-widget').length || $('#usage-dashboard').length || $('.credit-balance-display').length) {
+                self.loadCredits();
+                
+                // Auto-refresh every 5 minutes (300000 ms)
+                self.creditRefreshInterval = setInterval(function() {
+                    self.loadCredits(false); // Use cached data unless force refresh
+                }, 300000);
+            }
+
+            // Bind manual refresh button if exists
+            $(document).on('click', '.refresh-credits-btn', function(e) {
+                e.preventDefault();
+                self.loadCredits(true); // Force refresh
+            });
+        },
+
+        /**
+         * Load credit balance
+         */
+        loadCredits: function(forceRefresh) {
+            var self = this;
+            var action = forceRefresh ? 'writgoai_refresh_credits' : 'writgoai_get_credits';
+
+            $.ajax({
+                url: writgocmsAiml.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: action,
+                    nonce: writgocmsAiml.nonce
+                },
+                success: function(response) {
+                    if (response.success && response.data) {
+                        self.updateCreditDisplays(response.data);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Silently fail - credit display is non-critical
+                    if (typeof console !== 'undefined' && console.warn && writgocmsAiml.debug) {
+                        console.warn('Credit load failed:', error);
+                    }
+                }
+            });
+        },
+
+        /**
+         * Update all credit displays on page
+         */
+        updateCreditDisplays: function(data) {
+            // Update dashboard widget
+            if ($('.writgoai-credits-widget').length) {
+                $('.writgoai-credits-widget .credits-number').text(this.formatNumber(data.credits_remaining || 0));
+                
+                var percentage = data.credits_total > 0 ? (data.credits_remaining / data.credits_total) * 100 : 0;
+                var barColor = percentage > 50 ? '#28a745' : (percentage > 20 ? '#ffc107' : '#dc3545');
+                
+                $('.writgoai-credits-widget .credits-bar-fill')
+                    .css('width', Math.min(percentage, 100) + '%')
+                    .css('background', barColor);
+                
+                $('.writgoai-credits-widget .credits-info').find('strong').eq(0).text(this.formatNumber(data.credits_used || 0));
+                $('.writgoai-credits-widget .credits-info').find('strong').eq(1).text(this.formatNumber(data.credits_total || 0));
+            }
+
+            // Update admin bar if exists
+            if ($('#wp-admin-bar-writgoai-credits').length) {
+                $('#wp-admin-bar-writgoai-credits .ab-item').html(
+                    '<span style="display: inline-flex; align-items: center; gap: 5px;">🤖 <strong>' + 
+                    this.formatNumber(data.credits_remaining || 0) + 
+                    '</strong> credits</span>'
+                );
+            }
+
+            // Update any generic credit balance displays
+            $('.credit-balance-display').each(function() {
+                $(this).find('.credits-remaining').text(data.credits_remaining || 0);
+                $(this).find('.credits-used').text(data.credits_used || 0);
+                $(this).find('.credits-total').text(data.credits_total || 0);
+            });
+
+            // Update period end date if available
+            if (data.period_end && $('.credit-period-end').length) {
+                $('.credit-period-end').text(data.period_end);
+            }
+        },
+
+        /**
+         * Format number with thousand separators
+         */
+        formatNumber: function(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        },
+
+        /**
+         * Update credit display after action
+         */
+        updateCreditsAfterAction: function(creditsConsumed) {
+            var self = this;
+            
+            // Show notification
+            if (creditsConsumed > 0) {
+                self.showNotification(creditsConsumed + ' credits gebruikt', 'info');
+            }
+
+            // Refresh credit display
+            setTimeout(function() {
+                self.loadCredits(true);
+            }, 1000);
+        },
+
+        /**
+         * Show notification
+         */
+        showNotification: function(message, type) {
+            var notificationClass = 'notice-' + (type || 'info');
+            var $notification = $('<div class="notice ' + notificationClass + ' is-dismissible"><p>' + message + '</p></div>');
+            
+            $('.wrap').eq(0).prepend($notification);
+            
+            setTimeout(function() {
+                $notification.fadeOut(function() {
+                    $(this).remove();
+                });
+            }, 3000);
         }
     };
 

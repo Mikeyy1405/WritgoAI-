@@ -139,6 +139,11 @@ class WritgoCMS_AIML_Admin_Settings {
         // AIML provider if no server-side key is configured. The UI for entering the key
         // has been removed as we now prefer server-side configuration via WRITGO_AIML_API_KEY
         // constant or environment variable.
+        
+        // WritgoAI API Settings.
+        register_setting( 'writgocms_aiml_settings', 'writgocms_license_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_api_url', array( 'sanitize_callback' => 'esc_url_raw' ) );
+        
         register_setting( 'writgocms_aiml_settings', 'writgocms_default_model', array( 'sanitize_callback' => 'sanitize_text_field' ) );
         register_setting( 'writgocms_aiml_settings', 'writgocms_default_image_model', array( 'sanitize_callback' => 'sanitize_text_field' ) );
         register_setting( 'writgocms_aiml_settings', 'writgocms_text_temperature', array( 'sanitize_callback' => 'floatval' ) );
@@ -159,6 +164,10 @@ class WritgoCMS_AIML_Admin_Settings {
         register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_buttons', array( 'sanitize_callback' => array( $this, 'sanitize_toolbar_buttons' ) ) );
         register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_rewrite_tone', array( 'sanitize_callback' => 'sanitize_text_field' ) );
         register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_links_limit', array( 'sanitize_callback' => 'absint' ) );
+        
+        // Add AJAX handlers for credit operations.
+        add_action( 'wp_ajax_writgoai_get_credits', array( $this, 'ajax_get_credits' ) );
+        add_action( 'wp_ajax_writgoai_refresh_credits', array( $this, 'ajax_refresh_credits' ) );
     }
 
     /**
@@ -1000,6 +1009,59 @@ class WritgoCMS_AIML_Admin_Settings {
         <form method="post" action="options.php">
             <?php settings_fields( 'writgocms_aiml_settings' ); ?>
 
+            <!-- License & API Settings Section -->
+            <div class="aiml-settings-section">
+                <h2>🔑 Licentie & API Instellingen</h2>
+                <p class="description">
+                    Configureer je WritgoAI licentie sleutel voor toegang tot credit-based features.
+                </p>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_license_key">Licentie Sleutel</label>
+                        </th>
+                        <td>
+                            <input type="text" id="writgocms_license_key" name="writgocms_license_key" value="<?php echo esc_attr( get_option( 'writgocms_license_key', '' ) ); ?>" class="regular-text" placeholder="Voer je licentie sleutel in">
+                            <p class="description">Je WritgoAI licentie sleutel voor credit management en API toegang.</p>
+                            <?php
+                            // Show license status if available.
+                            if ( class_exists( 'WritgoCMS_API_Client' ) && ! empty( get_option( 'writgocms_license_key' ) ) ) {
+                                $api_client = WritgoCMS_API_Client::get_instance();
+                                $status = $api_client->get_subscription_status();
+                                if ( ! is_wp_error( $status ) && isset( $status['status'] ) ) :
+                                    $status_class = ( 'active' === $status['status'] ) ? 'success' : 'warning';
+                                    ?>
+                                    <p>
+                                        <span class="status-badge <?php echo esc_attr( $status_class ); ?>">
+                                            <?php
+                                            if ( 'active' === $status['status'] ) {
+                                                echo '✓ Licentie Actief';
+                                            } else {
+                                                echo '⚠️ Licentie ' . esc_html( ucfirst( $status['status'] ) );
+                                            }
+                                            ?>
+                                        </span>
+                                        <?php if ( ! empty( $status['plan_name'] ) ) : ?>
+                                            - <?php echo esc_html( $status['plan_name'] ); ?>
+                                        <?php endif; ?>
+                                    </p>
+                                <?php endif; ?>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_api_url">API URL (Optioneel)</label>
+                        </th>
+                        <td>
+                            <input type="url" id="writgocms_api_url" name="writgocms_api_url" value="<?php echo esc_attr( get_option( 'writgocms_api_url', 'https://api.writgoai.com' ) ); ?>" class="regular-text" placeholder="https://api.writgoai.com">
+                            <p class="description">API endpoint URL. Laat standaard staan tenzij je een custom server gebruikt.</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
             <!-- AI Service Status Section -->
             <div class="aiml-settings-section aiml-service-status">
                 <h2>🤖 AI Service Status</h2>
@@ -1662,6 +1724,66 @@ class WritgoCMS_AIML_Admin_Settings {
         }
 
         return false;
+    }
+
+    /**
+     * AJAX handler: Get credits
+     *
+     * @return void
+     */
+    public function ajax_get_credits() {
+        check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Geen toestemming.', 'writgocms' ) ) );
+        }
+
+        if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
+            wp_send_json_error( array( 'message' => __( 'API Client niet beschikbaar.', 'writgocms' ) ) );
+        }
+
+        $api_client = WritgoCMS_API_Client::get_instance();
+        $balance = $api_client->get_credit_balance();
+
+        if ( is_wp_error( $balance ) ) {
+            wp_send_json_error( array(
+                'message' => $balance->get_error_message(),
+                'code'    => $balance->get_error_code(),
+            ) );
+        }
+
+        wp_send_json_success( $balance );
+    }
+
+    /**
+     * AJAX handler: Refresh credits (force refresh cache)
+     *
+     * @return void
+     */
+    public function ajax_refresh_credits() {
+        check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Geen toestemming.', 'writgocms' ) ) );
+        }
+
+        if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
+            wp_send_json_error( array( 'message' => __( 'API Client niet beschikbaar.', 'writgocms' ) ) );
+        }
+
+        $api_client = WritgoCMS_API_Client::get_instance();
+        
+        // Force refresh by passing true.
+        $balance = $api_client->get_credit_balance( true );
+
+        if ( is_wp_error( $balance ) ) {
+            wp_send_json_error( array(
+                'message' => $balance->get_error_message(),
+                'code'    => $balance->get_error_code(),
+            ) );
+        }
+
+        wp_send_json_success( $balance );
     }
 }
 
