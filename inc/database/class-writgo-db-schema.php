@@ -35,7 +35,7 @@ class WritgoCMS_DB_Schema {
 	 *
 	 * @var string
 	 */
-	private $db_version = '1.1.0';
+	private $db_version = '1.2.0';
 
 	/**
 	 * Get instance
@@ -61,6 +61,9 @@ class WritgoCMS_DB_Schema {
 	 */
 	public function create_tables() {
 		$this->create_api_usage_table();
+		$this->create_site_analysis_table();
+		$this->create_post_scores_table();
+		$this->create_keywords_table();
 		$this->update_db_version();
 	}
 
@@ -117,6 +120,87 @@ class WritgoCMS_DB_Schema {
 	}
 
 	/**
+	 * Create site analysis table
+	 */
+	public function create_site_analysis_table() {
+		global $wpdb;
+
+		$table_name      = $wpdb->prefix . 'writgo_site_analysis';
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE {$table_name} (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			site_url varchar(255) NOT NULL,
+			total_posts int(11) NOT NULL DEFAULT 0,
+			optimized_posts int(11) NOT NULL DEFAULT 0,
+			health_score int(11) NOT NULL DEFAULT 0,
+			niche varchar(100) DEFAULT '',
+			topics TEXT,
+			analyzed_at datetime NOT NULL,
+			PRIMARY KEY  (id),
+			KEY site_url (site_url)
+		) {$charset_collate};";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
+	}
+
+	/**
+	 * Create post scores table
+	 */
+	public function create_post_scores_table() {
+		global $wpdb;
+
+		$table_name      = $wpdb->prefix . 'writgo_post_scores';
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE {$table_name} (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			post_id bigint(20) NOT NULL,
+			seo_score int(11) NOT NULL DEFAULT 0,
+			readability_score int(11) NOT NULL DEFAULT 0,
+			keyword_density float NOT NULL DEFAULT 0,
+			word_count int(11) NOT NULL DEFAULT 0,
+			internal_links int(11) NOT NULL DEFAULT 0,
+			external_links int(11) NOT NULL DEFAULT 0,
+			images_count int(11) NOT NULL DEFAULT 0,
+			has_meta_description tinyint(1) NOT NULL DEFAULT 0,
+			analyzed_at datetime NOT NULL,
+			PRIMARY KEY  (id),
+			KEY post_id (post_id)
+		) {$charset_collate};";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
+	}
+
+	/**
+	 * Create keywords table
+	 */
+	public function create_keywords_table() {
+		global $wpdb;
+
+		$table_name      = $wpdb->prefix . 'writgo_keywords';
+		$charset_collate = $wpdb->get_charset_collate();
+
+		$sql = "CREATE TABLE {$table_name} (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			keyword varchar(255) NOT NULL,
+			search_volume int(11) NOT NULL DEFAULT 0,
+			difficulty int(11) NOT NULL DEFAULT 0,
+			cpc float NOT NULL DEFAULT 0,
+			competition varchar(20) DEFAULT '',
+			related_keywords TEXT,
+			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY  (id),
+			UNIQUE KEY keyword (keyword)
+		) {$charset_collate};";
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $sql );
+	}
+
+	/**
 	 * Drop all plugin tables (for uninstall)
 	 */
 	public function drop_tables() {
@@ -124,6 +208,12 @@ class WritgoCMS_DB_Schema {
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}writgo_api_usage" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}writgo_site_analysis" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}writgo_post_scores" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}writgo_keywords" );
 
 		delete_option( $this->db_version_key );
 	}
