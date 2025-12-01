@@ -777,21 +777,33 @@
     }
 }
 
-/* Planner Cards */
+/* Planner Cards - Consistent Styling */
 .planner-card {
-    background: #f8fafc;
+    background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
 }
 
+.planner-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.planner-card h2,
 .planner-card h3 {
     margin: 0 0 20px 0;
     padding-bottom: 15px;
     border-bottom: 2px solid #e2e8f0;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: 600;
     color: #0f172a;
+}
+
+.planner-card h3 {
+    font-size: 16px;
 }
 
 /* Planner Fields */
@@ -2907,5 +2919,98 @@
 
     .usage-reset-info {
         color: #94a3b8;
+    }
+}
+
+/* ==========================================================================
+   WordPress Admin Menu Styling - Logical Groupings
+   ========================================================================== */
+
+/*
+ * Menu Visual Separators
+ * Note: These selectors use nth-child and href attribute matching because WordPress
+ * doesn't provide hooks for adding custom classes to admin menu items.
+ * If menu items are reordered, these selectors may need to be updated.
+ * Current menu order (as of implementation):
+ * 1. Dashboard
+ * 2. Licentie (Beheer section start)
+ * 3. Website Analyse (Content Tools section start)
+ * 4. Contentplan
+ * 5. Gegenereerde Content
+ * 6. Search Console (SEO Tools section start - if GSC enabled)
+ * 7. CTR Optimalisatie
+ * 8. GSC Instellingen
+ * 9. Statistieken (Beheer section continues)
+ * 10. Instellingen
+ * 11+ Dynamic items (Social Media, License Manager, etc.)
+ */
+
+/* Separator after Dashboard (before Licentie) */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(2)::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: #ddd;
+    margin: 8px 12px;
+}
+
+/* Separator after Content Tools section (after Gegenereerde Content) */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(5)::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: #ddd;
+    margin: 8px 12px;
+}
+
+/* Separator after Licentie page (using href matching for maintainability) */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href$="writgocms-license"]::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: -6px;
+    height: 1px;
+    background: #ddd;
+}
+
+/* Separator after GSC Settings (using href matching for maintainability) */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href$="writgocms-gsc-settings"]::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: -6px;
+    height: 1px;
+    background: #ddd;
+}
+
+/* Enhanced menu item hover states */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a:hover {
+    background-color: #f6f7f7;
+    transition: background-color 0.2s ease;
+}
+
+/* Improved menu item focus */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li.current a,
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a.current {
+    font-weight: 600;
+    color: #1877F2;
+}
+
+/* Add subtle indentation for better visual hierarchy */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a {
+    padding-left: 16px;
+}
+
+/* Responsive menu adjustments */
+@media screen and (max-width: 782px) {
+    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(2)::after,
+    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(5)::after,
+    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href$="writgocms-license"]::after,
+    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href$="writgocms-gsc-settings"]::after {
+        margin: 6px 8px;
     }
 }

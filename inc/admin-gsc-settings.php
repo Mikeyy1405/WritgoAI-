@@ -62,14 +62,16 @@ class WritgoCMS_GSC_Admin_Settings {
 	}
 
 	/**
-	 * Add admin menu
+	 * Add admin menu - SEO Tools section
 	 */
 	public function add_admin_menu() {
+		// === SEO TOOLS ===
+		
 		// Add GSC Dashboard submenu under WritgoAI.
 		add_submenu_page(
 			'writgocms-aiml',
 			__( 'Search Console', 'writgocms' ),
-			__( 'Search Console', 'writgocms' ),
+			'🔎 ' . __( 'Search Console', 'writgocms' ),
 			'manage_options',
 			'writgocms-gsc',
 			array( $this, 'render_dashboard_page' )
@@ -79,7 +81,7 @@ class WritgoCMS_GSC_Admin_Settings {
 		add_submenu_page(
 			'writgocms-aiml',
 			__( 'CTR Optimalisatie', 'writgocms' ),
-			__( 'CTR Optimalisatie', 'writgocms' ),
+			'📊 ' . __( 'CTR Optimalisatie', 'writgocms' ),
 			'manage_options',
 			'writgocms-ctr-optimizer',
 			array( $this, 'render_ctr_optimizer_page' )
@@ -89,7 +91,7 @@ class WritgoCMS_GSC_Admin_Settings {
 		add_submenu_page(
 			'writgocms-aiml',
 			__( 'GSC Instellingen', 'writgocms' ),
-			__( 'GSC Instellingen', 'writgocms' ),
+			'🔧 ' . __( 'GSC Instellingen', 'writgocms' ),
 			'manage_options',
 			'writgocms-gsc-settings',
 			array( $this, 'render_settings_page' )

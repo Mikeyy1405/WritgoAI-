@@ -54,7 +54,7 @@ class WritgoCMS_AIML_Admin_Settings {
     }
 
     /**
-     * Add admin menu - Dutch menu structure
+     * Add admin menu - Dutch menu structure with logical groupings
      */
     public function add_admin_menu() {
         // Add main menu item.
@@ -68,6 +68,8 @@ class WritgoCMS_AIML_Admin_Settings {
             26 // Position after Pages.
         );
 
+        // === HOOFDMENU ===
+        
         // Add Dashboard submenu (Dutch: Dashboard).
         add_submenu_page(
             'writgocms-aiml',
@@ -77,6 +79,8 @@ class WritgoCMS_AIML_Admin_Settings {
             'writgocms-aiml',
             array( $this, 'render_dashboard_page' )
         );
+
+        // === CONTENT TOOLS ===
 
         // Add Website Analysis submenu (Dutch: Website Analyse).
         add_submenu_page(
@@ -107,6 +111,8 @@ class WritgoCMS_AIML_Admin_Settings {
             'writgocms-aiml-generated',
             array( $this, 'render_generated_content_page' )
         );
+
+        // === BEHEER ===
 
         // Add Usage Statistics submenu (Dutch: Statistieken).
         add_submenu_page(
