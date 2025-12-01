@@ -270,6 +270,65 @@ class WritgoCMS_License_Admin {
 								<?php endif; ?>
 							</div>
 
+							<!-- Credit Usage Section -->
+							<?php
+							// Get credit info from Credit Manager.
+							$credit_info = null;
+							if ( class_exists( 'WritgoCMS_Credit_Manager' ) ) {
+								$credit_manager = WritgoCMS_Credit_Manager::get_instance();
+								$credit_info = $credit_manager->get_credit_info();
+							}
+							?>
+							<?php if ( $credit_info && $credit_info['credits_total'] > 0 ) : ?>
+							<div class="license-credits-section">
+								<h3>🪙 <?php esc_html_e( 'Credit Balance', 'writgocms' ); ?></h3>
+								<?php
+								$remaining = $credit_info['credits_remaining'];
+								$total = $credit_info['credits_total'];
+								$used = $credit_info['credits_used'];
+								$percentage = $total > 0 ? ( $remaining / $total ) * 100 : 0;
+								$bar_color = $percentage > 50 ? '#28a745' : ( $percentage > 20 ? '#ffc107' : '#dc3545' );
+								?>
+								<div class="credits-display-large">
+									<div class="credits-number"><?php echo number_format( $remaining ); ?></div>
+									<div class="credits-label"><?php esc_html_e( 'credits remaining', 'writgocms' ); ?></div>
+								</div>
+								<div class="credits-bar-large">
+									<div class="credits-bar-fill" style="width: <?php echo esc_attr( $percentage ); ?>%; background: <?php echo esc_attr( $bar_color ); ?>;"></div>
+								</div>
+								<div class="credits-details">
+									<div class="credits-detail-item">
+										<span class="credits-detail-label"><?php esc_html_e( 'Used', 'writgocms' ); ?></span>
+										<span class="credits-detail-value"><?php echo number_format( $used ); ?></span>
+									</div>
+									<div class="credits-detail-item">
+										<span class="credits-detail-label"><?php esc_html_e( 'Total', 'writgocms' ); ?></span>
+										<span class="credits-detail-value"><?php echo number_format( $total ); ?></span>
+									</div>
+									<?php if ( ! empty( $credit_info['period_end'] ) ) : ?>
+									<div class="credits-detail-item">
+										<span class="credits-detail-label"><?php esc_html_e( 'Resets On', 'writgocms' ); ?></span>
+										<span class="credits-detail-value"><?php echo esc_html( $credit_info['period_end'] ); ?></span>
+									</div>
+									<?php endif; ?>
+								</div>
+								<div class="credits-cost-table">
+									<h4><?php esc_html_e( 'Credit Costs per Action', 'writgocms' ); ?></h4>
+									<table class="widefat">
+										<tbody>
+											<tr><td><?php esc_html_e( 'AI Rewrite (small)', 'writgocms' ); ?></td><td><strong>10</strong></td></tr>
+											<tr><td><?php esc_html_e( 'AI Rewrite (paragraph)', 'writgocms' ); ?></td><td><strong>25</strong></td></tr>
+											<tr><td><?php esc_html_e( 'AI Rewrite (full)', 'writgocms' ); ?></td><td><strong>50</strong></td></tr>
+											<tr><td><?php esc_html_e( 'AI Image', 'writgocms' ); ?></td><td><strong>100</strong></td></tr>
+											<tr><td><?php esc_html_e( 'SEO Analysis', 'writgocms' ); ?></td><td><strong>20</strong></td></tr>
+											<tr><td><?php esc_html_e( 'Internal Links', 'writgocms' ); ?></td><td><strong>5</strong></td></tr>
+											<tr><td><?php esc_html_e( 'Keyword Research', 'writgocms' ); ?></td><td><strong>15</strong></td></tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<?php endif; ?>
+
 							<!-- Usage limits if available -->
 							<?php if ( isset( $license_status['usage'] ) && ! empty( $license_status['usage'] ) ) : ?>
 							<div class="license-usage-section">
@@ -566,6 +625,99 @@ class WritgoCMS_License_Admin {
 			#update-check-result.has-update {
 				background: #d4edda;
 				border: 1px solid #c3e6cb;
+			}
+
+			/* Credit Display Styles */
+			.writgocms-license-page .license-credits-section {
+				margin-top: 25px;
+				padding-top: 20px;
+				border-top: 1px solid #e9ecef;
+			}
+
+			.writgocms-license-page .credits-display-large {
+				text-align: center;
+				padding: 20px;
+				background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+				border-radius: 10px;
+				margin-bottom: 15px;
+			}
+
+			.writgocms-license-page .credits-number {
+				font-size: 48px;
+				font-weight: bold;
+				color: #0369a1;
+				line-height: 1;
+			}
+
+			.writgocms-license-page .credits-label {
+				font-size: 14px;
+				color: #64748b;
+				margin-top: 5px;
+			}
+
+			.writgocms-license-page .credits-bar-large {
+				height: 12px;
+				background: #e2e8f0;
+				border-radius: 6px;
+				overflow: hidden;
+				margin-bottom: 15px;
+			}
+
+			.writgocms-license-page .credits-bar-fill {
+				height: 100%;
+				border-radius: 6px;
+				transition: width 0.3s ease;
+			}
+
+			.writgocms-license-page .credits-details {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 15px;
+				margin-bottom: 20px;
+			}
+
+			.writgocms-license-page .credits-detail-item {
+				text-align: center;
+				padding: 10px;
+				background: #f8f9fa;
+				border-radius: 8px;
+			}
+
+			.writgocms-license-page .credits-detail-label {
+				display: block;
+				font-size: 12px;
+				color: #64748b;
+				text-transform: uppercase;
+			}
+
+			.writgocms-license-page .credits-detail-value {
+				display: block;
+				font-size: 18px;
+				font-weight: 600;
+				color: #1e293b;
+			}
+
+			.writgocms-license-page .credits-cost-table {
+				margin-top: 20px;
+			}
+
+			.writgocms-license-page .credits-cost-table h4 {
+				margin: 0 0 10px 0;
+				font-size: 14px;
+				color: #475569;
+			}
+
+			.writgocms-license-page .credits-cost-table table {
+				max-width: 400px;
+			}
+
+			.writgocms-license-page .credits-cost-table td {
+				padding: 8px 12px;
+			}
+
+			.writgocms-license-page .credits-cost-table td:last-child {
+				text-align: right;
+				color: #0369a1;
 			}
 		</style>
 

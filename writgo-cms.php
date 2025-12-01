@@ -56,6 +56,15 @@ function writgocms_init() {
 	require_once WRITGOCMS_DIR . 'inc/class-plugin-updater.php';
 	require_once WRITGOCMS_DIR . 'inc/admin-license-settings.php';
 
+	// Load Credit Manager (credit-based subscription system).
+	require_once WRITGOCMS_DIR . 'inc/class-credit-manager.php';
+	require_once WRITGOCMS_DIR . 'inc/admin-license-manager.php';
+
+	// Load WooCommerce Integration (if WooCommerce is active).
+	if ( class_exists( 'WooCommerce' ) || file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
+		require_once WRITGOCMS_DIR . 'licensing/woocommerce/class-woocommerce-integration.php';
+	}
+
 	// Load AIML Proxy (secure server-side API proxy).
 	require_once WRITGOCMS_DIR . 'inc/api/class-writgo-aiml-proxy.php';
 

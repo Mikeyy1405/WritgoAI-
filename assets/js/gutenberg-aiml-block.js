@@ -25,6 +25,16 @@
     var settings = window.writgocmsAimlBlock || {};
     var i18n = settings.i18n || {};
 
+    // Credit costs per action
+    var creditCosts = {
+        text_generation: 10,
+        ai_rewrite_small: 10,
+        ai_rewrite_paragraph: 25,
+        ai_rewrite_full: 50,
+        image_generation: 100,
+        ai_image: 100
+    };
+
     registerBlockType('writgocms/ai-generator', {
         title: i18n.blockTitle || 'AI Content Generator',
         description: i18n.blockDescription || 'Generate text or images using AI',
@@ -78,9 +88,59 @@
                 error = _useState6[0],
                 setError = _useState6[1];
 
+            var _useState7 = useState(null),
+                credits = _useState7[0],
+                setCredits = _useState7[1];
+
+            var _useState8 = useState(false),
+                loadingCredits = _useState8[0],
+                setLoadingCredits = _useState8[1];
+
+            var _useState9 = useState(''),
+                creditError = _useState9[0],
+                setCreditError = _useState9[1];
+
+            // Fetch credits on mount
+            useEffect(function() {
+                fetchCredits();
+            }, []);
+
+            function fetchCredits() {
+                setLoadingCredits(true);
+                setCreditError('');
+                wp.apiFetch({
+                    path: '/writgo/v1/credits',
+                    method: 'GET'
+                }).then(function(response) {
+                    setCredits(response);
+                    setLoadingCredits(false);
+                }).catch(function(err) {
+                    setLoadingCredits(false);
+                    // Log error for debugging and set error state.
+                    console.warn('WritgoAI: Failed to fetch credits', err);
+                    setCreditError(err.message || 'Failed to load credit information');
+                });
+            }
+
+            function getCreditCost() {
+                return mode === 'text' ? creditCosts.text_generation : creditCosts.image_generation;
+            }
+
+            function hasEnoughCredits() {
+                if (!credits) return true; // Allow if credits not loaded
+                return credits.credits_remaining >= getCreditCost();
+            }
+
             function handleGenerate() {
                 if (!prompt.trim()) {
                     setError(i18n.noPrompt || 'Please enter a prompt');
+                    return;
+                }
+
+                // Check credits before generating
+                var cost = getCreditCost();
+                if (credits && credits.credits_remaining < cost) {
+                    setError((i18n.insufficientCredits || 'Insufficient credits. Required: ') + cost + ', Available: ' + credits.credits_remaining);
                     return;
                 }
 
@@ -109,6 +169,8 @@
                                     imageId: response.data.attachment_id || 0
                                 });
                             }
+                            // Refresh credits after successful generation
+                            fetchCredits();
                         } else {
                             setError(response.data.message || 'Generation failed');
                         }
@@ -150,6 +212,51 @@
                 setError('');
             }
 
+            // Credit display component
+            function CreditDisplay() {
+                if (loadingCredits) {
+                    return createElement('div', { className: 'aiml-credits-loading' },
+                        createElement(Spinner, { size: 16 }),
+                        ' Loading credits...'
+                    );
+                }
+                if (creditError) {
+                    return createElement('div', { 
+                        className: 'aiml-credits-error',
+                        style: { padding: '10px', background: '#fee', borderRadius: '6px', color: '#c00', fontSize: '13px' }
+                    }, '⚠️ ' + creditError);
+                }
+                if (!credits) return null;
+
+                var remaining = credits.credits_remaining;
+                var total = credits.credits_total;
+                var percentage = total > 0 ? (remaining / total) * 100 : 0;
+                var barColor = percentage > 50 ? '#28a745' : (percentage > 20 ? '#ffc107' : '#dc3545');
+                var cost = getCreditCost();
+                var canGenerate = remaining >= cost;
+
+                return createElement('div', { className: 'aiml-credits-display' },
+                    createElement('div', { className: 'aiml-credits-header' },
+                        createElement('span', { className: 'aiml-credits-label' }, '🪙 Credits: '),
+                        createElement('strong', { style: { color: canGenerate ? '#28a745' : '#dc3545' } }, 
+                            remaining.toLocaleString()
+                        ),
+                        createElement('span', { className: 'aiml-credits-total' }, ' / ' + total.toLocaleString())
+                    ),
+                    createElement('div', { className: 'aiml-credits-bar' },
+                        createElement('div', { 
+                            className: 'aiml-credits-bar-fill',
+                            style: { width: percentage + '%', background: barColor }
+                        })
+                    ),
+                    createElement('div', { className: 'aiml-credits-cost' },
+                        createElement('span', null, 'This action costs: '),
+                        createElement('strong', null, cost),
+                        createElement('span', null, ' credits')
+                    )
+                );
+            }
+
             return createElement(
                 Fragment,
                 null,
@@ -164,6 +271,11 @@
                         ),
                         createElement('p', null, 
                             'Image Provider: ' + (settings.imageProvider || 'dalle')
+                        ),
+                        credits && createElement(PanelBody, { title: 'Credit Usage', initialOpen: true },
+                            createElement('p', null, 'Remaining: ' + credits.credits_remaining),
+                            createElement('p', null, 'Total: ' + credits.credits_total),
+                            credits.period_end && createElement('p', null, 'Resets: ' + credits.period_end)
                         )
                     )
                 ),
@@ -176,6 +288,7 @@
                         createElement('span', { className: 'aiml-block-icon' }, '🤖'),
                         createElement('span', { className: 'aiml-block-title' }, i18n.blockTitle || 'AI Content Generator')
                     ),
+                    createElement(CreditDisplay, null),
                     createElement(
                         'div',
                         { className: 'aiml-block-mode-toggle' },
@@ -189,7 +302,7 @@
                                     isSecondary: mode !== 'text',
                                     onClick: function() { setMode('text'); }
                                 },
-                                '📝 ' + (i18n.textMode || 'Text')
+                                '📝 ' + (i18n.textMode || 'Text') + ' (' + creditCosts.text_generation + ')'
                             ),
                             createElement(
                                 Button,
@@ -198,7 +311,7 @@
                                     isSecondary: mode !== 'image',
                                     onClick: function() { setMode('image'); }
                                 },
-                                '🖼️ ' + (i18n.imageMode || 'Image')
+                                '🖼️ ' + (i18n.imageMode || 'Image') + ' (' + creditCosts.image_generation + ')'
                             )
                         )
                     ),
@@ -220,12 +333,15 @@
                             {
                                 isPrimary: true,
                                 onClick: handleGenerate,
-                                disabled: isLoading,
+                                disabled: isLoading || !hasEnoughCredits(),
                                 className: 'aiml-generate-btn'
                             },
                             isLoading ? createElement(Spinner, null) : null,
                             isLoading ? (i18n.generating || 'Generating...') : ('✨ ' + (i18n.generateBtn || 'Generate'))
-                        )
+                        ),
+                        !hasEnoughCredits() && createElement('span', { 
+                            style: { color: '#dc3545', marginLeft: '10px', fontSize: '12px' }
+                        }, '⚠️ ' + (i18n.insufficientCredits || 'Insufficient credits'))
                     ),
                     error && createElement(
                         Notice,

@@ -6,6 +6,37 @@ AI-Powered WordPress Plugin with AIMLAPI Integration.
 
 ## 🚀 Features
 
+### 💳 Credit-Based Subscription System
+
+All subscription plans have **100% access to all features**. The only difference between plans is the monthly credit allowance:
+
+| Plan | Price | Monthly Credits |
+|------|-------|-----------------|
+| **Starter** | €29/month | 1,000 credits |
+| **Pro** | €79/month | 3,000 credits |
+| **Enterprise** | €199/month | 10,000 credits |
+
+#### Credit Costs per Action
+| Action | Credits |
+|--------|---------|
+| AI Rewrite (small) | 10 |
+| AI Rewrite (paragraph) | 25 |
+| AI Rewrite (full) | 50 |
+| AI Image | 100 |
+| SEO Analysis | 20 |
+| Internal Links | 5 |
+| Keyword Research | 15 |
+
+All plans include full access to:
+- ✅ AI Rewrite
+- ✅ AI Images
+- ✅ SEO Tools
+- ✅ Internal Links
+- ✅ Gutenberg Toolbar
+- ✅ Keyword Research
+- ✅ Analytics
+- ✅ All Future Features
+
 ### AI Integration via AIMLAPI
 - **Unified API Access**: Single AIMLAPI key provides access to multiple AI models
 - **Text Generation Models**: GPT-4o, GPT-4, GPT-4 Turbo, GPT-3.5 Turbo, Claude 3 (Opus, Sonnet, Haiku), Mistral (Large, Medium, Small)
@@ -13,8 +44,10 @@ AI-Powered WordPress Plugin with AIMLAPI Integration.
 - **OpenAI-Compatible API**: Uses the standard chat/completions endpoint format
 
 ### Plugin Features
-- **Gutenberg Block Support**: AI-powered content generation directly in the block editor
+- **Gutenberg Block Support**: AI-powered content generation directly in the block editor with credit tracking
 - **Classic Editor Integration**: AI button for traditional editing experience
+- **Credit Dashboard Widget**: See your credit balance right on your WordPress dashboard
+- **Admin Bar Credits**: Quick credit display in the admin bar
 - **Rate Limiting**: Built-in rate limiting to prevent API abuse
 - **Usage Statistics**: Track your AI generation usage over 30 days
 - **Caching**: Response caching for improved performance
