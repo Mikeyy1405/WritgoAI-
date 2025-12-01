@@ -1,0 +1,323 @@
+/**
+ * Dashboard CSS
+ *
+ * Styling for WritgoAI Dashboard.
+ */
+
+.writgocms-dashboard {
+	max-width: 1400px;
+	margin: 20px 0;
+}
+
+.dashboard-section {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	padding: 24px;
+	margin-bottom: 24px;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.dashboard-section h2 {
+	margin-top: 0;
+	margin-bottom: 20px;
+	font-size: 18px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+/* Health Score Section */
+.health-score-container {
+	display: flex;
+	gap: 40px;
+	align-items: center;
+}
+
+.health-score-circle {
+	flex-shrink: 0;
+}
+
+.score-value {
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+	width: 150px;
+	height: 150px;
+	border-radius: 50%;
+	font-size: 48px;
+	font-weight: 700;
+	line-height: 150px;
+	text-align: center;
+	position: relative;
+}
+
+.score-value.score-good {
+	background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+	color: #155724;
+	border: 4px solid #10B981;
+}
+
+.score-value.score-warning {
+	background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+	color: #856404;
+	border: 4px solid #F59E0B;
+}
+
+.score-value.score-poor {
+	background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+	color: #721c24;
+	border: 4px solid #EF4444;
+}
+
+.score-label {
+	font-size: 20px;
+	font-weight: 400;
+	color: inherit;
+	margin-left: 4px;
+}
+
+.health-metrics {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+}
+
+.metric {
+	padding: 16px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border-left: 4px solid #0073aa;
+}
+
+.metric-label {
+	display: block;
+	font-size: 13px;
+	color: #646970;
+	margin-bottom: 8px;
+}
+
+.metric-value {
+	display: block;
+	font-size: 24px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+/* Quick Stats Cards */
+.stats-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 16px;
+}
+
+.stat-card {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 20px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border: 1px solid #e2e4e7;
+	transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+	font-size: 32px;
+	flex-shrink: 0;
+}
+
+.stat-content {
+	flex: 1;
+}
+
+.stat-value {
+	font-size: 28px;
+	font-weight: 700;
+	color: #1d2327;
+	line-height: 1.2;
+}
+
+.stat-label {
+	font-size: 13px;
+	color: #646970;
+	margin-top: 4px;
+}
+
+/* Workflow Progress */
+.workflow-steps {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.workflow-step {
+	display: flex;
+	gap: 16px;
+	padding: 20px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border: 2px solid #e2e4e7;
+	transition: all 0.2s;
+}
+
+.workflow-step.completed {
+	border-color: #10B981;
+	background: #ecfdf5;
+}
+
+.workflow-step.in-progress {
+	border-color: #F59E0B;
+	background: #fffbeb;
+}
+
+.workflow-step.locked {
+	opacity: 0.6;
+	background: #f0f0f0;
+}
+
+.step-number {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	background: #0073aa;
+	color: #fff;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 16px;
+}
+
+.workflow-step.completed .step-number {
+	background: #10B981;
+}
+
+.workflow-step.locked .step-number {
+	background: #9ca3af;
+}
+
+.step-content {
+	flex: 1;
+}
+
+.step-content h3 {
+	margin: 0 0 8px 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.step-description {
+	margin: 0 0 12px 0;
+	font-size: 13px;
+	color: #646970;
+}
+
+.step-status {
+	margin: 8px 0;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.step-status.completed {
+	color: #10B981;
+}
+
+.step-status.in-progress {
+	color: #F59E0B;
+}
+
+.step-status.locked {
+	color: #6c757d;
+}
+
+/* Recent Activity */
+.activity-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.activity-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	background: #f8f9fa;
+	border-radius: 4px;
+}
+
+.activity-icon {
+	font-size: 20px;
+	flex-shrink: 0;
+}
+
+.activity-text {
+	flex: 1;
+	font-size: 14px;
+	color: #1d2327;
+}
+
+.activity-time {
+	font-size: 12px;
+	color: #646970;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+	.health-score-container {
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.health-metrics {
+		width: 100%;
+		grid-template-columns: 1fr;
+	}
+
+	.stats-cards {
+		grid-template-columns: 1fr;
+	}
+
+	.workflow-step {
+		flex-direction: column;
+	}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+	.dashboard-section {
+		background: #1e1e1e;
+		border-color: #3a3a3a;
+	}
+
+	.dashboard-section h2,
+	.metric-value,
+	.stat-value,
+	.step-content h3,
+	.activity-text {
+		color: #e0e0e0;
+	}
+
+	.metric,
+	.stat-card,
+	.workflow-step,
+	.activity-item {
+		background: #2a2a2a;
+		border-color: #3a3a3a;
+	}
+
+	.metric-label,
+	.stat-label,
+	.step-description,
+	.activity-time {
+		color: #b0b0b0;
+	}
+}

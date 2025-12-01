@@ -1,0 +1,360 @@
+/**
+ * Keyword Research CSS
+ *
+ * Styling for WritgoAI Keyword Research page.
+ */
+
+.writgocms-keyword-research {
+	max-width: 1200px;
+	margin: 20px 0;
+}
+
+.writgocms-keyword-research h1 {
+	margin-bottom: 8px;
+}
+
+.writgocms-keyword-research .description {
+	margin-bottom: 24px;
+	color: #646970;
+}
+
+/* Search Form */
+.keyword-search-form {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	padding: 24px;
+	margin-bottom: 24px;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.search-input-wrapper {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.search-input-wrapper input {
+	flex: 1;
+	max-width: 500px;
+}
+
+.credits-info {
+	margin: 0;
+	font-size: 13px;
+	color: #646970;
+}
+
+/* Loading State */
+.keyword-loading {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	padding: 40px;
+	text-align: center;
+	margin-bottom: 24px;
+}
+
+.keyword-loading p {
+	margin-top: 16px;
+	color: #646970;
+}
+
+/* Results Container */
+.keyword-results {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	margin-bottom: 24px;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.keyword-card {
+	padding: 24px;
+}
+
+.keyword-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 24px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid #e2e4e7;
+}
+
+.keyword-title {
+	margin: 0;
+	font-size: 24px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+/* Metrics */
+.keyword-metrics {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.metric-item {
+	padding: 16px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border-left: 4px solid #0073aa;
+}
+
+.metric-label {
+	display: block;
+	font-size: 12px;
+	color: #646970;
+	margin-bottom: 8px;
+	font-weight: 500;
+}
+
+.metric-value {
+	display: inline-block;
+	font-size: 24px;
+	font-weight: 700;
+	color: #1d2327;
+}
+
+.metric-unit {
+	font-size: 13px;
+	color: #646970;
+	margin-left: 4px;
+}
+
+.metric-badge {
+	display: inline-block;
+	padding: 4px 8px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	margin-left: 8px;
+}
+
+.metric-badge.easy {
+	background: #d4edda;
+	color: #155724;
+}
+
+.metric-badge.medium {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.metric-badge.hard {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+/* Related Keywords */
+.related-keywords-section {
+	margin-bottom: 24px;
+	padding-top: 24px;
+	border-top: 1px solid #e2e4e7;
+}
+
+.section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.section-header h3 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.related-keywords-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 12px;
+}
+
+.related-keyword-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 16px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border: 1px solid #e2e4e7;
+	transition: all 0.2s;
+}
+
+.related-keyword-item:hover {
+	background: #fff;
+	border-color: #0073aa;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.related-keyword-text {
+	flex: 1;
+	font-weight: 500;
+	color: #1d2327;
+}
+
+.related-keyword-volume {
+	font-size: 12px;
+	color: #646970;
+	margin-left: 8px;
+}
+
+/* Keyword Actions */
+.keyword-actions {
+	display: flex;
+	gap: 12px;
+	padding-top: 16px;
+	border-top: 1px solid #e2e4e7;
+}
+
+/* SERP Results */
+.serp-results {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	padding: 24px;
+	margin-bottom: 24px;
+}
+
+.serp-results h3 {
+	margin-top: 0;
+	margin-bottom: 16px;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.serp-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.serp-item {
+	padding: 16px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border: 1px solid #e2e4e7;
+	transition: all 0.2s;
+}
+
+.serp-item:hover {
+	background: #fff;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.serp-position {
+	display: inline-block;
+	width: 28px;
+	height: 28px;
+	background: #0073aa;
+	color: #fff;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 28px;
+	font-weight: 700;
+	font-size: 13px;
+	margin-right: 12px;
+}
+
+.serp-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: #0073aa;
+	margin-bottom: 4px;
+}
+
+.serp-url {
+	font-size: 13px;
+	color: #10B981;
+	margin-bottom: 8px;
+}
+
+.serp-description {
+	font-size: 13px;
+	color: #646970;
+	line-height: 1.5;
+}
+
+/* Saved Keywords */
+.saved-keywords-section {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+	padding: 24px;
+	margin-bottom: 24px;
+}
+
+.saved-keywords-section h2 {
+	margin-top: 0;
+	margin-bottom: 16px;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+	.search-input-wrapper {
+		flex-direction: column;
+	}
+
+	.search-input-wrapper input {
+		max-width: 100%;
+	}
+
+	.keyword-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.keyword-metrics {
+		grid-template-columns: 1fr;
+	}
+
+	.related-keywords-list {
+		grid-template-columns: 1fr;
+	}
+
+	.keyword-actions {
+		flex-direction: column;
+	}
+
+	.keyword-actions .button {
+		width: 100%;
+	}
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+	.keyword-search-form,
+	.keyword-results,
+	.serp-results,
+	.saved-keywords-section {
+		background: #1e1e1e;
+		border-color: #3a3a3a;
+	}
+
+	.keyword-title,
+	.metric-value,
+	.related-keyword-text,
+	.serp-title {
+		color: #e0e0e0;
+	}
+
+	.metric-item,
+	.related-keyword-item,
+	.serp-item {
+		background: #2a2a2a;
+		border-color: #3a3a3a;
+	}
+
+	.related-keyword-item:hover,
+	.serp-item:hover {
+		background: #333;
+	}
+}

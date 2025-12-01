@@ -305,6 +305,14 @@ class WritgoCMS_AIML_Admin_Settings {
      * Render dashboard page - Dutch interface with site analysis
      */
     public function render_dashboard_page() {
+        // Use new Dashboard class for rendering.
+        if ( class_exists( 'WritgoCMS_Dashboard' ) ) {
+            $dashboard = WritgoCMS_Dashboard::get_instance();
+            $dashboard->render();
+            return;
+        }
+
+        // Fallback to old dashboard if class not loaded.
         $stats = get_option( 'writgocms_aiml_usage_stats', array() );
         $totals = array(
             'text'  => 0,
@@ -1337,6 +1345,20 @@ class WritgoCMS_AIML_Admin_Settings {
                 </table>
             </div>
 
+            <p class="submit">
+                <input type="submit" name="submit" id="submit" class="button button-primary" value="💾 Opslaan">
+            </p>
+        </form>
+
+        <!-- DataForSEO Settings Section (PR #2) -->
+        <form method="post" action="options.php">
+            <?php settings_fields( 'writgocms_dataforseo_settings' ); ?>
+            <?php
+            if ( class_exists( 'WritgoCMS_DataForSEO_Settings' ) ) {
+                $dataforseo_settings = WritgoCMS_DataForSEO_Settings::get_instance();
+                $dataforseo_settings->render_settings_section();
+            }
+            ?>
             <p class="submit">
                 <input type="submit" name="submit" id="submit" class="button button-primary" value="💾 Opslaan">
             </p>

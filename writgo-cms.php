@@ -90,6 +90,16 @@ function writgocms_init() {
 	require_once WRITGOCMS_DIR . 'inc/class-gsc-data-handler.php';
 	require_once WRITGOCMS_DIR . 'inc/class-ctr-optimizer.php';
 	require_once WRITGOCMS_DIR . 'inc/admin-gsc-settings.php';
+
+	// Load Site Analyzer & Keyword Research files (PR #2).
+	require_once WRITGOCMS_DIR . 'inc/class-site-analyzer.php';
+	require_once WRITGOCMS_DIR . 'inc/class-dataforseo-api.php';
+	require_once WRITGOCMS_DIR . 'inc/class-keyword-research.php';
+	require_once WRITGOCMS_DIR . 'inc/class-cron-jobs.php';
+	require_once WRITGOCMS_DIR . 'inc/admin/dashboard.php';
+	require_once WRITGOCMS_DIR . 'inc/admin/keyword-research-page.php';
+	require_once WRITGOCMS_DIR . 'inc/admin/settings-dataforseo.php';
+	require_once WRITGOCMS_DIR . 'inc/admin/post-list-columns.php';
 }
 add_action( 'plugins_loaded', 'writgocms_init' );
 
@@ -125,6 +135,11 @@ function writgocms_activate() {
 	}
 	$license_manager = WritgoCMS_License_Manager::get_instance();
 	$license_manager->schedule_daily_check();
+
+	// Schedule cron jobs for site analysis and sync (PR #2).
+	require_once WRITGOCMS_DIR . 'inc/class-cron-jobs.php';
+	$cron_jobs = WritgoCMS_Cron_Jobs::get_instance();
+	$cron_jobs->maybe_schedule_events();
 }
 register_activation_hook( __FILE__, 'writgocms_activate' );
 
@@ -147,5 +162,10 @@ function writgocms_deactivate() {
 	}
 	$license_manager = WritgoCMS_License_Manager::get_instance();
 	$license_manager->unschedule_daily_check();
+
+	// Unschedule cron jobs (PR #2).
+	require_once WRITGOCMS_DIR . 'inc/class-cron-jobs.php';
+	$cron_jobs = WritgoCMS_Cron_Jobs::get_instance();
+	$cron_jobs->unschedule_events();
 }
 register_deactivation_hook( __FILE__, 'writgocms_deactivate' );

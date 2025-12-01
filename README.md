@@ -26,6 +26,9 @@ All subscription plans have **100% access to all features**. The only difference
 | SEO Analysis | 20 |
 | Internal Links | 5 |
 | Keyword Research | 15 |
+| Related Keywords | 5 |
+| SERP Analysis | 10 |
+| Site Analysis | FREE (1x per day) |
 
 All plans include full access to:
 - ✅ AI Rewrite
@@ -85,6 +88,68 @@ AI-powered meta content optimization:
 - **AI Suggestions**: Generate improved meta titles and descriptions with AI
 - **Expected Improvement**: See estimated CTR improvement for each suggestion
 - **One-Click Copy**: Copy suggestions directly to your clipboard
+
+### 🔍 Site Analyzer (New in v1.2)
+Comprehensive website analysis and SEO scoring:
+
+- **Full Site Scanning**: Analyze all published posts automatically
+- **SEO Scoring**: Calculate SEO scores (0-100) for each post
+- **Niche Detection**: Automatically detect your site's niche/industry
+- **Topic Extraction**: Identify main topics and categories
+- **Content Metrics**: Word count, readability, keyword density analysis
+- **Link Analysis**: Internal and external link counting
+- **Technical SEO**: Meta descriptions, images, and structure checks
+- **Health Score Dashboard**: Overall website health metrics (0-100)
+- **Post List Integration**: See SEO scores directly in WordPress post list
+
+### 🔑 Keyword Research with DataForSEO (New in v1.2)
+Professional keyword research powered by DataForSEO:
+
+- **Search Volume Data**: Monthly search volume for any keyword
+- **Keyword Difficulty**: Accurate difficulty scoring (0-100)
+- **CPC & Competition**: Cost-per-click and competition metrics
+- **Related Keywords**: Discover semantic variations and long-tail keywords
+- **SERP Analysis**: View top 10 search results for any keyword
+- **Save Keywords**: Save promising keywords for your content plan
+- **24-Hour Cache**: Reduce costs with intelligent caching
+- **Credit System Integration**: Transparent credit usage (15 credits per search)
+
+### 📊 Enhanced Dashboard (New in v1.2)
+New unified dashboard with comprehensive metrics:
+
+- **Website Health Score**: Single score (0-100) with component breakdown
+  - Content Coverage percentage
+  - Topical Authority score
+  - Internal Links quality
+  - Technical SEO score
+- **Quick Stats Cards**: Total posts, optimized posts, average ranking, monthly traffic
+- **Workflow Progress**: Step-by-step workflow guidance
+- **Recent Activity**: Track analysis, sync, and optimization activities
+- **Real-time Updates**: AJAX-powered live data refresh
+
+### 📈 Post List Enhancements (New in v1.2)
+SEO metrics directly in your WordPress posts list:
+
+- **SEO Score Column**: Visual score with color coding (green/yellow/red)
+- **Ranking Column**: Average position from Google Search Console
+- **Traffic Column**: 30-day clicks from GSC
+- **Status Column**: Quick status indicators (✅ Optimized / ⚠️ Needs Work / ❌ Poor)
+- **Sortable Columns**: Sort by score, ranking, or traffic
+- **Bulk Actions**: Analyze multiple posts at once with "Analyze with WritgoAI"
+
+### ⏰ Automated Tasks (New in v1.2)
+Background cron jobs keep your data fresh:
+
+- **Daily Sync** (3 AM):
+  - Sync Google Search Console data
+  - Update post rankings
+  - Detect declining posts
+  - Calculate new health scores
+- **Weekly Analysis** (Sunday 3 AM):
+  - Full site re-analysis
+  - Performance email reports
+- **Automatic Scheduling**: Set up on plugin activation
+- **Manual Triggers**: Force sync anytime via dashboard
 
 ## 📋 Installation
 
@@ -185,21 +250,42 @@ git clone https://github.com/Mikeyy1405/WritgoCMS.git WritgoCMS
 | `inc/class-gsc-provider.php` | Google Search Console OAuth 2.0 provider |
 | `inc/class-gsc-data-handler.php` | GSC data storage, sync, and opportunity detection |
 | `inc/class-ctr-optimizer.php` | CTR analysis and AI-powered optimization |
+| `inc/class-site-analyzer.php` | Site analysis and SEO scoring engine (v1.2) |
+| `inc/class-keyword-research.php` | Keyword research manager (v1.2) |
+| `inc/class-dataforseo-api.php` | DataForSEO API client (v1.2) |
+| `inc/class-cron-jobs.php` | Automated background tasks (v1.2) |
+| `inc/admin/dashboard.php` | Enhanced dashboard page (v1.2) |
+| `inc/admin/keyword-research-page.php` | Keyword research interface (v1.2) |
+| `inc/admin/post-list-columns.php` | Post list enhancements (v1.2) |
 | `inc/admin-aiml-settings.php` | Admin settings panel for AIMLAPI configuration |
 | `inc/admin-gsc-settings.php` | Admin settings panel for GSC configuration |
 | `inc/gutenberg-aiml-block.php` | Gutenberg block registration |
 | `inc/classic-editor-button.php` | TinyMCE button for Classic Editor |
 | `assets/` | CSS and JavaScript assets |
+| `docs/` | Documentation files (SETUP.md, SEARCH-CONSOLE.md, DATAFORSEO.md) |
 
 ## 🗄️ Database Tables
 
-The plugin creates the following database tables for GSC data:
+The plugin creates the following database tables:
 
+**Google Search Console:**
 | Table | Description |
 |-------|-------------|
 | `wp_writgoai_gsc_queries` | Search query data (query, clicks, impressions, CTR, position, date) |
 | `wp_writgoai_gsc_pages` | Page performance data (url, post_id, clicks, impressions, CTR, position, date) |
 | `wp_writgoai_gsc_opportunities` | Keyword opportunities (keyword, type, score, suggested_action) |
+
+**Site Analysis (v1.2):**
+| Table | Description |
+|-------|-------------|
+| `wp_writgo_site_analysis` | Site-wide analysis results (health score, niche, topics, stats) |
+| `wp_writgo_post_scores` | Per-post SEO scores and metrics |
+| `wp_writgo_keywords` | Saved keyword research data |
+
+**Usage Tracking:**
+| Table | Description |
+|-------|-------------|
+| `wp_writgo_api_usage` | API usage and credit tracking |
 
 ## 🔧 Available Models
 
@@ -227,11 +313,13 @@ The plugin creates the following database tables for GSC data:
 
 ## 📄 Requirements
 
-- WordPress 5.9 or higher
+- WordPress 5.8 or higher
 - PHP 7.4 or higher
 - MySQL 5.7 or MariaDB 10.3
-- AIMLAPI account and API key
+- PHP Extensions: curl, json
+- AIMLAPI account and API key (for AI features)
 - Google Cloud Console project (for GSC integration)
+- DataForSEO account (for keyword research)
 
 ## 🔒 Security
 
@@ -239,8 +327,35 @@ The plugin creates the following database tables for GSC data:
 - Nonce verification for AJAX requests
 - Rate limiting for API calls
 - Secure API key storage in WordPress options
+- Data encryption for sensitive credentials
+- Capability checks for admin functions
+- SQL injection prevention with prepared statements
 
 ## 📝 Changelog
+
+### Version 1.2.0 (Current)
+**New Features:**
+- Site Analyzer with comprehensive SEO scoring
+- Keyword Research with DataForSEO integration
+- Enhanced Dashboard with health metrics
+- Post list columns with SEO scores and rankings
+- Automated cron jobs for daily sync and weekly analysis
+- Related keywords and SERP analysis
+- Bulk post analysis action
+- Real-time dashboard updates
+
+**Improvements:**
+- Better database schema with new tables
+- Improved credit system integration
+- Enhanced workflow guidance
+- Mobile-responsive dashboard design
+- Dark mode support for new UI elements
+
+**Database:**
+- Added `wp_writgo_site_analysis` table
+- Added `wp_writgo_post_scores` table
+- Added `wp_writgo_keywords` table
+- Updated database version to 1.2.0
 
 ### Version 1.1.0
 - Google Search Console integration with OAuth 2.0
