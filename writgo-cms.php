@@ -25,8 +25,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! defined( 'WRITGOCMS_VERSION' ) ) {
 	define( 'WRITGOCMS_VERSION', '1.0.0' );
 }
+if ( ! defined( 'WRITGOCMS_FILE' ) ) {
+	define( 'WRITGOCMS_FILE', __FILE__ );
+}
 if ( ! defined( 'WRITGOCMS_DIR' ) ) {
 	define( 'WRITGOCMS_DIR', plugin_dir_path( __FILE__ ) );
+}
+if ( ! defined( 'WRITGOCMS_PATH' ) ) {
+	define( 'WRITGOCMS_PATH', plugin_dir_path( __FILE__ ) );
 }
 if ( ! defined( 'WRITGOCMS_URL' ) ) {
 	define( 'WRITGOCMS_URL', plugin_dir_url( __FILE__ ) );
@@ -53,8 +59,13 @@ function writgocms_init() {
 
 	// Load License Manager first (foundation for everything).
 	require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
-	require_once WRITGOCMS_DIR . 'inc/class-plugin-updater.php';
 	require_once WRITGOCMS_DIR . 'inc/admin-license-settings.php';
+	
+	// Initialize plugin updater
+	if ( is_admin() ) {
+		require_once WRITGOCMS_DIR . 'inc/class-plugin-updater.php';
+		new WritgoCMS_Plugin_Updater( WRITGOCMS_FILE, WRITGOCMS_VERSION );
+	}
 
 	// Load API Client (for credit endpoints integration).
 	require_once WRITGOCMS_DIR . 'inc/class-api-client.php';
