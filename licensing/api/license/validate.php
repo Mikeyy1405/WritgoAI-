@@ -91,8 +91,7 @@ try {
     }
 
     // Check if license is valid.
-    $valid_statuses = array( 'active', 'trial' );
-    $is_valid = in_array( $license['status'], $valid_statuses, true );
+    $is_valid = in_array( $license['status'], VALID_LICENSE_STATUSES, true );
 
     // Check expiration.
     if ( $is_valid && null !== $license['expires_at'] ) {

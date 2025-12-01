@@ -291,11 +291,13 @@ class WritgoCMS_License_Client {
     /**
      * Set request timeout
      *
-     * @param int $timeout Timeout in seconds.
+     * @param int $timeout Timeout in seconds. Minimum 5 seconds.
      * @return void
      */
     public function set_timeout( $timeout ) {
-        $this->timeout = absint( $timeout );
+        $timeout = absint( $timeout );
+        // Ensure minimum timeout of 5 seconds.
+        $this->timeout = max( 5, $timeout );
     }
 }
 

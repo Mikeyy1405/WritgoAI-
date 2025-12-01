@@ -73,10 +73,10 @@ if ( ! preg_match( '/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/i', $lice
 $license_key = strtoupper( $license_key );
 
 // Validate amount.
-if ( $amount < 1 || $amount > 1000 ) {
+if ( $amount < 1 || $amount > MAX_CREDIT_CONSUMPTION ) {
     send_json_response( array( 
         'success' => false,
-        'error'   => 'Invalid amount. Must be between 1 and 1000.' 
+        'error'   => 'Invalid amount. Must be between 1 and ' . MAX_CREDIT_CONSUMPTION . '.' 
     ), 400 );
 }
 
@@ -106,8 +106,7 @@ try {
     }
 
     // Check if license is valid.
-    $valid_statuses = array( 'active', 'trial' );
-    if ( ! in_array( $license['status'], $valid_statuses, true ) ) {
+    if ( ! in_array( $license['status'], VALID_LICENSE_STATUSES, true ) ) {
         $pdo->rollBack();
         send_json_response( array(
             'success' => false,

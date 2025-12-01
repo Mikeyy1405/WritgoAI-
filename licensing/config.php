@@ -47,6 +47,16 @@ $plan_credits_map = array(
 );
 
 /**
+ * Valid license statuses that allow usage
+ */
+define( 'VALID_LICENSE_STATUSES', array( 'active', 'trial' ) );
+
+/**
+ * Maximum credits that can be consumed in a single request
+ */
+define( 'MAX_CREDIT_CONSUMPTION', 1000 );
+
+/**
  * Get PDO Database Connection
  *
  * @return PDO Database connection.
@@ -82,6 +92,8 @@ function get_plan_credits( $price_id ) {
 /**
  * Require HTTPS for all API endpoints
  *
+ * HTTPS is required by default unless APP_ENV is explicitly set to 'development'.
+ *
  * @return void
  * @throws Exception If not using HTTPS in production.
  */
@@ -90,7 +102,10 @@ function require_https() {
                 || ( ! empty( $_SERVER['SERVER_PORT'] ) && 443 === (int) $_SERVER['SERVER_PORT'] )
                 || ( ! empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'] );
 
-    if ( ! $is_https && 'production' === getenv( 'APP_ENV' ) ) {
+    // Require HTTPS unless explicitly in development mode.
+    $is_development = 'development' === getenv( 'APP_ENV' );
+
+    if ( ! $is_https && ! $is_development ) {
         http_response_code( 403 );
         header( 'Content-Type: application/json' );
         echo json_encode( array( 'error' => 'HTTPS required' ) );

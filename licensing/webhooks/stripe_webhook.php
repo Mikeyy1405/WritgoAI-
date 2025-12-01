@@ -139,6 +139,9 @@ try {
 /**
  * Handle subscription created event
  *
+ * Uses INSERT ... ON DUPLICATE KEY UPDATE to prevent race conditions
+ * when multiple webhooks arrive simultaneously.
+ *
  * @param PDO   $pdo          Database connection.
  * @param array $subscription Subscription object from Stripe.
  * @return void
@@ -151,48 +154,39 @@ function handle_subscription_created( $pdo, $subscription ) {
         : null;
     $status = 'active' === $subscription['status'] ? 'active' : 'trial';
 
-    // Check if license already exists for this customer.
-    $stmt = $pdo->prepare( 'SELECT id FROM licenses WHERE stripe_customer_id = ?' );
-    $stmt->execute( array( $customer_id ) );
-    $existing = $stmt->fetch();
+    // Generate a license key for new records.
+    $license_key = generate_license_key();
 
-    if ( $existing ) {
-        // Update existing license.
-        $stmt = $pdo->prepare(
-            'UPDATE licenses SET 
-                stripe_subscription_id = ?,
-                stripe_price_id = ?,
-                status = ?,
-                activated_at = NOW(),
-                expires_at = FROM_UNIXTIME(?)
-            WHERE stripe_customer_id = ?'
-        );
-        $stmt->execute( array(
-            $subscription_id,
-            $price_id,
-            $status,
-            $subscription['current_period_end'],
-            $customer_id,
-        ) );
-        $license_id = $existing['id'];
-    } else {
-        // Create new license.
-        $license_key = generate_license_key();
-        $stmt = $pdo->prepare(
-            'INSERT INTO licenses 
-                (license_key, email, stripe_customer_id, stripe_subscription_id, stripe_price_id, status, activated_at, expires_at) 
-            VALUES (?, ?, ?, ?, ?, ?, NOW(), FROM_UNIXTIME(?))'
-        );
-        $stmt->execute( array(
-            $license_key,
-            '', // Email will be updated from customer object.
-            $customer_id,
-            $subscription_id,
-            $price_id,
-            $status,
-            $subscription['current_period_end'],
-        ) );
-        $license_id = $pdo->lastInsertId();
+    // Use INSERT ... ON DUPLICATE KEY UPDATE to handle race conditions.
+    $stmt = $pdo->prepare(
+        'INSERT INTO licenses 
+            (license_key, email, stripe_customer_id, stripe_subscription_id, stripe_price_id, status, activated_at, expires_at) 
+        VALUES (?, ?, ?, ?, ?, ?, NOW(), FROM_UNIXTIME(?))
+        ON DUPLICATE KEY UPDATE
+            stripe_subscription_id = VALUES(stripe_subscription_id),
+            stripe_price_id = VALUES(stripe_price_id),
+            status = VALUES(status),
+            activated_at = NOW(),
+            expires_at = VALUES(expires_at)'
+    );
+    $stmt->execute( array(
+        $license_key,
+        '', // Email will be updated from customer object if available.
+        $customer_id,
+        $subscription_id,
+        $price_id,
+        $status,
+        $subscription['current_period_end'],
+    ) );
+
+    // Get the license ID (either inserted or existing).
+    $license_id = $pdo->lastInsertId();
+    if ( ! $license_id ) {
+        // Record existed, get its ID.
+        $stmt = $pdo->prepare( 'SELECT id FROM licenses WHERE stripe_customer_id = ?' );
+        $stmt->execute( array( $customer_id ) );
+        $existing = $stmt->fetch();
+        $license_id = $existing ? $existing['id'] : 0;
     }
 
     // Add initial credits.
@@ -346,6 +340,9 @@ function handle_invoice_payment_failed( $pdo, $invoice ) {
 /**
  * Add credits for a billing period
  *
+ * Only creates new credit records for new periods. Does not reset existing
+ * credits_used to preserve consumed credits during period renewals.
+ *
  * @param PDO    $pdo          Database connection.
  * @param int    $license_id   License ID.
  * @param string $price_id     Stripe price ID.
@@ -363,13 +360,14 @@ function add_credits_for_period( $pdo, $license_id, $price_id, $period_start, $p
     $start_date = gmdate( 'Y-m-d', $period_start );
     $end_date = gmdate( 'Y-m-d', $period_end );
 
-    // Insert or update credits for this period.
+    // Insert new credits record for this period, or update credits_total only if period already exists.
+    // Do not reset credits_used to preserve consumed credits.
     $stmt = $pdo->prepare(
         'INSERT INTO user_credits (license_id, credits_total, credits_used, period_start, period_end) 
         VALUES (?, ?, 0, ?, ?)
-        ON DUPLICATE KEY UPDATE credits_total = ?, credits_used = 0'
+        ON DUPLICATE KEY UPDATE credits_total = VALUES(credits_total)'
     );
-    $stmt->execute( array( $license_id, $credits, $start_date, $end_date, $credits ) );
+    $stmt->execute( array( $license_id, $credits, $start_date, $end_date ) );
 }
 
 /**
