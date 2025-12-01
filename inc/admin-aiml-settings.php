@@ -988,6 +988,14 @@ class WritgoCMS_AIML_Admin_Settings {
      * Render settings page (Dutch: Instellingen)
      */
     public function render_settings_page() {
+        // Use new beginner-friendly settings template.
+        $settings_template = WRITGOCMS_DIR . 'inc/admin/views/settings.php';
+        if ( file_exists( $settings_template ) ) {
+            include $settings_template;
+            return;
+        }
+
+        // Fallback to old settings page.
         ?>
         <div class="wrap writgocms-aiml-settings">
             <h1 class="aiml-header">

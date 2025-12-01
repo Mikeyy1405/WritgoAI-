@@ -41,6 +41,11 @@ class WritgoCMS_Admin_Controller {
 	 */
 	private function __construct() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_beginner_assets' ) );
+		
+		// AJAX handlers for advanced settings.
+		add_action( 'wp_ajax_writgocms_test_api_connection', array( $this, 'ajax_test_api_connection' ) );
+		add_action( 'wp_ajax_writgocms_clear_cache', array( $this, 'ajax_clear_cache' ) );
+		add_action( 'wp_ajax_writgocms_reset_wizard', array( $this, 'ajax_reset_wizard' ) );
 	}
 
 	/**
@@ -125,5 +130,93 @@ class WritgoCMS_Admin_Controller {
 	public function mark_wizard_completed() {
 		update_option( 'writgocms_wizard_completed', true );
 		update_option( 'writgocms_wizard_completed_at', current_time( 'mysql' ) );
+	}
+
+	/**
+	 * AJAX handler to test API connection
+	 */
+	public function ajax_test_api_connection() {
+		check_ajax_referer( 'writgocms_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
+		}
+
+		$api_url = isset( $_POST['api_url'] ) ? esc_url_raw( wp_unslash( $_POST['api_url'] ) ) : '';
+
+		if ( empty( $api_url ) ) {
+			wp_send_json_error( array( 'message' => __( 'Geen API URL opgegeven', 'writgocms' ) ) );
+		}
+
+		// Test connection by making a simple request.
+		$response = wp_remote_get( $api_url . '/health', array( 'timeout' => 10 ) );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( array(
+				'message' => sprintf(
+					/* translators: %s: error message */
+					__( 'Verbinding mislukt: %s', 'writgocms' ),
+					$response->get_error_message()
+				),
+			) );
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+
+		if ( $status_code === 200 ) {
+			wp_send_json_success( array( 'message' => __( 'Verbinding succesvol!', 'writgocms' ) ) );
+		} else {
+			wp_send_json_error( array(
+				'message' => sprintf(
+					/* translators: %d: HTTP status code */
+					__( 'Server antwoordde met status: %d', 'writgocms' ),
+					$status_code
+				),
+			) );
+		}
+	}
+
+	/**
+	 * AJAX handler to clear cache
+	 */
+	public function ajax_clear_cache() {
+		check_ajax_referer( 'writgocms_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
+		}
+
+		// Clear WordPress transients.
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			"DELETE FROM {$wpdb->options} 
+			WHERE option_name LIKE '_transient_writgocms_%' 
+			OR option_name LIKE '_transient_timeout_writgocms_%'"
+		);
+
+		wp_send_json_success( array( 'message' => __( 'Cache geleegd', 'writgocms' ) ) );
+	}
+
+	/**
+	 * AJAX handler to reset wizard
+	 */
+	public function ajax_reset_wizard() {
+		check_ajax_referer( 'writgocms_admin_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
+		}
+
+		// Reset wizard completion status.
+		delete_option( 'writgocms_wizard_completed' );
+		delete_option( 'writgocms_wizard_completed_at' );
+
+		// Clear wizard step data.
+		for ( $i = 1; $i <= 5; $i++ ) {
+			delete_option( 'writgocms_wizard_step_' . $i );
+		}
+
+		wp_send_json_success( array( 'message' => __( 'Wizard gereset', 'writgocms' ) ) );
 	}
 }
