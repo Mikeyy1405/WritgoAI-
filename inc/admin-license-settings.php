@@ -59,16 +59,13 @@ class WritgoCMS_License_Admin {
 
 	/**
 	 * Add admin menu
+	 * 
+	 * Note: License menu item removed as WP admin users with manage_options
+	 * capability always have access without separate license activation.
 	 */
 	public function add_admin_menu() {
-		add_submenu_page(
-			'writgocms-aiml',
-			'Licentie',
-			'🔑 Licentie',
-			'manage_options',
-			'writgocms-license',
-			array( $this, 'render_license_page' )
-		);
+		// Menu item removed - admins don't need license management UI
+		// License functionality still available via class methods
 	}
 
 	/**

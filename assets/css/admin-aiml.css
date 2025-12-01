@@ -42,18 +42,22 @@
     line-height: 1.5;
 }
 
-/* Header */
-.aiml-header {
+/* Header - Consistent styling for all pages */
+.aiml-header,
+.writgo-page-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: linear-gradient(135deg, #1877F2 0%, #f97316 100%);
+    background: linear-gradient(135deg, #1877F2 0%, #6366f1 100%);
     color: #fff;
     padding: 20px 25px;
-    margin: -10px -20px 20px -20px;
+    /* Negative margins compensate for parent padding to create full-width header */
+    /* Format: top right bottom left */
+    margin: -10px -20px 10px -20px; /* Extends into parent padding, reduces bottom gap for tighter integration */
     border-radius: 0 0 8px 8px;
     font-size: 22px;
     font-weight: 600;
+    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.2);
 }
 
 .aiml-logo {
@@ -89,22 +93,29 @@
     color: #1877F2;
 }
 
-/* Tab Content */
+/* Tab Content - Integrated with header */
 .aiml-tab-content {
     background: #fff;
     padding: 30px;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     color: #1e293b;
+    margin-top: 0;
 }
 
-/* Settings Sections */
+/* Settings Sections - Consistent with overall design */
 .aiml-settings-section {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 24px;
     margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.aiml-settings-section:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .aiml-settings-section h2 {
@@ -287,7 +298,7 @@
 }
 
 .test-type-btn.active {
-    background: linear-gradient(135deg, #1877F2 0%, #f97316 100%) !important;
+    background: linear-gradient(135deg, #1877F2 0%, #6366f1 100%) !important;
     color: #fff !important;
     border: none !important;
 }
@@ -332,7 +343,7 @@
 }
 
 #test-generate {
-    background: linear-gradient(135deg, #1877F2 0%, #f97316 100%) !important;
+    background: linear-gradient(135deg, #1877F2 0%, #6366f1 100%) !important;
     border: none !important;
     padding: 12px 30px !important;
     font-size: 15px !important;
@@ -737,7 +748,7 @@
 
 /* Submit Button */
 .submit .button-primary {
-    background: linear-gradient(135deg, #1877F2 0%, #f97316 100%) !important;
+    background: linear-gradient(135deg, #1877F2 0%, #6366f1 100%) !important;
     border: none !important;
     padding: 10px 30px !important;
     font-size: 14px !important;
@@ -777,19 +788,27 @@
     }
 }
 
-/* Planner Cards - Consistent Styling */
+/* Planner Cards - Consistent Styling with seamless integration */
 .planner-card {
     background: #fff;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 24px;
     margin-bottom: 20px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
+    will-change: transform, box-shadow; /* Optimize hover animation performance */
 }
 
 .planner-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+/* First planner card after header - seamless integration */
+.aiml-tab-content > .planner-card:first-child,
+.aiml-tab-content > div > .planner-card:first-child {
+    margin-top: 0;
 }
 
 .planner-card h2,
@@ -859,7 +878,7 @@
 }
 
 #generate-topical-map {
-    background: linear-gradient(135deg, #1877F2 0%, #f97316 100%) !important;
+    background: linear-gradient(135deg, #1877F2 0%, #6366f1 100%) !important;
     border: none !important;
     color: #fff !important;
     padding: 15px 25px !important;
@@ -979,7 +998,7 @@
 }
 
 .main-topic-header {
-    background: linear-gradient(135deg, #1877F2 0%, #f97316 100%);
+    background: linear-gradient(135deg, #1877F2 0%, #6366f1 100%);
     color: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -1747,7 +1766,7 @@
 }
 
 .dashboard-feature-card .button-hero {
-    background: linear-gradient(135deg, #1877F2 0%, #f97316 100%) !important;
+    background: linear-gradient(135deg, #1877F2 0%, #6366f1 100%) !important;
     border: none !important;
     color: #fff !important;
     padding: 15px 30px !important;
@@ -1875,7 +1894,7 @@
 
 /* Welcome Box with CTA */
 .writgoai-welcome-box {
-    background: linear-gradient(135deg, #1877F2 0%, #f97316 100%);
+    background: linear-gradient(135deg, #1877F2 0%, #6366f1 100%);
     color: #fff;
     padding: 40px;
     text-align: center;

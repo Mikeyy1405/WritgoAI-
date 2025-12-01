@@ -46,17 +46,14 @@ class WritgoCMS_Credit_History_Page {
 	/**
 	 * Add admin menu
 	 *
+	 * Note: Credit History menu item removed as it's not needed without license system.
+	 * Credit information can be viewed in the main dashboard or settings if needed.
+	 *
 	 * @return void
 	 */
 	public function add_admin_menu() {
-		add_submenu_page(
-			'writgocms-aiml',
-			__( 'Credit Geschiedenis', 'writgocms' ),
-			'💳 ' . __( 'Credit Geschiedenis', 'writgocms' ),
-			'manage_options',
-			'writgocms-credit-history',
-			array( $this, 'render_page' )
-		);
+		// Menu item removed - not needed in simplified admin UI
+		// Credit information available elsewhere in the interface
 	}
 
 	/**

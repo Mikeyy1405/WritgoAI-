@@ -55,17 +55,14 @@ class WritgoCMS_Admin_License_Manager {
     /**
      * Add admin menu
      *
+     * Note: License Manager menu item removed as part of UI simplification.
+     * License management functionality still available via class methods for API/backend use.
+     *
      * @return void
      */
     public function add_admin_menu() {
-        add_submenu_page(
-            'writgocms-aiml',
-            __( 'License Manager', 'writgocms' ),
-            __( '📋 License Manager', 'writgocms' ),
-            'manage_options',
-            'writgocms-license-manager',
-            array( $this, 'render_license_manager_page' )
-        );
+        // Menu item removed - not needed in simplified admin UI
+        // Functionality still accessible programmatically if needed
     }
 
     /**
