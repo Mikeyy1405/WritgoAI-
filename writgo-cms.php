@@ -104,6 +104,12 @@ function writgocms_init() {
 	require_once WRITGOCMS_DIR . 'inc/admin/keyword-research-page.php';
 	require_once WRITGOCMS_DIR . 'inc/admin/settings-dataforseo.php';
 	require_once WRITGOCMS_DIR . 'inc/admin/post-list-columns.php';
+
+	// Load Admin Controller and Setup Wizard (Beginner-friendly interface).
+	require_once WRITGOCMS_DIR . 'inc/admin/class-admin-controller.php';
+	require_once WRITGOCMS_DIR . 'inc/admin/class-setup-wizard.php';
+	WritgoCMS_Admin_Controller::get_instance();
+	WritgoCMS_Setup_Wizard::get_instance();
 }
 add_action( 'plugins_loaded', 'writgocms_init' );
 
@@ -144,6 +150,9 @@ function writgocms_activate() {
 	require_once WRITGOCMS_DIR . 'inc/class-cron-jobs.php';
 	$cron_jobs = WritgoCMS_Cron_Jobs::get_instance();
 	$cron_jobs->maybe_schedule_events();
+
+	// Set transient for wizard redirect on first activation.
+	set_transient( 'writgocms_activation_redirect', true, 30 );
 }
 register_activation_hook( __FILE__, 'writgocms_activate' );
 
