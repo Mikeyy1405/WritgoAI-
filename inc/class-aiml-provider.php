@@ -150,10 +150,46 @@ class WritgoCMS_AIML_Provider {
     /**
      * Get AIMLAPI key
      *
+     * This method first tries to get the API key from the license manager
+     * (injected from the licensing server), then falls back to the stored option.
+     *
      * @return string
      */
     private function get_api_key() {
+        // First, try to get API key from license manager.
+        if ( class_exists( 'WritgoCMS_License_Manager' ) ) {
+            $license_manager = WritgoCMS_License_Manager::get_instance();
+            $injected_key = $license_manager->get_injected_api_key();
+
+            if ( ! is_wp_error( $injected_key ) && ! empty( $injected_key ) ) {
+                return $injected_key;
+            }
+        }
+
+        // Fall back to stored API key.
         return get_option( 'writgocms_aimlapi_key', '' );
+    }
+
+    /**
+     * Check if license is valid before allowing AI operations
+     *
+     * @return bool|WP_Error True if valid, WP_Error if not.
+     */
+    private function check_license_valid() {
+        if ( ! class_exists( 'WritgoCMS_License_Manager' ) ) {
+            return true; // License manager not loaded, allow operation.
+        }
+
+        $license_manager = WritgoCMS_License_Manager::get_instance();
+
+        if ( ! $license_manager->is_license_valid() ) {
+            return new WP_Error(
+                'license_invalid',
+                __( 'Je licentie is niet actief. Activeer je licentie om WritgoAI te gebruiken.', 'writgocms' )
+            );
+        }
+
+        return true;
     }
 
     /**
@@ -248,6 +284,12 @@ class WritgoCMS_AIML_Provider {
      * @return array|WP_Error
      */
     public function generate_text( $prompt, $model = null, $settings = array() ) {
+        // Check license validity first.
+        $license_check = $this->check_license_valid();
+        if ( is_wp_error( $license_check ) ) {
+            return $license_check;
+        }
+
         $api_key = $this->get_api_key();
         if ( empty( $api_key ) ) {
             return new WP_Error( 'missing_api_key', __( 'AIMLAPI key is not configured. Please go to Settings > WritgoCMS AIML to configure your API key.', 'writgocms' ) );
@@ -336,6 +378,12 @@ class WritgoCMS_AIML_Provider {
      * @return array|WP_Error
      */
     public function generate_image( $prompt, $model = null, $settings = array() ) {
+        // Check license validity first.
+        $license_check = $this->check_license_valid();
+        if ( is_wp_error( $license_check ) ) {
+            return $license_check;
+        }
+
         $api_key = $this->get_api_key();
         if ( empty( $api_key ) ) {
             return new WP_Error( 'missing_api_key', __( 'AIMLAPI key is not configured. Please go to Settings > WritgoCMS AIML to configure your API key.', 'writgocms' ) );

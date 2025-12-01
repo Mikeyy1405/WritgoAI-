@@ -1,0 +1,730 @@
+<?php
+/**
+ * License Admin Settings
+ *
+ * Admin interface for license management.
+ * Features:
+ * - License activation/deactivation
+ * - License status display
+ * - Subscription management
+ * - Update checking
+ *
+ * @package WritgoCMS
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Class WritgoCMS_License_Admin
+ */
+class WritgoCMS_License_Admin {
+
+	/**
+	 * Instance
+	 *
+	 * @var WritgoCMS_License_Admin
+	 */
+	private static $instance = null;
+
+	/**
+	 * License manager instance
+	 *
+	 * @var WritgoCMS_License_Manager
+	 */
+	private $license_manager;
+
+	/**
+	 * Get instance
+	 *
+	 * @return WritgoCMS_License_Admin
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Constructor
+	 */
+	private function __construct() {
+		$this->license_manager = WritgoCMS_License_Manager::get_instance();
+
+		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 5 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+	}
+
+	/**
+	 * Add admin menu
+	 */
+	public function add_admin_menu() {
+		add_submenu_page(
+			'writgocms-aiml',
+			'Licentie',
+			'🔑 Licentie',
+			'manage_options',
+			'writgocms-license',
+			array( $this, 'render_license_page' )
+		);
+	}
+
+	/**
+	 * Enqueue admin scripts
+	 *
+	 * @param string $hook Current admin page hook.
+	 */
+	public function enqueue_scripts( $hook ) {
+		if ( strpos( $hook, 'writgocms-license' ) === false ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'writgocms-license-admin',
+			WRITGOCMS_URL . 'assets/css/admin-aiml.css',
+			array(),
+			WRITGOCMS_VERSION
+		);
+
+		wp_enqueue_script(
+			'writgocms-license-admin',
+			WRITGOCMS_URL . 'assets/js/admin-aiml.js',
+			array( 'jquery' ),
+			WRITGOCMS_VERSION,
+			true
+		);
+
+		wp_localize_script(
+			'writgocms-license-admin',
+			'writgocmsLicense',
+			array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'nonce'   => wp_create_nonce( 'writgocms_license_nonce' ),
+				'i18n'    => array(
+					'activating'    => 'Activeren...',
+					'deactivating'  => 'Deactiveren...',
+					'checking'      => 'Controleren...',
+					'refreshing'    => 'Bijwerken...',
+					'success'       => 'Gelukt!',
+					'error'         => 'Fout',
+					'confirmDeactivate' => 'Weet je zeker dat je de licentie wilt deactiveren?',
+				),
+				'updateUrl' => admin_url( 'update-core.php' ),
+			)
+		);
+	}
+
+	/**
+	 * Render license page
+	 */
+	public function render_license_page() {
+		$license_key   = $this->license_manager->get_license_key();
+		$license_email = $this->license_manager->get_license_email();
+		$license_status = $this->license_manager->get_license_status();
+		$is_valid      = $this->license_manager->is_license_valid();
+		$days_remaining = $this->license_manager->get_days_remaining();
+		?>
+		<div class="wrap writgocms-aiml-settings writgocms-license-page">
+			<h1 class="aiml-header">
+				<span class="aiml-logo">🔑</span>
+				WritgoAI Licentie
+			</h1>
+
+			<div class="aiml-tab-content">
+				<?php if ( empty( $license_key ) ) : ?>
+					<!-- No license activated -->
+					<div class="license-activation-form">
+						<div class="planner-card">
+							<h2>🔐 Licentie Activeren</h2>
+							<p class="description">
+								Voer je licentiesleutel en e-mailadres in om WritgoAI te activeren.
+								Je kunt je licentie vinden in je account op <a href="https://writgoai.com/account" target="_blank">writgoai.com</a>.
+							</p>
+
+							<form id="license-activation-form">
+								<table class="form-table">
+									<tr>
+										<th scope="row">
+											<label for="license-email">E-mailadres</label>
+										</th>
+										<td>
+											<input type="email" id="license-email" name="email" class="regular-text" placeholder="je@email.nl" required>
+											<p class="description">Het e-mailadres waarmee je je hebt aangemeld.</p>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row">
+											<label for="license-key">Licentiesleutel</label>
+										</th>
+										<td>
+											<input type="text" id="license-key" name="license_key" class="regular-text" placeholder="XXXX-XXXX-XXXX-XXXX" required>
+											<p class="description">Je unieke licentiesleutel.</p>
+										</td>
+									</tr>
+								</table>
+
+								<p class="submit">
+									<button type="submit" id="activate-license-btn" class="button button-primary button-hero">
+										✅ Licentie Activeren
+									</button>
+									<span class="license-status-message"></span>
+								</p>
+							</form>
+
+							<div class="license-help-section">
+								<h3>❓ Nog geen licentie?</h3>
+								<p>
+									Bezoek <a href="https://writgoai.com/pricing" target="_blank">writgoai.com</a> om een abonnement te kiezen.
+								</p>
+								<ul>
+									<li>✅ Onbeperkt AI content genereren</li>
+									<li>✅ Automatische updates</li>
+									<li>✅ Premium support</li>
+									<li>✅ Alle AI modellen toegang</li>
+								</ul>
+								<a href="https://writgoai.com/pricing" target="_blank" class="button button-secondary">
+									Bekijk Abonnementen
+								</a>
+							</div>
+						</div>
+					</div>
+				<?php else : ?>
+					<!-- License activated -->
+					<div class="license-status-panel">
+						<div class="planner-card">
+							<h2>📋 Licentie Status</h2>
+
+							<div class="license-info-grid">
+								<div class="license-info-card <?php echo $is_valid ? 'status-valid' : 'status-invalid'; ?>">
+									<div class="info-icon">
+										<?php echo $is_valid ? '✅' : '❌'; ?>
+									</div>
+									<div class="info-content">
+										<span class="info-label">Status</span>
+										<span class="info-value">
+											<?php echo esc_html( $this->license_manager->get_status_label( $license_status['status'] ) ); ?>
+										</span>
+									</div>
+								</div>
+
+								<?php if ( isset( $license_status['plan_name'] ) && ! empty( $license_status['plan_name'] ) ) : ?>
+								<div class="license-info-card">
+									<div class="info-icon">📦</div>
+									<div class="info-content">
+										<span class="info-label">Abonnement</span>
+										<span class="info-value"><?php echo esc_html( $license_status['plan_name'] ); ?></span>
+									</div>
+								</div>
+								<?php endif; ?>
+
+								<?php if ( isset( $license_status['expires'] ) && ! empty( $license_status['expires'] ) ) : ?>
+								<div class="license-info-card">
+									<div class="info-icon">📅</div>
+									<div class="info-content">
+										<span class="info-label">Verloopt op</span>
+										<span class="info-value"><?php echo esc_html( $license_status['expires'] ); ?></span>
+										<?php if ( null !== $days_remaining ) : ?>
+										<span class="info-subtext">
+											<?php
+											if ( $days_remaining > 0 ) {
+												/* translators: %d: number of days */
+												echo esc_html( sprintf( __( 'Nog %d dagen', 'writgocms' ), $days_remaining ) );
+											} else {
+												echo esc_html__( 'Verlopen', 'writgocms' );
+											}
+											?>
+										</span>
+										<?php endif; ?>
+									</div>
+								</div>
+								<?php endif; ?>
+
+								<div class="license-info-card">
+									<div class="info-icon">📧</div>
+									<div class="info-content">
+										<span class="info-label">E-mail</span>
+										<span class="info-value"><?php echo esc_html( $license_email ); ?></span>
+									</div>
+								</div>
+
+								<div class="license-info-card">
+									<div class="info-icon">🔑</div>
+									<div class="info-content">
+										<span class="info-label">Licentiesleutel</span>
+										<span class="info-value license-key-masked">
+											<?php echo esc_html( substr( $license_key, 0, 4 ) . '-****-****-' . substr( $license_key, -4 ) ); ?>
+										</span>
+									</div>
+								</div>
+
+								<?php if ( isset( $license_status['checked_at'] ) ) : ?>
+								<div class="license-info-card">
+									<div class="info-icon">🕐</div>
+									<div class="info-content">
+										<span class="info-label">Laatst gecontroleerd</span>
+										<span class="info-value"><?php echo esc_html( $license_status['checked_at'] ); ?></span>
+									</div>
+								</div>
+								<?php endif; ?>
+							</div>
+
+							<!-- Usage limits if available -->
+							<?php if ( isset( $license_status['usage'] ) && ! empty( $license_status['usage'] ) ) : ?>
+							<div class="license-usage-section">
+								<h3>📊 Gebruik</h3>
+								<div class="usage-grid">
+									<?php if ( isset( $license_status['usage']['text_generations'] ) ) : ?>
+									<div class="usage-item">
+										<span class="usage-label">Tekst Generaties</span>
+										<div class="usage-bar">
+											<?php
+											$used  = $license_status['usage']['text_generations'];
+											$limit = isset( $license_status['limits']['text_generations'] ) ? $license_status['limits']['text_generations'] : 'onbeperkt';
+											$percentage = is_numeric( $limit ) && $limit > 0 ? min( 100, ( $used / $limit ) * 100 ) : 0;
+											?>
+											<div class="usage-progress" style="width: <?php echo esc_attr( $percentage ); ?>%;"></div>
+										</div>
+										<span class="usage-value">
+											<?php echo esc_html( $used ); ?> / <?php echo esc_html( $limit ); ?>
+										</span>
+									</div>
+									<?php endif; ?>
+
+									<?php if ( isset( $license_status['usage']['image_generations'] ) ) : ?>
+									<div class="usage-item">
+										<span class="usage-label">Afbeelding Generaties</span>
+										<div class="usage-bar">
+											<?php
+											$used  = $license_status['usage']['image_generations'];
+											$limit = isset( $license_status['limits']['image_generations'] ) ? $license_status['limits']['image_generations'] : 'onbeperkt';
+											$percentage = is_numeric( $limit ) && $limit > 0 ? min( 100, ( $used / $limit ) * 100 ) : 0;
+											?>
+											<div class="usage-progress" style="width: <?php echo esc_attr( $percentage ); ?>%;"></div>
+										</div>
+										<span class="usage-value">
+											<?php echo esc_html( $used ); ?> / <?php echo esc_html( $limit ); ?>
+										</span>
+									</div>
+									<?php endif; ?>
+								</div>
+							</div>
+							<?php endif; ?>
+
+							<!-- Features if available -->
+							<?php if ( isset( $license_status['features'] ) && ! empty( $license_status['features'] ) ) : ?>
+							<div class="license-features-section">
+								<h3>⭐ Inbegrepen Features</h3>
+								<ul class="features-list">
+									<?php foreach ( $license_status['features'] as $feature ) : ?>
+									<li>✅ <?php echo esc_html( $feature ); ?></li>
+									<?php endforeach; ?>
+								</ul>
+							</div>
+							<?php endif; ?>
+
+							<!-- License actions -->
+							<div class="license-actions">
+								<button type="button" id="refresh-license-btn" class="button button-secondary">
+									🔄 Status Vernieuwen
+								</button>
+								<button type="button" id="check-updates-btn" class="button button-secondary">
+									⬆️ Controleer Updates
+								</button>
+								<a href="https://writgoai.com/account" target="_blank" class="button button-secondary">
+									👤 Mijn Account
+								</a>
+								<button type="button" id="deactivate-license-btn" class="button button-link-delete">
+									❌ Licentie Deactiveren
+								</button>
+							</div>
+
+							<div class="license-status-message"></div>
+						</div>
+
+						<!-- Update info section -->
+						<div class="planner-card">
+							<h2>⬆️ Plugin Updates</h2>
+							<div class="update-info">
+								<p>
+									<strong>Huidige versie:</strong> <?php echo esc_html( WRITGOCMS_VERSION ); ?>
+								</p>
+								<p class="description">
+									Met een actieve licentie ontvang je automatisch updates via het WordPress update systeem.
+								</p>
+								<div id="update-check-result"></div>
+							</div>
+						</div>
+
+						<!-- Quick links -->
+						<div class="planner-card">
+							<h2>🔗 Snelle Links</h2>
+							<div class="quick-links-grid">
+								<a href="https://writgoai.com/docs" target="_blank" class="quick-link">
+									📚 Documentatie
+								</a>
+								<a href="https://writgoai.com/support" target="_blank" class="quick-link">
+									🆘 Support
+								</a>
+								<a href="https://writgoai.com/changelog" target="_blank" class="quick-link">
+									📝 Changelog
+								</a>
+								<a href="https://writgoai.com/pricing" target="_blank" class="quick-link">
+									💰 Prijzen & Abonnementen
+								</a>
+							</div>
+						</div>
+					</div>
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<style>
+			.writgocms-license-page .license-info-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+				gap: 15px;
+				margin-bottom: 25px;
+			}
+
+			.writgocms-license-page .license-info-card {
+				background: #f8f9fa;
+				border-radius: 8px;
+				padding: 15px;
+				display: flex;
+				align-items: flex-start;
+				gap: 12px;
+			}
+
+			.writgocms-license-page .license-info-card.status-valid {
+				background: #d4edda;
+				border: 1px solid #c3e6cb;
+			}
+
+			.writgocms-license-page .license-info-card.status-invalid {
+				background: #f8d7da;
+				border: 1px solid #f5c6cb;
+			}
+
+			.writgocms-license-page .info-icon {
+				font-size: 24px;
+				line-height: 1;
+			}
+
+			.writgocms-license-page .info-content {
+				display: flex;
+				flex-direction: column;
+			}
+
+			.writgocms-license-page .info-label {
+				font-size: 12px;
+				color: #6c757d;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+
+			.writgocms-license-page .info-value {
+				font-size: 16px;
+				font-weight: 600;
+				color: #212529;
+			}
+
+			.writgocms-license-page .info-subtext {
+				font-size: 12px;
+				color: #6c757d;
+			}
+
+			.writgocms-license-page .license-key-masked {
+				font-family: monospace;
+				letter-spacing: 1px;
+			}
+
+			.writgocms-license-page .license-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				padding-top: 20px;
+				border-top: 1px solid #e9ecef;
+				margin-top: 20px;
+			}
+
+			.writgocms-license-page .license-usage-section,
+			.writgocms-license-page .license-features-section {
+				margin-top: 25px;
+				padding-top: 20px;
+				border-top: 1px solid #e9ecef;
+			}
+
+			.writgocms-license-page .usage-grid {
+				display: grid;
+				gap: 15px;
+			}
+
+			.writgocms-license-page .usage-item {
+				display: flex;
+				flex-direction: column;
+				gap: 5px;
+			}
+
+			.writgocms-license-page .usage-bar {
+				height: 8px;
+				background: #e9ecef;
+				border-radius: 4px;
+				overflow: hidden;
+			}
+
+			.writgocms-license-page .usage-progress {
+				height: 100%;
+				background: linear-gradient(90deg, #007bff, #28a745);
+				border-radius: 4px;
+				transition: width 0.3s ease;
+			}
+
+			.writgocms-license-page .usage-value {
+				font-size: 12px;
+				color: #6c757d;
+			}
+
+			.writgocms-license-page .features-list {
+				columns: 2;
+				column-gap: 20px;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+
+			.writgocms-license-page .features-list li {
+				padding: 5px 0;
+			}
+
+			.writgocms-license-page .quick-links-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+				gap: 10px;
+			}
+
+			.writgocms-license-page .quick-link {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 15px;
+				background: #f8f9fa;
+				border-radius: 8px;
+				text-decoration: none;
+				color: #212529;
+				font-weight: 500;
+				transition: all 0.2s ease;
+			}
+
+			.writgocms-license-page .quick-link:hover {
+				background: #e9ecef;
+				transform: translateY(-2px);
+			}
+
+			.writgocms-license-page .license-help-section {
+				margin-top: 30px;
+				padding-top: 25px;
+				border-top: 1px solid #e9ecef;
+			}
+
+			.writgocms-license-page .license-help-section ul {
+				list-style: none;
+				padding: 0;
+				margin: 15px 0;
+			}
+
+			.writgocms-license-page .license-help-section li {
+				padding: 5px 0;
+			}
+
+			.writgocms-license-page .license-status-message {
+				margin-left: 15px;
+				font-weight: 500;
+			}
+
+			.writgocms-license-page .license-status-message.success {
+				color: #28a745;
+			}
+
+			.writgocms-license-page .license-status-message.error {
+				color: #dc3545;
+			}
+
+			#update-check-result {
+				margin-top: 15px;
+				padding: 15px;
+				background: #f8f9fa;
+				border-radius: 8px;
+				display: none;
+			}
+
+			#update-check-result.visible {
+				display: block;
+			}
+
+			#update-check-result.has-update {
+				background: #d4edda;
+				border: 1px solid #c3e6cb;
+			}
+		</style>
+
+		<script>
+		jQuery(document).ready(function($) {
+			// License activation form.
+			$('#license-activation-form').on('submit', function(e) {
+				e.preventDefault();
+
+				var $btn = $('#activate-license-btn');
+				var $message = $('.license-status-message');
+				var email = $('#license-email').val();
+				var licenseKey = $('#license-key').val();
+
+				$btn.prop('disabled', true).text('Activeren...');
+				$message.removeClass('success error').text('');
+
+				$.ajax({
+					url: writgocmsLicense.ajaxUrl,
+					type: 'POST',
+					data: {
+						action: 'writgocms_activate_license',
+						nonce: writgocmsLicense.nonce,
+						email: email,
+						license_key: licenseKey
+					},
+					success: function(response) {
+						if (response.success) {
+							$message.addClass('success').text(response.data.message);
+							setTimeout(function() {
+								location.reload();
+							}, 1500);
+						} else {
+							$message.addClass('error').text(response.data.message);
+							$btn.prop('disabled', false).text('✅ Licentie Activeren');
+						}
+					},
+					error: function() {
+						$message.addClass('error').text('Er is een fout opgetreden.');
+						$btn.prop('disabled', false).text('✅ Licentie Activeren');
+					}
+				});
+			});
+
+			// Deactivate license.
+			$('#deactivate-license-btn').on('click', function() {
+				if (!confirm(writgocmsLicense.i18n.confirmDeactivate)) {
+					return;
+				}
+
+				var $btn = $(this);
+				var $message = $('.license-status-message');
+
+				$btn.prop('disabled', true).text('Deactiveren...');
+				$message.removeClass('success error').text('');
+
+				$.ajax({
+					url: writgocmsLicense.ajaxUrl,
+					type: 'POST',
+					data: {
+						action: 'writgocms_deactivate_license',
+						nonce: writgocmsLicense.nonce
+					},
+					success: function(response) {
+						if (response.success) {
+							$message.addClass('success').text(response.data.message);
+							setTimeout(function() {
+								location.reload();
+							}, 1500);
+						} else {
+							$message.addClass('error').text(response.data.message);
+							$btn.prop('disabled', false).text('❌ Licentie Deactiveren');
+						}
+					},
+					error: function() {
+						$message.addClass('error').text('Er is een fout opgetreden.');
+						$btn.prop('disabled', false).text('❌ Licentie Deactiveren');
+					}
+				});
+			});
+
+			// Refresh license status.
+			$('#refresh-license-btn').on('click', function() {
+				var $btn = $(this);
+				var $message = $('.license-status-message');
+
+				$btn.prop('disabled', true).text('Bijwerken...');
+				$message.removeClass('success error').text('');
+
+				$.ajax({
+					url: writgocmsLicense.ajaxUrl,
+					type: 'POST',
+					data: {
+						action: 'writgocms_refresh_license',
+						nonce: writgocmsLicense.nonce
+					},
+					success: function(response) {
+						if (response.success) {
+							$message.addClass('success').text(response.data.message);
+							setTimeout(function() {
+								location.reload();
+							}, 1000);
+						} else {
+							$message.addClass('error').text(response.data.message);
+						}
+						$btn.prop('disabled', false).text('🔄 Status Vernieuwen');
+					},
+					error: function() {
+						$message.addClass('error').text('Er is een fout opgetreden.');
+						$btn.prop('disabled', false).text('🔄 Status Vernieuwen');
+					}
+				});
+			});
+
+			// Check for updates.
+			$('#check-updates-btn').on('click', function() {
+				var $btn = $(this);
+				var $result = $('#update-check-result');
+
+				$btn.prop('disabled', true).text('Controleren...');
+				$result.removeClass('visible has-update').html('');
+
+				$.ajax({
+					url: writgocmsLicense.ajaxUrl,
+					type: 'POST',
+					data: {
+						action: 'writgocms_check_updates',
+						nonce: writgocmsLicense.nonce
+					},
+					success: function(response) {
+						if (response.success) {
+							var html = '<p><strong>' + response.data.message + '</strong></p>';
+							html += '<p>Huidige versie: ' + response.data.current_version + '</p>';
+							html += '<p>Nieuwste versie: ' + response.data.latest_version + '</p>';
+
+							if (response.data.has_update) {
+								$result.addClass('has-update');
+								html += '<p><a href="' + writgocmsLicense.updateUrl + '" class="button button-primary">Ga naar Updates</a></p>';
+							}
+
+							$result.html(html).addClass('visible');
+						} else {
+							$result.html('<p class="error">' + response.data.message + '</p>').addClass('visible');
+						}
+						$btn.prop('disabled', false).text('⬆️ Controleer Updates');
+					},
+					error: function() {
+						$result.html('<p class="error">Er is een fout opgetreden.</p>').addClass('visible');
+						$btn.prop('disabled', false).text('⬆️ Controleer Updates');
+					}
+				});
+			});
+		});
+		</script>
+		<?php
+	}
+}
+
+// Initialize.
+add_action( 'plugins_loaded', function() {
+	WritgoCMS_License_Admin::get_instance();
+}, 15 );

@@ -44,6 +44,11 @@ function writgocms_init() {
 	// Load text domain for translations.
 	load_plugin_textdomain( 'writgocms', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
+	// Load License Manager first (foundation for everything).
+	require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
+	require_once WRITGOCMS_DIR . 'inc/class-plugin-updater.php';
+	require_once WRITGOCMS_DIR . 'inc/admin-license-settings.php';
+
 	// Load AIML Integration files.
 	require_once WRITGOCMS_DIR . 'inc/class-aiml-provider.php';
 	require_once WRITGOCMS_DIR . 'inc/class-content-planner.php';
@@ -84,6 +89,13 @@ function writgocms_activate() {
 
 	$social_media_manager = WritgoCMS_Social_Media_Manager::get_instance();
 	$social_media_manager->create_tables();
+
+	// Schedule daily license check.
+	if ( ! class_exists( 'WritgoCMS_License_Manager' ) ) {
+		require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
+	}
+	$license_manager = WritgoCMS_License_Manager::get_instance();
+	$license_manager->schedule_daily_check();
 }
 register_activation_hook( __FILE__, 'writgocms_activate' );
 
@@ -99,5 +111,12 @@ function writgocms_deactivate() {
 
 	$data_handler = WritgoCMS_GSC_Data_Handler::get_instance();
 	$data_handler->unschedule_sync();
+
+	// Unschedule license check.
+	if ( ! class_exists( 'WritgoCMS_License_Manager' ) ) {
+		require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
+	}
+	$license_manager = WritgoCMS_License_Manager::get_instance();
+	$license_manager->unschedule_daily_check();
 }
 register_deactivation_hook( __FILE__, 'writgocms_deactivate' );
