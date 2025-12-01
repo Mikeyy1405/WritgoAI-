@@ -154,6 +154,7 @@ class WritgoCMS_License_Manager {
 	 */
 	public function is_license_valid() {
 		// WordPress admin users with manage_options capability always have access
+		// Admin users always have access
 		if ( current_user_can( 'manage_options' ) ) {
 			return true;
 		}
@@ -174,6 +175,7 @@ class WritgoCMS_License_Manager {
 			return true;
 		}
 
+		// Use is_license_valid() which already includes admin bypass
 		if ( ! $this->is_license_valid() ) {
 			return false;
 		}
@@ -442,6 +444,7 @@ class WritgoCMS_License_Manager {
 	 */
 	public function display_license_notices() {
 		// Don't show license notices to WordPress admin users with manage_options capability
+		// Admin users don't need license notices
 		if ( current_user_can( 'manage_options' ) ) {
 			return;
 		}
