@@ -108,6 +108,7 @@ class WritgoCMS_Classic_Editor_Button {
             array(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'writgocms_aiml_nonce' ),
+                'isAdmin' => current_user_can( 'manage_options' ),
                 'i18n'    => array(
                     'title'          => __( 'AI Content Generator', 'writgocms' ),
                     'promptLabel'    => __( 'Enter your prompt:', 'writgocms' ),

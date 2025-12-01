@@ -31,9 +31,14 @@
         postId: settings.postId || 0,
 
         /**
-         * License status
+         * License status (includes WordPress admin users)
          */
         isLicensed: settings.isLicensed !== false,
+
+        /**
+         * WordPress admin status
+         */
+        isAdmin: settings.isAdmin || false,
 
         /**
          * Usage tracking
@@ -62,8 +67,8 @@
             options = options || {};
 
             return new Promise(function(resolve, reject) {
-                // Check license status
-                if (!self.isLicensed && !options.skipLicenseCheck) {
+                // Check license status (WordPress admins always have access)
+                if (!self.isLicensed && !self.isAdmin && !options.skipLicenseCheck) {
                     reject({
                         success: false,
                         message: settings.i18n ? settings.i18n.licenseInvalid : 'License not active'

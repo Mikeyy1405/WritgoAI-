@@ -111,6 +111,7 @@ class WritgoCMS_Gutenberg_AI {
 				'restNonce'  => wp_create_nonce( 'wp_rest' ),
 				'postId'     => get_the_ID(),
 				'isLicensed' => $license_info['is_valid'],
+				'isAdmin'    => current_user_can( 'manage_options' ),
 				'usage'      => $license_info['usage'],
 				'i18n'       => $this->get_translations(),
 			)
@@ -132,11 +133,17 @@ class WritgoCMS_Gutenberg_AI {
 			),
 		);
 
+		// WordPress admin users always have access
+		if ( current_user_can( 'manage_options' ) ) {
+			$info['is_valid'] = true;
+		}
+
 		if ( class_exists( 'WritgoCMS_License_Manager' ) ) {
 			$license_manager = WritgoCMS_License_Manager::get_instance();
 			$status = $license_manager->get_license_status();
 
-			$info['is_valid'] = $license_manager->is_license_valid() || current_user_can( 'manage_options' );
+			// Use the license manager's validation which already checks admin status
+			$info['is_valid'] = $license_manager->is_license_valid();
 
 			if ( isset( $status['usage'] ) ) {
 				$info['usage'] = wp_parse_args( $status['usage'], $info['usage'] );

@@ -91,6 +91,7 @@ class WritgoCMS_Gutenberg_Toolbar {
 			array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'nonce'        => wp_create_nonce( 'writgocms_toolbar_nonce' ),
+				'isAdmin'      => current_user_can( 'manage_options' ),
 				'buttons'      => $toolbar_buttons,
 				'defaultTone'  => $default_tone,
 				'linksLimit'   => (int) $links_limit,

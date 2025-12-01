@@ -127,6 +127,7 @@ class WritgoCMS_Gutenberg_AIML_Block {
             array(
                 'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
                 'nonce'        => wp_create_nonce( 'writgocms_aiml_nonce' ),
+                'isAdmin'      => current_user_can( 'manage_options' ),
                 'defaultModel' => $provider->get_default_text_model(),
                 'defaultImageModel' => $provider->get_default_image_model(),
                 'textModels'   => $provider->get_text_models(),
