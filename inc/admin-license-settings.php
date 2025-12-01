@@ -120,9 +120,8 @@ class WritgoCMS_License_Admin {
 	 * Render license page
 	 */
 	public function render_license_page() {
-		// Check authentication status first.
+		// Get WordPress user (always authenticated for admin users with manage_options).
 		$auth_manager = WritgoCMS_Auth_Manager::get_instance();
-		$is_authenticated = $auth_manager->is_authenticated();
 		$current_user = $auth_manager->get_current_user();
 
 		// Legacy license support.
@@ -139,99 +138,33 @@ class WritgoCMS_License_Admin {
 			</h1>
 
 			<div class="aiml-tab-content">
-				<?php if ( $is_authenticated ) : ?>
-					<!-- Authenticated User View -->
-					<div class="auth-user-panel">
-						<div class="planner-card">
-							<h2>👤 Je Account</h2>
-							
-							<div class="auth-user-info">
-								<div class="user-avatar">
-									<span class="user-icon">👤</span>
-								</div>
-								<div class="user-details">
-									<h3 class="user-name"><?php echo esc_html( $current_user['name'] ? $current_user['name'] : $current_user['email'] ); ?></h3>
-									<p class="user-email"><?php echo esc_html( $current_user['email'] ); ?></p>
-									<?php if ( ! empty( $current_user['company'] ) ) : ?>
-										<p class="user-company">🏢 <?php echo esc_html( $current_user['company'] ); ?></p>
-									<?php endif; ?>
-								</div>
+				<!-- WordPress User View (always authenticated) -->
+				<div class="auth-user-panel">
+					<div class="planner-card">
+						<h2>👤 Je WordPress Account</h2>
+						
+						<div class="auth-user-info">
+							<div class="user-avatar">
+								<span class="user-icon">👤</span>
 							</div>
-
-							<div class="auth-actions">
-								<a href="https://writgoai.com/account" target="_blank" class="button button-secondary">
-									⚙️ Account Instellingen
-								</a>
-								<button type="button" id="logout-btn" class="button button-link-delete">
-									🚪 Uitloggen
-								</button>
-							</div>
-
-							<div class="auth-status-message-settings"></div>
-						</div>
-					</div>
-				<?php elseif ( empty( $license_key ) ) : ?>
-					<!-- Login Form -->
-					<div class="auth-login-form">
-						<div class="planner-card">
-							<h2>🔐 Log in op je Account</h2>
-							<p class="description">
-								Log in met je WritgoAI account om toegang te krijgen tot alle functies.
-							</p>
-
-							<form id="settings-login-form" class="auth-form">
-								<table class="form-table">
-									<tr>
-										<th scope="row">
-											<label for="settings-email">E-mailadres</label>
-										</th>
-										<td>
-											<input type="email" id="settings-email" name="email" class="regular-text" placeholder="je@email.nl" required>
-											<p class="description">Het e-mailadres van je WritgoAI account.</p>
-										</td>
-									</tr>
-									<tr>
-										<th scope="row">
-											<label for="settings-password">Wachtwoord</label>
-										</th>
-										<td>
-											<input type="password" id="settings-password" name="password" class="regular-text" placeholder="Wachtwoord" required>
-											<p class="description">Je WritgoAI wachtwoord.</p>
-										</td>
-									</tr>
-								</table>
-
-								<p class="submit">
-									<button type="submit" id="settings-login-btn" class="button button-primary button-hero">
-										🔓 Inloggen
-									</button>
-									<span class="auth-status-message"></span>
-								</p>
-							</form>
-
-							<div class="auth-help-section">
-								<h3>❓ Nog geen account?</h3>
-								<p>
-									Bezoek <a href="https://writgo.ai/register" target="_blank">writgo.ai</a> om een account aan te maken.
-								</p>
-								<ul>
-									<li>✅ Onbeperkt AI content genereren</li>
-									<li>✅ Automatische updates</li>
-									<li>✅ Premium support</li>
-									<li>✅ Alle AI modellen toegang</li>
-								</ul>
-								<a href="https://writgo.ai/register" target="_blank" class="button button-secondary">
-									Account Aanmaken
-								</a>
-								<p style="margin-top: 16px;">
-									<a href="https://writgo.ai/forgot-password" target="_blank">
-										Wachtwoord vergeten?
-									</a>
+							<div class="user-details">
+								<h3 class="user-name"><?php echo esc_html( $current_user['name'] ); ?></h3>
+								<p class="user-email"><?php echo esc_html( $current_user['email'] ); ?></p>
+								<p class="description">
+									<?php esc_html_e( 'Je bent ingelogd met je WordPress account. De plugin gebruikt automatisch je WordPress inloggegevens voor authenticatie met de WritgoAI API.', 'writgocms' ); ?>
 								</p>
 							</div>
 						</div>
+
+						<div class="auth-actions">
+							<a href="https://writgoai.com/account" target="_blank" class="button button-secondary">
+								⚙️ Bekijk WritgoAI Account
+							</a>
+						</div>
 					</div>
-				<?php else : ?>
+				</div>
+
+				<?php if ( ! empty( $license_key ) ) : ?>
 					<!-- License activated -->
 					<div class="license-status-panel">
 						<div class="planner-card">
