@@ -28,6 +28,9 @@
 			// License validation
 			$(document).on('click', '#validate-license-btn', this.validateLicense.bind(this));
 
+			// Authentication
+			$(document).on('submit', '#wizard-login-form', this.handleLogin.bind(this));
+
 			// Example cards selection
 			$(document).on('click', '.example-card', this.selectExample.bind(this));
 
@@ -229,6 +232,53 @@
 				},
 				complete: function() {
 					$button.prop('disabled', false).text('Valideren');
+				}
+			});
+		},
+
+		handleLogin: function(e) {
+			e.preventDefault();
+			const $form = $(e.currentTarget);
+			const $button = $('#wizard-login-btn');
+			const $message = $('.auth-status-message');
+			const email = $('#wizard-email').val();
+			const password = $('#wizard-password').val();
+
+			if (!email || !password) {
+				$message.removeClass('success').addClass('error').text('Vul alle velden in.');
+				return;
+			}
+
+			$button.prop('disabled', true).text('Inloggen...');
+			$message.removeClass('success error').text('');
+
+			// Create auth nonce if not exists (for backward compatibility)
+			const authNonce = typeof writgocmsAuth !== 'undefined' ? writgocmsAuth.nonce : writgocmsAdmin.nonce;
+
+			$.ajax({
+				url: writgocmsAdmin.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'writgocms_login',
+					nonce: authNonce,
+					email: email,
+					password: password
+				},
+				success: function(response) {
+					if (response.success) {
+						$message.addClass('success').text(response.data.message || 'Login succesvol!');
+						// Reload page to show logged-in state
+						setTimeout(function() {
+							window.location.reload();
+						}, 1000);
+					} else {
+						$message.addClass('error').text(response.data.message || 'Login mislukt.');
+						$button.prop('disabled', false).text('Inloggen');
+					}
+				},
+				error: function() {
+					$message.addClass('error').text('Er is een fout opgetreden.');
+					$button.prop('disabled', false).text('Inloggen');
 				}
 			});
 		},

@@ -31,11 +31,18 @@ class WritgoCMS_API_Client {
 	private $api_url;
 
 	/**
-	 * License Key
+	 * License Key (deprecated - use AuthManager)
 	 *
 	 * @var string
 	 */
 	private $license_key;
+
+	/**
+	 * Auth Manager instance
+	 *
+	 * @var WritgoCMS_Auth_Manager
+	 */
+	private $auth_manager;
 
 	/**
 	 * Cache duration in seconds (5 minutes)
@@ -63,8 +70,13 @@ class WritgoCMS_API_Client {
 		// Get API URL from options or use default.
 		$this->api_url = get_option( 'writgocms_api_url', 'https://api.writgoai.com' );
 		
-		// Get license key from options.
+		// Get license key from options (backward compatibility).
 		$this->license_key = get_option( 'writgocms_license_key', '' );
+
+		// Get AuthManager instance.
+		if ( class_exists( 'WritgoCMS_Auth_Manager' ) ) {
+			$this->auth_manager = WritgoCMS_Auth_Manager::get_instance();
+		}
 	}
 
 	/**
@@ -238,23 +250,31 @@ class WritgoCMS_API_Client {
 	 * @return array|WP_Error Response data or error.
 	 */
 	private function request( $method, $endpoint, $body = array() ) {
-		// Validate license key.
-		if ( empty( $this->license_key ) ) {
+		// Prepare headers.
+		$headers = array(
+			'Content-Type' => 'application/json',
+			'User-Agent'   => 'WritgoCMS/' . WRITGOCMS_VERSION,
+		);
+
+		// Use AuthManager if available, otherwise fall back to license key.
+		if ( $this->auth_manager && $this->auth_manager->is_authenticated() ) {
+			$auth_header = $this->auth_manager->get_auth_header();
+			if ( is_wp_error( $auth_header ) ) {
+				return $auth_header;
+			}
+			$headers = array_merge( $headers, $auth_header );
+		} elseif ( ! empty( $this->license_key ) ) {
+			// Backward compatibility with license key.
+			$headers['Authorization'] = 'Bearer ' . $this->license_key;
+		} else {
 			return new WP_Error(
-				'INVALID_LICENSE',
-				__( 'Licentie sleutel is niet geconfigureerd. Ga naar Instellingen om je licentie te activeren.', 'writgocms' )
+				'NOT_AUTHENTICATED',
+				__( 'Niet ingelogd. Log in om door te gaan.', 'writgocms' )
 			);
 		}
 
 		// Build full URL.
 		$url = $this->api_url . $endpoint;
-
-		// Prepare headers.
-		$headers = array(
-			'Content-Type'  => 'application/json',
-			'Authorization' => 'Bearer ' . $this->license_key,
-			'User-Agent'    => 'WritgoCMS/' . WRITGOCMS_VERSION,
-		);
 
 		// Prepare arguments.
 		$args = array(
