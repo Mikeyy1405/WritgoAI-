@@ -184,12 +184,18 @@ class WritgoCMS_Plugin_Updater {
         
         // Move the plugin to the correct location
         if ($result['destination'] !== $plugin_folder) {
-            $wp_filesystem->move($result['destination'], $plugin_folder);
-            $result['destination'] = $plugin_folder;
+            if ($wp_filesystem && $wp_filesystem->move($result['destination'], $plugin_folder)) {
+                $result['destination'] = $plugin_folder;
+            } else {
+                return new WP_Error('move_failed', 'Failed to move plugin to correct directory.');
+            }
         }
         
         // Reactivate plugin
-        activate_plugin($this->plugin_slug);
+        $activated = activate_plugin($this->plugin_slug);
+        if (is_wp_error($activated)) {
+            return new WP_Error('activation_failed', 'Plugin updated but reactivation failed: ' . $activated->get_error_message());
+        }
         
         return $result;
     }

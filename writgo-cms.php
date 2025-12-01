@@ -31,9 +31,6 @@ if ( ! defined( 'WRITGOCMS_FILE' ) ) {
 if ( ! defined( 'WRITGOCMS_DIR' ) ) {
 	define( 'WRITGOCMS_DIR', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'WRITGOCMS_PATH' ) ) {
-	define( 'WRITGOCMS_PATH', plugin_dir_path( __FILE__ ) );
-}
 if ( ! defined( 'WRITGOCMS_URL' ) ) {
 	define( 'WRITGOCMS_URL', plugin_dir_url( __FILE__ ) );
 }

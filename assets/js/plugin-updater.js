@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
         
         // Make AJAX request
         $.ajax({
-            url: ajaxurl,
+            url: writgocmsUpdater.ajaxurl,
             type: 'POST',
             data: {
                 action: 'writgocms_check_updates',
