@@ -269,17 +269,26 @@ class WritgoCMS_Gutenberg_Toolbar {
 	 * @return array Array of keywords.
 	 */
 	private function extract_keywords( $text ) {
-		// Remove common stop words and extract meaningful words.
-		$stop_words = array(
-			'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-			'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
-			'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
-			'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need',
-			'dare', 'ought', 'used', 'this', 'that', 'these', 'those', 'i', 'you',
-			'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'whom',
-			'de', 'het', 'een', 'en', 'of', 'maar', 'in', 'op', 'aan', 'voor',
-			'van', 'met', 'door', 'uit', 'als', 'is', 'was', 'zijn', 'waren',
-			'dat', 'die', 'deze', 'dit', 'ik', 'je', 'jij', 'hij', 'zij', 'wij',
+		/**
+		 * Filter stop words for keyword extraction.
+		 *
+		 * @param array $stop_words Default stop words for English and Dutch.
+		 */
+		$stop_words = apply_filters(
+			'writgocms_toolbar_stop_words',
+			array(
+				// English stop words.
+				'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+				'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
+				'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
+				'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need',
+				'dare', 'ought', 'used', 'this', 'that', 'these', 'those', 'i', 'you',
+				'he', 'she', 'it', 'we', 'they', 'what', 'which', 'who', 'whom',
+				// Dutch stop words.
+				'de', 'het', 'een', 'en', 'of', 'maar', 'in', 'op', 'aan', 'voor',
+				'van', 'met', 'door', 'uit', 'als', 'is', 'was', 'zijn', 'waren',
+				'dat', 'die', 'deze', 'dit', 'ik', 'je', 'jij', 'hij', 'zij', 'wij',
+			)
 		);
 
 		// Convert to lowercase and remove punctuation.
@@ -287,11 +296,18 @@ class WritgoCMS_Gutenberg_Toolbar {
 		$text  = preg_replace( '/[^\p{L}\p{N}\s]/u', '', $text );
 		$words = preg_split( '/\s+/', $text );
 
+		/**
+		 * Filter the minimum word length for keyword extraction.
+		 *
+		 * @param int $min_length Minimum word length (default: 4).
+		 */
+		$min_word_length = apply_filters( 'writgocms_toolbar_min_word_length', 4 );
+
 		// Filter out stop words and short words.
 		$keywords = array();
 		foreach ( $words as $word ) {
 			$word = trim( $word );
-			if ( strlen( $word ) >= 4 && ! in_array( $word, $stop_words, true ) ) {
+			if ( strlen( $word ) >= $min_word_length && ! in_array( $word, $stop_words, true ) ) {
 				$keywords[] = $word;
 			}
 		}
@@ -319,8 +335,9 @@ class WritgoCMS_Gutenberg_Toolbar {
 			'post_type'      => array( 'post', 'page' ),
 			'post_status'    => 'publish',
 			's'              => $search_query,
-			'posts_per_page' => $limit * 2, // Get more to filter.
+			'posts_per_page' => $limit,
 			'orderby'        => 'relevance',
+			'no_found_rows'  => true, // Optimization: skip counting total rows.
 		);
 
 		$query   = new WP_Query( $args );

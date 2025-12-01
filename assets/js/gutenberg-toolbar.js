@@ -43,6 +43,38 @@
 	var buttons = settings.buttons || {};
 
 	/**
+	 * Helper function to make AJAX requests using fetch API
+	 *
+	 * @param {Object} options Request options.
+	 * @param {string} options.action AJAX action name.
+	 * @param {Object} options.data Additional data to send.
+	 * @return {Promise} Promise resolving to response data.
+	 */
+	function ajaxRequest( options ) {
+		var formData = new FormData();
+		formData.append( 'action', options.action );
+		formData.append( 'nonce', settings.nonce );
+		
+		if ( options.data ) {
+			Object.keys( options.data ).forEach( function( key ) {
+				formData.append( key, options.data[ key ] );
+			} );
+		}
+
+		return fetch( settings.ajaxUrl, {
+			method: 'POST',
+			credentials: 'same-origin',
+			body: formData
+		} )
+		.then( function( response ) {
+			if ( ! response.ok ) {
+				throw new Error( 'Network response was not ok' );
+			}
+			return response.json();
+		} );
+	}
+
+	/**
 	 * Toast notification helper
 	 */
 	function showToast( message, type ) {
@@ -194,29 +226,26 @@
 			setIsLoading( true );
 			setRewrittenText( '' );
 
-			jQuery.ajax( {
-				url: settings.ajaxUrl,
-				type: 'POST',
+			ajaxRequest( {
+				action: 'writgocms_toolbar_rewrite',
 				data: {
-					action: 'writgocms_toolbar_rewrite',
-					nonce: settings.nonce,
 					text: selectedText,
 					tone: selectedTone
-				},
-				success: function( response ) {
-					if ( response.success && response.data.rewritten ) {
-						setRewrittenText( response.data.rewritten );
-					} else {
-						var errorMsg = response.data && response.data.message ? response.data.message : ( i18n.errorGeneral || 'An error occurred.' );
-						showToast( errorMsg, 'error' );
-					}
-				},
-				error: function() {
-					showToast( i18n.errorGeneral || 'An error occurred.', 'error' );
-				},
-				complete: function() {
-					setIsLoading( false );
 				}
+			} )
+			.then( function( response ) {
+				if ( response.success && response.data.rewritten ) {
+					setRewrittenText( response.data.rewritten );
+				} else {
+					var errorMsg = response.data && response.data.message ? response.data.message : ( i18n.errorGeneral || 'An error occurred.' );
+					showToast( errorMsg, 'error' );
+				}
+			} )
+			.catch( function() {
+				showToast( i18n.errorGeneral || 'An error occurred.', 'error' );
+			} )
+			.finally( function() {
+				setIsLoading( false );
 			} );
 		}
 
@@ -260,29 +289,26 @@
 		function fetchInternalLinks( text ) {
 			setIsLoading( true );
 
-			jQuery.ajax( {
-				url: settings.ajaxUrl,
-				type: 'POST',
+			ajaxRequest( {
+				action: 'writgocms_toolbar_get_internal_links',
 				data: {
-					action: 'writgocms_toolbar_get_internal_links',
-					nonce: settings.nonce,
 					text: text,
 					limit: settings.linksLimit || 5
-				},
-				success: function( response ) {
-					if ( response.success && response.data.links ) {
-						setSuggestedLinks( response.data.links );
-					} else {
-						setSuggestedLinks( [] );
-					}
-				},
-				error: function() {
-					setSuggestedLinks( [] );
-					showToast( i18n.errorGeneral || 'An error occurred.', 'error' );
-				},
-				complete: function() {
-					setIsLoading( false );
 				}
+			} )
+			.then( function( response ) {
+				if ( response.success && response.data.links ) {
+					setSuggestedLinks( response.data.links );
+				} else {
+					setSuggestedLinks( [] );
+				}
+			} )
+			.catch( function() {
+				setSuggestedLinks( [] );
+				showToast( i18n.errorGeneral || 'An error occurred.', 'error' );
+			} )
+			.finally( function() {
+				setIsLoading( false );
 			} );
 		}
 
@@ -337,31 +363,28 @@
 			setIsLoading( true );
 			setGeneratedImage( null );
 
-			jQuery.ajax( {
-				url: settings.ajaxUrl,
-				type: 'POST',
+			ajaxRequest( {
+				action: 'writgocms_toolbar_generate_image',
 				data: {
-					action: 'writgocms_toolbar_generate_image',
-					nonce: settings.nonce,
 					prompt: imagePrompt
-				},
-				success: function( response ) {
-					if ( response.success && response.data.image_url ) {
-						setGeneratedImage( {
-							url: response.data.image_url,
-							attachmentId: response.data.attachment_id
-						} );
-					} else {
-						var errorMsg = response.data && response.data.message ? response.data.message : ( i18n.errorGeneral || 'An error occurred.' );
-						showToast( errorMsg, 'error' );
-					}
-				},
-				error: function() {
-					showToast( i18n.errorGeneral || 'An error occurred.', 'error' );
-				},
-				complete: function() {
-					setIsLoading( false );
 				}
+			} )
+			.then( function( response ) {
+				if ( response.success && response.data.image_url ) {
+					setGeneratedImage( {
+						url: response.data.image_url,
+						attachmentId: response.data.attachment_id
+					} );
+				} else {
+					var errorMsg = response.data && response.data.message ? response.data.message : ( i18n.errorGeneral || 'An error occurred.' );
+					showToast( errorMsg, 'error' );
+				}
+			} )
+			.catch( function() {
+				showToast( i18n.errorGeneral || 'An error occurred.', 'error' );
+			} )
+			.finally( function() {
+				setIsLoading( false );
 			} );
 		}
 
