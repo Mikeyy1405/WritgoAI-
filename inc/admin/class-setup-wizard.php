@@ -38,6 +38,19 @@ class WritgoCMS_Setup_Wizard {
 	private $total_steps = 5;
 
 	/**
+	 * Step file mapping
+	 *
+	 * @var array
+	 */
+	private $step_files = array(
+		1 => 'step-1-welcome.php',
+		2 => 'step-2-theme.php',
+		3 => 'step-3-audience.php',
+		4 => 'step-4-analysis.php',
+		5 => 'step-5-complete.php',
+	);
+
+	/**
 	 * Get instance
 	 *
 	 * @return WritgoCMS_Setup_Wizard
@@ -142,10 +155,14 @@ class WritgoCMS_Setup_Wizard {
 			$this->current_step = 1;
 		}
 		
-		$step_file = WRITGOCMS_DIR . 'inc/admin/views/wizard/step-' . absint( $this->current_step ) . '.php';
-		
-		if ( file_exists( $step_file ) ) {
-			include $step_file;
+		if ( isset( $this->step_files[ $this->current_step ] ) ) {
+			// Sanitize filename for defense in depth, even though it's from a controlled array.
+			$filename  = sanitize_file_name( $this->step_files[ $this->current_step ] );
+			$step_file = WRITGOCMS_DIR . 'inc/admin/views/wizard/' . $filename;
+			
+			if ( file_exists( $step_file ) ) {
+				include $step_file;
+			}
 		}
 	}
 
