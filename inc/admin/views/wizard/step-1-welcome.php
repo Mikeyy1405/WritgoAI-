@@ -44,43 +44,85 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 			</div>
 
-			<div class="license-section">
-				<h3><?php esc_html_e( 'Activeer je Licentie', 'writgocms' ); ?></h3>
-				<p class="description">
-					<?php esc_html_e( 'Voer je activatiecode in om toegang te krijgen tot alle functies.', 'writgocms' ); ?>
-				</p>
-				
-				<?php
-				$license_key = get_option( 'writgocms_license_key', '' );
-				$license_status = get_option( 'writgocms_license_status', '' );
-				?>
+			<?php
+			// Check if user is authenticated.
+			$auth_manager = WritgoCMS_Auth_Manager::get_instance();
+			$is_authenticated = $auth_manager->is_authenticated();
+			$current_user = $auth_manager->get_current_user();
+			?>
 
-				<div class="license-input-group">
-					<input 
-						type="text" 
-						id="wizard-license-key" 
-						class="regular-text" 
-						placeholder="<?php esc_attr_e( 'bijv. XXXX-XXXX-XXXX-XXXX', 'writgocms' ); ?>"
-						value="<?php echo esc_attr( $license_key ); ?>"
-					/>
-					<button type="button" id="validate-license-btn" class="button button-primary">
-						<?php esc_html_e( 'Valideren', 'writgocms' ); ?>
-					</button>
-				</div>
+			<?php if ( ! $is_authenticated ) : ?>
+				<!-- Login Form -->
+				<div class="auth-section">
+					<h3><?php esc_html_e( 'Log in op je Account', 'writgocms' ); ?></h3>
+					<p class="description">
+						<?php esc_html_e( 'Log in met je WritgoAI account om toegang te krijgen tot alle functies.', 'writgocms' ); ?>
+					</p>
 
-				<?php if ( $license_status === 'valid' ) : ?>
-					<div class="license-status license-valid">
-						<span class="dashicons dashicons-yes-alt"></span>
-						<?php esc_html_e( 'Licentie is geldig en actief!', 'writgocms' ); ?>
+					<form id="wizard-login-form" class="auth-form">
+						<div class="form-field">
+							<label for="wizard-email"><?php esc_html_e( 'E-mailadres', 'writgocms' ); ?></label>
+							<input 
+								type="email" 
+								id="wizard-email" 
+								name="email"
+								class="regular-text" 
+								placeholder="<?php esc_attr_e( 'je@email.nl', 'writgocms' ); ?>"
+								required
+							/>
+						</div>
+
+						<div class="form-field">
+							<label for="wizard-password"><?php esc_html_e( 'Wachtwoord', 'writgocms' ); ?></label>
+							<input 
+								type="password" 
+								id="wizard-password" 
+								name="password"
+								class="regular-text" 
+								placeholder="<?php esc_attr_e( 'Wachtwoord', 'writgocms' ); ?>"
+								required
+							/>
+						</div>
+
+						<div class="form-actions">
+							<button type="submit" id="wizard-login-btn" class="button button-primary button-large">
+								<?php esc_html_e( 'Inloggen', 'writgocms' ); ?>
+							</button>
+							<a href="https://writgo.ai/forgot-password" target="_blank" class="forgot-password-link">
+								<?php esc_html_e( 'Wachtwoord vergeten?', 'writgocms' ); ?>
+							</a>
+						</div>
+
+						<div class="auth-status-message"></div>
+					</form>
+
+					<div class="auth-help">
+						<p>
+							<strong><?php esc_html_e( 'Nog geen account?', 'writgocms' ); ?></strong><br>
+							<a href="https://writgo.ai/register" target="_blank" class="button button-secondary">
+								<?php esc_html_e( 'Account Aanmaken', 'writgocms' ); ?> →
+							</a>
+						</p>
 					</div>
-				<?php endif; ?>
-
-				<p class="license-help">
-					<a href="https://writgo.ai/licentie" target="_blank">
-						<?php esc_html_e( 'Nog geen licentie? Koop er hier een', 'writgocms' ); ?> →
-					</a>
-				</p>
-			</div>
+				</div>
+			<?php else : ?>
+				<!-- Logged In User Info -->
+				<div class="auth-section auth-logged-in">
+					<div class="user-welcome">
+						<span class="welcome-icon">👋</span>
+						<div class="welcome-text">
+							<h3><?php echo esc_html( sprintf( __( 'Welkom terug, %s!', 'writgocms' ), $current_user['name'] ? $current_user['name'] : $current_user['email'] ) ); ?></h3>
+							<p class="user-email"><?php echo esc_html( $current_user['email'] ); ?></p>
+							<?php if ( ! empty( $current_user['company'] ) ) : ?>
+								<p class="user-company"><?php echo esc_html( $current_user['company'] ); ?></p>
+							<?php endif; ?>
+						</div>
+					</div>
+					<p class="description">
+						<?php esc_html_e( 'Je bent ingelogd en klaar om te beginnen met WritgoAI!', 'writgocms' ); ?>
+					</p>
+				</div>
+			<?php endif; ?>
 		</div>
 
 		<div class="wizard-actions">

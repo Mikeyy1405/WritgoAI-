@@ -54,7 +54,10 @@ function writgocms_init() {
 	$db_schema = WritgoCMS_DB_Schema::get_instance();
 	$db_schema->maybe_update();
 
-	// Load License Manager first (foundation for everything).
+	// Load Auth Manager first (new authentication system).
+	require_once WRITGOCMS_DIR . 'inc/class-auth-manager.php';
+
+	// Load License Manager (legacy support - will use AuthManager).
 	require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
 	require_once WRITGOCMS_DIR . 'inc/admin-license-settings.php';
 	

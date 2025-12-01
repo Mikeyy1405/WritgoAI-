@@ -101,7 +101,7 @@ class WritgoCMS_License_Admin {
 			'writgocmsLicense',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'writgocms_license_nonce' ),
+				'nonce'   => wp_create_nonce( 'writgocms_auth_nonce' ), // Changed to auth_nonce for auth actions.
 				'i18n'    => array(
 					'activating'    => 'Activeren...',
 					'deactivating'  => 'Deactiveren...',
@@ -120,6 +120,12 @@ class WritgoCMS_License_Admin {
 	 * Render license page
 	 */
 	public function render_license_page() {
+		// Check authentication status first.
+		$auth_manager = WritgoCMS_Auth_Manager::get_instance();
+		$is_authenticated = $auth_manager->is_authenticated();
+		$current_user = $auth_manager->get_current_user();
+
+		// Legacy license support.
 		$license_key   = $this->license_manager->get_license_key();
 		$license_email = $this->license_manager->get_license_email();
 		$license_status = $this->license_manager->get_license_status();
@@ -133,50 +139,80 @@ class WritgoCMS_License_Admin {
 			</h1>
 
 			<div class="aiml-tab-content">
-				<?php if ( empty( $license_key ) ) : ?>
-					<!-- No license activated -->
-					<div class="license-activation-form">
+				<?php if ( $is_authenticated ) : ?>
+					<!-- Authenticated User View -->
+					<div class="auth-user-panel">
 						<div class="planner-card">
-							<h2>🔐 Licentie Activeren</h2>
+							<h2>👤 Je Account</h2>
+							
+							<div class="auth-user-info">
+								<div class="user-avatar">
+									<span class="user-icon">👤</span>
+								</div>
+								<div class="user-details">
+									<h3 class="user-name"><?php echo esc_html( $current_user['name'] ? $current_user['name'] : $current_user['email'] ); ?></h3>
+									<p class="user-email"><?php echo esc_html( $current_user['email'] ); ?></p>
+									<?php if ( ! empty( $current_user['company'] ) ) : ?>
+										<p class="user-company">🏢 <?php echo esc_html( $current_user['company'] ); ?></p>
+									<?php endif; ?>
+								</div>
+							</div>
+
+							<div class="auth-actions">
+								<a href="https://writgoai.com/account" target="_blank" class="button button-secondary">
+									⚙️ Account Instellingen
+								</a>
+								<button type="button" id="logout-btn" class="button button-link-delete">
+									🚪 Uitloggen
+								</button>
+							</div>
+
+							<div class="auth-status-message-settings"></div>
+						</div>
+					</div>
+				<?php elseif ( empty( $license_key ) ) : ?>
+					<!-- Login Form -->
+					<div class="auth-login-form">
+						<div class="planner-card">
+							<h2>🔐 Log in op je Account</h2>
 							<p class="description">
-								Voer je licentiesleutel en e-mailadres in om WritgoAI te activeren.
-								Je kunt je licentie vinden in je account op <a href="https://writgoai.com/account" target="_blank">writgoai.com</a>.
+								Log in met je WritgoAI account om toegang te krijgen tot alle functies.
 							</p>
 
-							<form id="license-activation-form">
+							<form id="settings-login-form" class="auth-form">
 								<table class="form-table">
 									<tr>
 										<th scope="row">
-											<label for="license-email">E-mailadres</label>
+											<label for="settings-email">E-mailadres</label>
 										</th>
 										<td>
-											<input type="email" id="license-email" name="email" class="regular-text" placeholder="je@email.nl" required>
-											<p class="description">Het e-mailadres waarmee je je hebt aangemeld.</p>
+											<input type="email" id="settings-email" name="email" class="regular-text" placeholder="je@email.nl" required>
+											<p class="description">Het e-mailadres van je WritgoAI account.</p>
 										</td>
 									</tr>
 									<tr>
 										<th scope="row">
-											<label for="license-key">Licentiesleutel</label>
+											<label for="settings-password">Wachtwoord</label>
 										</th>
 										<td>
-											<input type="text" id="license-key" name="license_key" class="regular-text" placeholder="XXXX-XXXX-XXXX-XXXX" required>
-											<p class="description">Je unieke licentiesleutel.</p>
+											<input type="password" id="settings-password" name="password" class="regular-text" placeholder="Wachtwoord" required>
+											<p class="description">Je WritgoAI wachtwoord.</p>
 										</td>
 									</tr>
 								</table>
 
 								<p class="submit">
-									<button type="submit" id="activate-license-btn" class="button button-primary button-hero">
-										✅ Licentie Activeren
+									<button type="submit" id="settings-login-btn" class="button button-primary button-hero">
+										🔓 Inloggen
 									</button>
-									<span class="license-status-message"></span>
+									<span class="auth-status-message"></span>
 								</p>
 							</form>
 
-							<div class="license-help-section">
-								<h3>❓ Nog geen licentie?</h3>
+							<div class="auth-help-section">
+								<h3>❓ Nog geen account?</h3>
 								<p>
-									Bezoek <a href="https://writgoai.com/pricing" target="_blank">writgoai.com</a> om een abonnement te kiezen.
+									Bezoek <a href="https://writgo.ai/register" target="_blank">writgo.ai</a> om een account aan te maken.
 								</p>
 								<ul>
 									<li>✅ Onbeperkt AI content genereren</li>
@@ -184,9 +220,14 @@ class WritgoCMS_License_Admin {
 									<li>✅ Premium support</li>
 									<li>✅ Alle AI modellen toegang</li>
 								</ul>
-								<a href="https://writgoai.com/pricing" target="_blank" class="button button-secondary">
-									Bekijk Abonnementen
+								<a href="https://writgo.ai/register" target="_blank" class="button button-secondary">
+									Account Aanmaken
 								</a>
+								<p style="margin-top: 16px;">
+									<a href="https://writgo.ai/forgot-password" target="_blank">
+										Wachtwoord vergeten?
+									</a>
+								</p>
 							</div>
 						</div>
 					</div>
@@ -860,6 +901,108 @@ class WritgoCMS_License_Admin {
 					font-size: 36px;
 				}
 			}
+
+			/* Auth User Panel Styles */
+			.writgocms-license-page .auth-user-info {
+				display: flex;
+				align-items: center;
+				gap: 24px;
+				padding: 24px;
+				background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+				border-radius: 12px;
+				margin-bottom: 24px;
+			}
+
+			.writgocms-license-page .user-avatar {
+				flex-shrink: 0;
+			}
+
+			.writgocms-license-page .user-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 80px;
+				height: 80px;
+				background: white;
+				border-radius: 50%;
+				font-size: 40px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			}
+
+			.writgocms-license-page .user-details {
+				flex: 1;
+			}
+
+			.writgocms-license-page .user-name {
+				font-size: 24px;
+				font-weight: 600;
+				color: #0f172a;
+				margin: 0 0 8px 0;
+			}
+
+			.writgocms-license-page .user-email {
+				font-size: 14px;
+				color: #64748b;
+				margin: 4px 0;
+			}
+
+			.writgocms-license-page .user-company {
+				font-size: 14px;
+				color: #94a3b8;
+				margin: 4px 0;
+			}
+
+			.writgocms-license-page .auth-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				padding-top: 20px;
+				border-top: 1px solid #e2e8f0;
+			}
+
+			.writgocms-license-page .auth-status-message-settings {
+				margin-top: 16px;
+				padding: 12px 16px;
+				border-radius: 8px;
+				font-size: 14px;
+				display: none;
+			}
+
+			.writgocms-license-page .auth-status-message-settings.success {
+				background: #d1fae5;
+				color: #065f46;
+				border: 1px solid #10b981;
+				display: block;
+			}
+
+			.writgocms-license-page .auth-status-message-settings.error {
+				background: #fee2e2;
+				color: #991b1b;
+				border: 1px solid #ef4444;
+				display: block;
+			}
+
+			.writgocms-license-page .auth-help-section {
+				margin-top: 24px;
+				padding-top: 24px;
+				border-top: 1px solid #e9ecef;
+			}
+
+			@media screen and (max-width: 782px) {
+				.writgocms-license-page .auth-user-info {
+					flex-direction: column;
+					text-align: center;
+				}
+
+				.writgocms-license-page .auth-actions {
+					flex-direction: column;
+				}
+
+				.writgocms-license-page .auth-actions .button {
+					width: 100%;
+					text-align: center;
+				}
+			}
 		</style>
 
 		<script>
@@ -1010,6 +1153,88 @@ class WritgoCMS_License_Admin {
 						$btn.prop('disabled', false).text('⬆️ Controleer Updates');
 					}
 				});
+			});
+		});
+
+		// Settings login form.
+		$('#settings-login-form').on('submit', function(e) {
+			e.preventDefault();
+
+			var $form = $(this);
+			var $btn = $('#settings-login-btn');
+			var $message = $('.auth-status-message');
+			var email = $('#settings-email').val();
+			var password = $('#settings-password').val();
+
+			if (!email || !password) {
+				$message.removeClass('success').addClass('error').text('Vul alle velden in.');
+				return;
+			}
+
+			$btn.prop('disabled', true).text('Inloggen...');
+			$message.removeClass('success error').text('');
+
+			$.ajax({
+				url: writgocmsLicense.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'writgocms_login',
+					nonce: writgocmsLicense.nonce,
+					email: email,
+					password: password
+				},
+				success: function(response) {
+					if (response.success) {
+						$message.addClass('success').text(response.data.message || 'Login succesvol!');
+						setTimeout(function() {
+							location.reload();
+						}, 1000);
+					} else {
+						$message.addClass('error').text(response.data.message || 'Login mislukt.');
+						$btn.prop('disabled', false).text('🔓 Inloggen');
+					}
+				},
+				error: function() {
+					$message.addClass('error').text('Er is een fout opgetreden.');
+					$btn.prop('disabled', false).text('🔓 Inloggen');
+				}
+			});
+		});
+
+		// Logout button.
+		$('#logout-btn').on('click', function() {
+			if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
+				return;
+			}
+
+			var $btn = $(this);
+			var $message = $('.auth-status-message-settings');
+
+			$btn.prop('disabled', true).text('Uitloggen...');
+			$message.removeClass('success error').text('');
+
+			$.ajax({
+				url: writgocmsLicense.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'writgocms_logout',
+					nonce: writgocmsLicense.nonce
+				},
+				success: function(response) {
+					if (response.success) {
+						$message.addClass('success').text(response.data.message || 'Uitgelogd.');
+						setTimeout(function() {
+							location.reload();
+						}, 1000);
+					} else {
+						$message.addClass('error').text(response.data.message || 'Uitloggen mislukt.');
+						$btn.prop('disabled', false).text('🚪 Uitloggen');
+					}
+				},
+				error: function() {
+					$message.addClass('error').text('Er is een fout opgetreden.');
+					$btn.prop('disabled', false).text('🚪 Uitloggen');
+				}
 			});
 		});
 		</script>

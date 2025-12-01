@@ -97,6 +97,15 @@ class WritgoCMS_Admin_Controller {
 				),
 			)
 		);
+
+		// Add auth nonce for authentication endpoints.
+		wp_localize_script(
+			'writgocms-admin-beginner',
+			'writgocmsAuth',
+			array(
+				'nonce' => wp_create_nonce( 'writgocms_auth_nonce' ),
+			)
+		);
 	}
 
 	/**
