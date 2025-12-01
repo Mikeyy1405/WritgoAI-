@@ -252,8 +252,10 @@
 			$button.prop('disabled', true).text('Inloggen...');
 			$message.removeClass('success error').text('');
 
-			// Create auth nonce if not exists (for backward compatibility)
-			const authNonce = typeof writgocmsAuth !== 'undefined' ? writgocmsAuth.nonce : writgocmsAdmin.nonce;
+			// Use auth nonce if available, otherwise fall back to admin nonce
+			const authNonce = (typeof writgocmsAuth !== 'undefined' && writgocmsAuth.nonce) 
+				? writgocmsAuth.nonce 
+				: writgocmsAdmin.nonce;
 
 			$.ajax({
 				url: writgocmsAdmin.ajaxUrl,

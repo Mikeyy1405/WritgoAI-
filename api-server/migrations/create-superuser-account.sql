@@ -27,7 +27,21 @@ SET @superuser_credits = 999999999;
 -- ============================================================================
 -- STEP 1: Create the superuser account
 -- ============================================================================
--- Replace $PLACEHOLDER_HASH with actual password hash from create-superuser.php
+-- CRITICAL: Replace $PLACEHOLDER_HASH with actual password hash from create-superuser.php
+-- DO NOT run this migration without updating the password hash!
+-- The migration will fail if you forget to update it.
+
+-- Check if placeholder is still present (basic validation)
+-- If you see this error, you forgot to update the password hash!
+-- Run: php scripts/create-superuser.php
+SET @check_placeholder = '$2y$10$PLACEHOLDER_HASH';
+SELECT 
+    CASE 
+        WHEN @check_placeholder LIKE '%PLACEHOLDER%' 
+        THEN SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'ERROR: Password hash placeholder not replaced! Run scripts/create-superuser.php first.'
+    END AS validation;
+
 INSERT INTO wp_writgo_users (
     email,
     password_hash,
@@ -38,7 +52,7 @@ INSERT INTO wp_writgo_users (
     updated_at
 ) VALUES (
     @superuser_email,
-    '$2y$10$PLACEHOLDER_HASH', -- UPDATE THIS WITH ACTUAL HASH
+    '$2y$10$PLACEHOLDER_HASH', -- ⚠️ UPDATE THIS WITH ACTUAL HASH FROM create-superuser.php ⚠️
     @superuser_name,
     @superuser_company,
     NOW(), -- Email already verified

@@ -182,10 +182,11 @@ class WritgoCMS_Auth_Manager {
 	 */
 	public function logout() {
 		$token = $this->get_token();
+		$api_logout_success = true;
 
 		// Call logout endpoint if we have a token.
 		if ( ! empty( $token ) ) {
-			wp_remote_post(
+			$response = wp_remote_post(
 				$this->api_base_url . '/v1/auth/logout',
 				array(
 					'timeout' => 10,
@@ -195,16 +196,29 @@ class WritgoCMS_Auth_Manager {
 					),
 				)
 			);
+
+			// Check if API logout failed (but continue with local cleanup anyway).
+			if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) >= 400 ) {
+				$api_logout_success = false;
+				// Log the error for debugging.
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'WritgoAI Auth: API logout failed - ' . ( is_wp_error( $response ) ? $response->get_error_message() : 'HTTP ' . wp_remote_retrieve_response_code( $response ) ) );
+				}
+			}
 		}
 
-		// Clear stored authentication data.
+		// Clear stored authentication data (always do this, even if API call fails).
 		delete_option( $this->token_option );
 		delete_option( $this->user_option );
 		delete_option( $this->expiry_option );
 
+		$message = $api_logout_success 
+			? __( 'Je bent uitgelogd.', 'writgocms' )
+			: __( 'Je bent lokaal uitgelogd. De server kon niet worden bereikt.', 'writgocms' );
+
 		return array(
 			'success' => true,
-			'message' => __( 'Je bent uitgelogd.', 'writgocms' ),
+			'message' => $message,
 		);
 	}
 
@@ -351,32 +365,65 @@ class WritgoCMS_Auth_Manager {
 	/**
 	 * Encrypt token for storage
 	 *
+	 * Uses OpenSSL AES-256-CBC encryption for secure token storage.
+	 *
 	 * @param string $token Token to encrypt.
-	 * @return string Encrypted token.
+	 * @return string Encrypted token (base64 encoded).
 	 */
 	private function encrypt_token( $token ) {
-		// Use WordPress salts for encryption key.
-		$key = wp_salt( 'auth' );
+		// Check if OpenSSL is available.
+		if ( ! function_exists( 'openssl_encrypt' ) ) {
+			// Fallback to base64 encoding if OpenSSL not available.
+			// Note: This is not secure, but better than nothing.
+			return base64_encode( $token );
+		}
 
-		// Simple encryption using base64 and XOR (WordPress doesn't have built-in encryption).
-		// For production, consider using a proper encryption library.
-		$encrypted = base64_encode( $token ^ $key );
+		// Use WordPress salt as encryption key (hash it to get proper length).
+		$key = hash( 'sha256', wp_salt( 'auth' ), true );
 
-		return $encrypted;
+		// Generate a random initialization vector.
+		$iv = openssl_random_pseudo_bytes( openssl_cipher_iv_length( 'aes-256-cbc' ) );
+
+		// Encrypt the token.
+		$encrypted = openssl_encrypt( $token, 'aes-256-cbc', $key, 0, $iv );
+
+		// Combine IV and encrypted data (we need IV for decryption).
+		$result = base64_encode( $iv . $encrypted );
+
+		return $result;
 	}
 
 	/**
 	 * Decrypt token from storage
 	 *
-	 * @param string $encrypted_token Encrypted token.
-	 * @return string Decrypted token.
+	 * Decrypts token encrypted with encrypt_token() method.
+	 *
+	 * @param string $encrypted_token Encrypted token (base64 encoded).
+	 * @return string|false Decrypted token or false on failure.
 	 */
 	private function decrypt_token( $encrypted_token ) {
-		// Use WordPress salts for encryption key.
-		$key = wp_salt( 'auth' );
+		// Check if OpenSSL is available.
+		if ( ! function_exists( 'openssl_decrypt' ) ) {
+			// Fallback for base64 encoded tokens (not secure).
+			return base64_decode( $encrypted_token );
+		}
 
-		// Decrypt using base64 and XOR.
-		$decrypted = base64_decode( $encrypted_token ) ^ $key;
+		// Decode the base64 encoded data.
+		$data = base64_decode( $encrypted_token );
+		if ( false === $data ) {
+			return false;
+		}
+
+		// Use WordPress salt as encryption key (hash it to get proper length).
+		$key = hash( 'sha256', wp_salt( 'auth' ), true );
+
+		// Extract IV from the beginning of the data.
+		$iv_length = openssl_cipher_iv_length( 'aes-256-cbc' );
+		$iv        = substr( $data, 0, $iv_length );
+		$encrypted = substr( $data, $iv_length );
+
+		// Decrypt the token.
+		$decrypted = openssl_decrypt( $encrypted, 'aes-256-cbc', $key, 0, $iv );
 
 		return $decrypted;
 	}
