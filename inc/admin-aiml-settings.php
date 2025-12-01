@@ -314,6 +314,13 @@ class WritgoCMS_AIML_Admin_Settings {
      * Render dashboard page - Dutch interface with site analysis
      */
     public function render_dashboard_page() {
+        // Use new beginner-friendly dashboard template.
+        $dashboard_template = WRITGOCMS_DIR . 'inc/admin/views/dashboard.php';
+        if ( file_exists( $dashboard_template ) ) {
+            include $dashboard_template;
+            return;
+        }
+
         // Use new Dashboard class for rendering.
         if ( class_exists( 'WritgoCMS_Dashboard' ) ) {
             $dashboard = WritgoCMS_Dashboard::get_instance();
