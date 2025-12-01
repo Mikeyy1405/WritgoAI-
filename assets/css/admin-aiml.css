@@ -2921,3 +2921,79 @@
         color: #94a3b8;
     }
 }
+
+/* ==========================================================================
+   WordPress Admin Menu Styling - Logical Groupings
+   ========================================================================== */
+
+/* Add visual separation between menu groups using CSS selector targeting */
+
+/* Separator after Dashboard (Licentie comes next as Beheer section) */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(2)::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: #ddd;
+    margin: 8px 12px;
+}
+
+/* Separator after Content Tools section (after Gegenereerde Content, before Statistieken) */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(5)::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: #ddd;
+    margin: 8px 12px;
+}
+
+/* Separator after Licentie (before SEO Tools) */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href*="writgocms-license"]::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: -6px;
+    height: 1px;
+    background: #ddd;
+}
+
+/* Separator before Beheer section (before Statistieken if it's after SEO tools) */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href*="writgocms-gsc-settings"]::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: -6px;
+    height: 1px;
+    background: #ddd;
+}
+
+/* Enhanced menu item hover states */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a:hover {
+    background-color: #f6f7f7;
+    transition: background-color 0.2s ease;
+}
+
+/* Improved menu item focus */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li.current a,
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a.current {
+    font-weight: 600;
+    color: #1877F2;
+}
+
+/* Add subtle indentation for better visual hierarchy */
+#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a {
+    padding-left: 16px;
+}
+
+/* Responsive menu adjustments */
+@media screen and (max-width: 782px) {
+    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(2)::after,
+    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(5)::after,
+    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href*="writgocms-license"]::after,
+    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href*="writgocms-gsc-settings"]::after {
+        margin: 6px 8px;
+    }
+}

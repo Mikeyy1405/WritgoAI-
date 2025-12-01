@@ -517,6 +517,48 @@ class WritgoCMS_License_Admin {
 				margin-top: 20px;
 			}
 
+			/* Better button styling */
+			.writgocms-license-page .license-actions .button {
+				padding: 8px 16px;
+				min-height: 36px;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				border-radius: 6px;
+				transition: all 0.2s ease;
+			}
+
+			.writgocms-license-page .license-actions .button:hover {
+				transform: translateY(-1px);
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+			}
+
+			.writgocms-license-page .button-primary {
+				background: linear-gradient(135deg, #1877F2 0%, #3b82f6 100%);
+				border: none;
+				color: #fff;
+			}
+
+			.writgocms-license-page .button-secondary {
+				background: #fff;
+				border: 1px solid #e2e8f0;
+				color: #1e293b;
+			}
+
+			.writgocms-license-page .button-secondary:hover {
+				border-color: #1877F2;
+				color: #1877F2;
+			}
+
+			.writgocms-license-page .button-link-delete {
+				color: #dc2626;
+			}
+
+			.writgocms-license-page .button-link-delete:hover {
+				color: #991b1b;
+				background: #fef2f2;
+			}
+
 			.writgocms-license-page .license-usage-section,
 			.writgocms-license-page .license-features-section {
 				margin-top: 25px;
@@ -600,6 +642,12 @@ class WritgoCMS_License_Admin {
 				border-top: 1px solid #e9ecef;
 			}
 
+			.writgocms-license-page .license-help-section h3 {
+				color: #0f172a;
+				font-size: 18px;
+				margin-bottom: 12px;
+			}
+
 			.writgocms-license-page .license-help-section ul {
 				list-style: none;
 				padding: 0;
@@ -607,7 +655,15 @@ class WritgoCMS_License_Admin {
 			}
 
 			.writgocms-license-page .license-help-section li {
-				padding: 5px 0;
+				padding: 8px 0;
+				font-size: 14px;
+				color: #475569;
+			}
+
+			.writgocms-license-page .license-activation-form .button-hero {
+				padding: 12px 24px;
+				font-size: 16px;
+				min-height: 44px;
 			}
 
 			.writgocms-license-page .license-status-message {
@@ -638,6 +694,30 @@ class WritgoCMS_License_Admin {
 			#update-check-result.has-update {
 				background: #d4edda;
 				border: 1px solid #c3e6cb;
+			}
+
+			/* Planner Card Consistency */
+			.writgocms-license-page .planner-card {
+				background: #fff;
+				border: 1px solid #e2e8f0;
+				border-radius: 12px;
+				padding: 24px;
+				margin-bottom: 20px;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+				transition: all 0.2s ease;
+			}
+
+			.writgocms-license-page .planner-card:hover {
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+			}
+
+			.writgocms-license-page .planner-card h2 {
+				margin: 0 0 20px 0;
+				padding-bottom: 15px;
+				border-bottom: 2px solid #e2e8f0;
+				font-size: 20px;
+				font-weight: 600;
+				color: #0f172a;
 			}
 
 			/* Credit Display Styles */
