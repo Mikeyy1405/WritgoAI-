@@ -65,6 +65,7 @@ function writgocms_init() {
 	require_once WRITGOCMS_DIR . 'inc/class-post-updater.php';
 	require_once WRITGOCMS_DIR . 'inc/admin-aiml-settings.php';
 	require_once WRITGOCMS_DIR . 'inc/gutenberg-aiml-block.php';
+	require_once WRITGOCMS_DIR . 'inc/class-gutenberg-toolbar.php';
 	require_once WRITGOCMS_DIR . 'inc/classic-editor-button.php';
 
 	// Load Social Media Manager files.

@@ -153,6 +153,35 @@ class WritgoCMS_AIML_Admin_Settings {
         register_setting( 'writgocms_aiml_settings', 'writgocms_items_per_analysis', array( 'sanitize_callback' => 'absint' ) );
         register_setting( 'writgocms_aiml_settings', 'writgocms_weekly_updates', array( 'sanitize_callback' => 'absint' ) );
         register_setting( 'writgocms_aiml_settings', 'writgocms_notifications', array( 'sanitize_callback' => 'absint' ) );
+
+        // Gutenberg Toolbar Settings.
+        register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_enabled', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_buttons', array( 'sanitize_callback' => array( $this, 'sanitize_toolbar_buttons' ) ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_rewrite_tone', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_links_limit', array( 'sanitize_callback' => 'absint' ) );
+    }
+
+    /**
+     * Sanitize toolbar buttons settings
+     *
+     * @param array $input Toolbar buttons input.
+     * @return array
+     */
+    public function sanitize_toolbar_buttons( $input ) {
+        if ( ! is_array( $input ) ) {
+            return array(
+                'rewrite'     => true,
+                'links'       => true,
+                'image'       => true,
+                'rewrite_all' => true,
+            );
+        }
+        return array(
+            'rewrite'     => isset( $input['rewrite'] ) ? (bool) $input['rewrite'] : false,
+            'links'       => isset( $input['links'] ) ? (bool) $input['links'] : false,
+            'image'       => isset( $input['image'] ) ? (bool) $input['image'] : false,
+            'rewrite_all' => isset( $input['rewrite_all'] ) ? (bool) $input['rewrite_all'] : false,
+        );
     }
 
     /**
@@ -1140,6 +1169,95 @@ class WritgoCMS_AIML_Admin_Settings {
                                     Notificaties bij nieuwe suggesties
                                 </label>
                             </fieldset>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Gutenberg AI Toolbar Section -->
+            <?php
+            $toolbar_enabled = get_option( 'writgocms_toolbar_enabled', 1 );
+            $toolbar_buttons = get_option( 'writgocms_toolbar_buttons', array(
+                'rewrite'     => true,
+                'links'       => true,
+                'image'       => true,
+                'rewrite_all' => true,
+            ) );
+            $default_rewrite_tone = get_option( 'writgocms_toolbar_rewrite_tone', 'professional' );
+            $links_limit = get_option( 'writgocms_toolbar_links_limit', 5 );
+            ?>
+            <div class="aiml-settings-section">
+                <h2>🛠️ Gutenberg AI Toolbar</h2>
+                <p class="description">
+                    Configureer de AI-gestuurde toolbar die in de Gutenberg editor verschijnt.
+                </p>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            Toolbar Inschakelen
+                        </th>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="writgocms_toolbar_enabled" value="1" <?php checked( $toolbar_enabled, 1 ); ?>>
+                                AI Toolbar weergeven in Gutenberg editor
+                            </label>
+                            <p class="description">Schakel de AI-toolbar in of uit in de Gutenberg block editor.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            Toolbar Knoppen
+                        </th>
+                        <td>
+                            <fieldset>
+                                <label>
+                                    <input type="checkbox" name="writgocms_toolbar_buttons[rewrite]" value="1" <?php checked( isset( $toolbar_buttons['rewrite'] ) ? $toolbar_buttons['rewrite'] : true ); ?>>
+                                    🤖 AI Rewrite - Herschrijf geselecteerde tekst
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="writgocms_toolbar_buttons[links]" value="1" <?php checked( isset( $toolbar_buttons['links'] ) ? $toolbar_buttons['links'] : true ); ?>>
+                                    🔗 Add Links - Interne link suggesties
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="writgocms_toolbar_buttons[image]" value="1" <?php checked( isset( $toolbar_buttons['image'] ) ? $toolbar_buttons['image'] : true ); ?>>
+                                    🖼️ Generate Image - AI afbeelding genereren
+                                </label><br>
+                                <label>
+                                    <input type="checkbox" name="writgocms_toolbar_buttons[rewrite_all]" value="1" <?php checked( isset( $toolbar_buttons['rewrite_all'] ) ? $toolbar_buttons['rewrite_all'] : true ); ?>>
+                                    📝 Rewrite All - Hele blok herschrijven
+                                </label>
+                            </fieldset>
+                            <p class="description">Selecteer welke knoppen in de AI toolbar worden weergegeven.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_toolbar_rewrite_tone">Standaard Herschrijf Toon</label>
+                        </th>
+                        <td>
+                            <select id="writgocms_toolbar_rewrite_tone" name="writgocms_toolbar_rewrite_tone">
+                                <option value="professional" <?php selected( $default_rewrite_tone, 'professional' ); ?>>Professioneel</option>
+                                <option value="casual" <?php selected( $default_rewrite_tone, 'casual' ); ?>>Informeel</option>
+                                <option value="friendly" <?php selected( $default_rewrite_tone, 'friendly' ); ?>>Vriendelijk</option>
+                                <option value="formal" <?php selected( $default_rewrite_tone, 'formal' ); ?>>Formeel</option>
+                                <option value="creative" <?php selected( $default_rewrite_tone, 'creative' ); ?>>Creatief</option>
+                            </select>
+                            <p class="description">De standaard schrijfstijl voor AI herschrijvingen.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="writgocms_toolbar_links_limit">Interne Links Limiet</label>
+                        </th>
+                        <td>
+                            <select id="writgocms_toolbar_links_limit" name="writgocms_toolbar_links_limit">
+                                <option value="3" <?php selected( $links_limit, 3 ); ?>>3 links</option>
+                                <option value="5" <?php selected( $links_limit, 5 ); ?>>5 links</option>
+                                <option value="10" <?php selected( $links_limit, 10 ); ?>>10 links</option>
+                                <option value="15" <?php selected( $links_limit, 15 ); ?>>15 links</option>
+                            </select>
+                            <p class="description">Maximum aantal interne link suggesties per selectie.</p>
                         </td>
                     </tr>
                 </table>
