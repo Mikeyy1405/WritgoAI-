@@ -96,6 +96,10 @@
                 loadingCredits = _useState8[0],
                 setLoadingCredits = _useState8[1];
 
+            var _useState9 = useState(''),
+                creditError = _useState9[0],
+                setCreditError = _useState9[1];
+
             // Fetch credits on mount
             useEffect(function() {
                 fetchCredits();
@@ -103,14 +107,18 @@
 
             function fetchCredits() {
                 setLoadingCredits(true);
+                setCreditError('');
                 wp.apiFetch({
                     path: '/writgo/v1/credits',
                     method: 'GET'
                 }).then(function(response) {
                     setCredits(response);
                     setLoadingCredits(false);
-                }).catch(function() {
+                }).catch(function(err) {
                     setLoadingCredits(false);
+                    // Log error for debugging and set error state.
+                    console.warn('WritgoAI: Failed to fetch credits', err);
+                    setCreditError(err.message || 'Failed to load credit information');
                 });
             }
 
@@ -211,6 +219,12 @@
                         createElement(Spinner, { size: 16 }),
                         ' Loading credits...'
                     );
+                }
+                if (creditError) {
+                    return createElement('div', { 
+                        className: 'aiml-credits-error',
+                        style: { padding: '10px', background: '#fee', borderRadius: '6px', color: '#c00', fontSize: '13px' }
+                    }, '⚠️ ' + creditError);
                 }
                 if (!credits) return null;
 

@@ -46,6 +46,13 @@ class WritgoCMS_Credit_Manager {
     );
 
     /**
+     * Grace period in days before marking expired licenses as inactive
+     *
+     * @var int
+     */
+    private $grace_period_days = 7;
+
+    /**
      * License manager instance
      *
      * @var WritgoCMS_License_Manager
@@ -86,6 +93,9 @@ class WritgoCMS_Credit_Manager {
 
         // Admin bar credit display.
         add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_credits' ), 100 );
+
+        // Enqueue admin scripts for credit operations.
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
         // Filter to check credits before AI operations.
         add_filter( 'writgocms_before_ai_operation', array( $this, 'check_credits_before_operation' ), 10, 2 );
@@ -144,6 +154,27 @@ class WritgoCMS_Credit_Manager {
                 ),
             ),
         ) );
+    }
+
+    /**
+     * Enqueue admin scripts
+     *
+     * @return void
+     */
+    public function enqueue_admin_scripts() {
+        if ( ! current_user_can( 'edit_posts' ) ) {
+            return;
+        }
+
+        // Localize script for AJAX operations.
+        wp_localize_script(
+            'jquery',
+            'writgocmsCredits',
+            array(
+                'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+                'nonce'   => wp_create_nonce( 'writgocms_credits_nonce' ),
+            )
+        );
     }
 
     /**
@@ -438,8 +469,8 @@ class WritgoCMS_Credit_Manager {
             $period_end = strtotime( $license['period_end'] );
             $today      = strtotime( gmdate( 'Y-m-d' ) );
 
-            // If period ended more than 7 days ago and still active, mark as expired.
-            if ( $today > $period_end + ( 7 * DAY_IN_SECONDS ) && 'active' === $license['status'] ) {
+            // If period ended more than grace_period_days ago and still active, mark as expired.
+            if ( $today > $period_end + ( $this->grace_period_days * DAY_IN_SECONDS ) && 'active' === $license['status'] ) {
                 $licenses[ $key ]['status'] = 'expired';
             }
         }

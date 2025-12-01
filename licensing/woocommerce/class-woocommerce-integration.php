@@ -524,12 +524,14 @@ class WritgoAI_WooCommerce_Integration {
             return;
         }
 
-        // Check if we're on the products page with create action.
-        if ( ! isset( $_GET['page'] ) || 'writgocms-products' !== $_GET['page'] ) {
+        // Sanitize and check if we're on the products page with create action.
+        $page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+        if ( 'writgocms-products' !== $page ) {
             return;
         }
 
-        if ( ! isset( $_GET['action'] ) || 'create_products' !== $_GET['action'] ) {
+        $action = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+        if ( 'create_products' !== $action ) {
             return;
         }
 
@@ -656,7 +658,10 @@ class WritgoAI_WooCommerce_Integration {
                 <?php esc_html_e( 'WritgoAI Subscription Products', 'writgocms' ); ?>
             </h1>
 
-            <?php if ( isset( $_GET['created'] ) && '1' === $_GET['created'] ) : ?>
+            <?php
+            $created_param = isset( $_GET['created'] ) ? sanitize_text_field( wp_unslash( $_GET['created'] ) ) : '';
+            if ( '1' === $created_param ) :
+            ?>
             <div class="notice notice-success is-dismissible">
                 <p><?php esc_html_e( 'Subscription products have been created successfully!', 'writgocms' ); ?></p>
             </div>
