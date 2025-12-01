@@ -169,11 +169,7 @@ class WritgoCMS_License_Manager {
 	 * @return bool
 	 */
 	public function check_can_use_ai( $can_use ) {
-		// Admin users always have access
-		if ( current_user_can( 'manage_options' ) ) {
-			return true;
-		}
-
+		// Use is_license_valid() which already includes admin bypass
 		if ( ! $this->is_license_valid() ) {
 			return false;
 		}
