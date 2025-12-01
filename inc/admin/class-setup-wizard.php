@@ -137,7 +137,12 @@ class WritgoCMS_Setup_Wizard {
 	 * Render current wizard step
 	 */
 	private function render_current_step() {
-		$step_file = WRITGOCMS_DIR . 'inc/admin/views/wizard/step-' . $this->current_step . '.php';
+		// Validate step number to prevent path traversal.
+		if ( $this->current_step < 1 || $this->current_step > $this->total_steps ) {
+			$this->current_step = 1;
+		}
+		
+		$step_file = WRITGOCMS_DIR . 'inc/admin/views/wizard/step-' . absint( $this->current_step ) . '.php';
 		
 		if ( file_exists( $step_file ) ) {
 			include $step_file;

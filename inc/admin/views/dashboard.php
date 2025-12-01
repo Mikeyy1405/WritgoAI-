@@ -12,8 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Get dashboard instance for stats.
+if ( ! class_exists( 'WritgoCMS_Dashboard' ) ) {
+	return;
+}
 $dashboard = WritgoCMS_Dashboard::get_instance();
 $stats = $dashboard->get_dashboard_stats();
+
+if ( ! class_exists( 'WritgoCMS_Admin_Controller' ) ) {
+	return;
+}
 $controller = WritgoCMS_Admin_Controller::get_instance();
 $wizard_completed = $controller->is_wizard_completed();
 ?>

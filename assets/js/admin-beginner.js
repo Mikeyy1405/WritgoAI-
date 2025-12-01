@@ -376,8 +376,8 @@
 	 * Initialize on document ready
 	 */
 	$(document).ready(function() {
-		// Get admin URL from WordPress
-		const adminUrl = window.location.origin + '/wp-admin/admin.php';
+		// Admin URL should be passed via wp_localize_script
+		const adminUrl = writgocmsAdmin.ajaxUrl.replace('/admin-ajax.php', '') + '/admin.php';
 		window.adminUrl = adminUrl;
 
 		// Initialize components

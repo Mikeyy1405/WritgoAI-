@@ -186,14 +186,29 @@ class WritgoCMS_Admin_Controller {
 			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
 		}
 
-		// Clear WordPress transients.
+		// Clear WordPress transients using safe method.
 		global $wpdb;
+		// Get all WritgoCMS transient names.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query(
-			"DELETE FROM {$wpdb->options} 
-			WHERE option_name LIKE '_transient_writgocms_%' 
-			OR option_name LIKE '_transient_timeout_writgocms_%'"
+		$transients = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT option_name FROM {$wpdb->options} 
+				WHERE option_name LIKE %s 
+				OR option_name LIKE %s",
+				$wpdb->esc_like( '_transient_writgocms_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_writgocms_' ) . '%'
+			)
 		);
+
+		// Delete transients using WordPress functions.
+		foreach ( $transients as $transient ) {
+			if ( strpos( $transient, '_transient_timeout_' ) === 0 ) {
+				// Skip timeout entries, they'll be deleted with the transient.
+				continue;
+			}
+			$transient_name = str_replace( '_transient_', '', $transient );
+			delete_transient( $transient_name );
+		}
 
 		wp_send_json_success( array( 'message' => __( 'Cache geleegd', 'writgocms' ) ) );
 	}
