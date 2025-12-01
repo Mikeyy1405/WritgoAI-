@@ -49,6 +49,7 @@ class WritgoCMS_Admin_License_Manager {
         add_action( 'wp_ajax_writgocms_admin_update_license', array( $this, 'ajax_update_license' ) );
         add_action( 'wp_ajax_writgocms_admin_delete_license', array( $this, 'ajax_delete_license' ) );
         add_action( 'wp_ajax_writgocms_admin_add_credits', array( $this, 'ajax_add_credits' ) );
+        add_action( 'wp_ajax_writgocms_admin_generate_test_license', array( $this, 'ajax_generate_test_license' ) );
     }
 
     /**
@@ -187,7 +188,15 @@ class WritgoCMS_Admin_License_Manager {
     private function render_licenses_tab( $licenses ) {
         ?>
         <div class="planner-card">
-            <h2><?php esc_html_e( 'All Licenses', 'writgocms' ); ?> <span class="count">(<?php echo count( $licenses ); ?>)</span></h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;"><?php esc_html_e( 'All Licenses', 'writgocms' ); ?> <span class="count">(<?php echo count( $licenses ); ?>)</span></h2>
+                <?php if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
+                    <button type="button" class="button button-primary" id="generate-test-license-btn">
+                        <span class="dashicons dashicons-admin-network" style="margin-top: 3px;"></span>
+                        <?php esc_html_e( 'Generate Test License', 'writgocms' ); ?>
+                    </button>
+                <?php endif; ?>
+            </div>
 
             <?php if ( empty( $licenses ) ) : ?>
                 <p class="description"><?php esc_html_e( 'No licenses found. Licenses are created automatically when customers purchase a subscription.', 'writgocms' ); ?></p>
@@ -280,6 +289,44 @@ class WritgoCMS_Admin_License_Manager {
                         <button type="submit" class="button button-primary"><?php esc_html_e( 'Add Credits', 'writgocms' ); ?></button>
                     </p>
                 </form>
+            </div>
+        </div>
+
+        <!-- Generate Test License Modal -->
+        <div id="generate-test-license-modal" class="writgoai-modal" style="display: none;">
+            <div class="writgoai-modal-content">
+                <span class="writgoai-modal-close">&times;</span>
+                <h2><?php esc_html_e( 'Generate Test License', 'writgocms' ); ?></h2>
+                <?php if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
+                    <p class="description"><?php esc_html_e( 'Generate a test license for development and testing. This feature is only available when WP_DEBUG is enabled.', 'writgocms' ); ?></p>
+                    <form id="generate-test-license-form">
+                        <p>
+                            <label>
+                                <input type="checkbox" id="test-license-use-demo" name="use_demo" value="1">
+                                <?php esc_html_e( 'Use fixed demo license (TEST-DEMO-1234-5678)', 'writgocms' ); ?>
+                            </label>
+                        </p>
+                        <div id="test-license-custom-fields">
+                            <p>
+                                <label for="test-license-email"><?php esc_html_e( 'Email:', 'writgocms' ); ?></label>
+                                <input type="email" id="test-license-email" name="email" class="regular-text" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" required>
+                            </p>
+                            <p>
+                                <label for="test-license-plan"><?php esc_html_e( 'Plan:', 'writgocms' ); ?></label>
+                                <select id="test-license-plan" name="plan" class="regular-text">
+                                    <option value="starter"><?php esc_html_e( 'Starter (1,000 credits)', 'writgocms' ); ?></option>
+                                    <option value="pro" selected><?php esc_html_e( 'Pro (3,000 credits)', 'writgocms' ); ?></option>
+                                    <option value="enterprise"><?php esc_html_e( 'Enterprise (10,000 credits)', 'writgocms' ); ?></option>
+                                </select>
+                            </p>
+                        </div>
+                        <p class="submit">
+                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Generate License', 'writgocms' ); ?></button>
+                        </p>
+                    </form>
+                <?php else : ?>
+                    <p style="color: #dc3545;"><?php esc_html_e( 'Test license generation is only available when WP_DEBUG is enabled in wp-config.php', 'writgocms' ); ?></p>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -426,6 +473,60 @@ class WritgoCMS_Admin_License_Manager {
                     },
                     complete: function() {
                         $btn.prop('disabled', false).text('<?php esc_html_e( 'Add Credits', 'writgocms' ); ?>');
+                    }
+                });
+            });
+
+            // Generate test license button
+            $('#generate-test-license-btn').on('click', function() {
+                $('#generate-test-license-modal').show();
+            });
+
+            // Toggle demo license checkbox
+            $('#test-license-use-demo').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#test-license-custom-fields').hide();
+                    $('#test-license-email').prop('required', false);
+                } else {
+                    $('#test-license-custom-fields').show();
+                    $('#test-license-email').prop('required', true);
+                }
+            });
+
+            // Generate test license form
+            $('#generate-test-license-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                var $btn = $(this).find('button[type="submit"]');
+                var useDemo = $('#test-license-use-demo').is(':checked');
+                var email = $('#test-license-email').val();
+                var plan = $('#test-license-plan').val();
+                
+                $btn.prop('disabled', true).text('<?php esc_html_e( 'Generating...', 'writgocms' ); ?>');
+                
+                $.ajax({
+                    url: writgocmsLicenseManager.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'writgocms_admin_generate_test_license',
+                        nonce: writgocmsLicenseManager.nonce,
+                        use_demo: useDemo ? '1' : '0',
+                        email: email,
+                        plan: plan
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.data.message + '\n\nLicense Key: ' + response.data.license_key);
+                            location.reload();
+                        } else {
+                            alert(response.data.message);
+                        }
+                    },
+                    error: function() {
+                        alert('<?php esc_html_e( 'An error occurred.', 'writgocms' ); ?>');
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).text('<?php esc_html_e( 'Generate License', 'writgocms' ); ?>');
                     }
                 });
             });
@@ -814,6 +915,138 @@ class WritgoCMS_Admin_License_Manager {
         wp_send_json_success( array(
             /* translators: %d: number of credits added */
             'message' => sprintf( __( '%d credits added successfully.', 'writgocms' ), $amount ),
+        ) );
+    }
+
+    /**
+     * Generate a test license for development
+     * Only available when WP_DEBUG is true
+     *
+     * @param string $email Email address.
+     * @param string $plan  Plan type (starter, pro, enterprise).
+     * @param bool   $use_demo Whether to use the fixed demo license.
+     * @return array|WP_Error License data or error.
+     */
+    public function generate_test_license( $email = '', $plan = 'pro', $use_demo = false ) {
+        if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+            return new WP_Error( 'not_debug', __( 'Test licenses can only be generated in debug mode.', 'writgocms' ) );
+        }
+
+        // Plan credits mapping
+        $plan_credits = array(
+            'starter'    => 1000,
+            'pro'        => 3000,
+            'enterprise' => 10000,
+        );
+
+        // Check if demo license
+        if ( $use_demo ) {
+            $license_key = 'TEST-DEMO-1234-5678';
+            $email       = 'demo@writgoai.com';
+            $plan        = 'pro';
+            $credits     = 3000;
+            $is_demo     = true;
+        } else {
+            // Validate plan
+            if ( ! isset( $plan_credits[ $plan ] ) ) {
+                return new WP_Error( 'invalid_plan', __( 'Invalid plan type.', 'writgocms' ) );
+            }
+
+            // Validate email
+            if ( empty( $email ) || ! is_email( $email ) ) {
+                return new WP_Error( 'invalid_email', __( 'Valid email address is required.', 'writgocms' ) );
+            }
+
+            // Genereer license key
+            $segments = array();
+            for ( $i = 0; $i < 4; $i++ ) {
+                $segments[] = strtoupper( substr( bin2hex( random_bytes( 2 ) ), 0, 4 ) );
+            }
+            $license_key = 'TEST-' . implode( '-', array_slice( $segments, 1 ) );
+            $credits     = $plan_credits[ $plan ];
+            $is_demo     = false;
+        }
+
+        // Check if license already exists
+        $licenses = get_option( 'writgoai_licenses', array() );
+        if ( isset( $licenses[ $license_key ] ) ) {
+            return new WP_Error( 'license_exists', __( 'This license key already exists.', 'writgocms' ) );
+        }
+
+        $license_data = array(
+            'license_key'   => $license_key,
+            'email'         => $email,
+            'plan_type'     => $plan,
+            'plan_name'     => ucfirst( $plan ) . ( $is_demo ? ' (Demo)' : ' (Test)' ),
+            'credits_total' => $credits,
+            'credits_used'  => 0,
+            'status'        => 'active',
+            'order_id'      => 0,
+            'activated_at'  => current_time( 'mysql' ),
+            'expires_at'    => date( 'Y-m-d H:i:s', strtotime( '+1 year' ) ),
+            'period_start'  => date( 'Y-m-d' ),
+            'period_end'    => date( 'Y-m-d', strtotime( '+1 month' ) ),
+            'features'      => array( 'ai_rewrite', 'ai_image', 'seo_analysis', 'keyword_research', 'content_planner' ),
+            'is_test'       => true,
+            'is_demo'       => $is_demo,
+        );
+
+        // Save to WordPress options
+        $licenses[ $license_key ] = $license_data;
+        update_option( 'writgoai_licenses', $licenses );
+
+        // Activate directly
+        update_option( 'writgoai_license_key', $license_key );
+        update_option( 'writgoai_license_status', 'active' );
+        update_option( 'writgoai_license_data', $license_data );
+
+        // Log activity
+        $activity_log   = get_option( 'writgoai_license_activity', array() );
+        $activity_log[] = array(
+            'license_key'   => $license_key,
+            'activity_type' => 'created',
+            'metadata'      => array(
+                'type'    => 'test_license',
+                'plan'    => $plan,
+                'credits' => $credits,
+                'is_demo' => $is_demo,
+            ),
+            'ip_address'    => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
+            'created_at'    => current_time( 'mysql' ),
+        );
+        update_option( 'writgoai_license_activity', $activity_log );
+
+        return $license_data;
+    }
+
+    /**
+     * AJAX: Generate test license
+     *
+     * @return void
+     */
+    public function ajax_generate_test_license() {
+        check_ajax_referer( 'writgocms_license_manager_nonce', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+        }
+
+        $use_demo = isset( $_POST['use_demo'] ) && '1' === $_POST['use_demo'];
+        $email    = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+        $plan     = isset( $_POST['plan'] ) ? sanitize_text_field( wp_unslash( $_POST['plan'] ) ) : 'pro';
+
+        $result = $this->generate_test_license( $email, $plan, $use_demo );
+
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+        }
+
+        wp_send_json_success( array(
+            'message'     => $use_demo
+                ? __( 'Demo license generated and activated successfully!', 'writgocms' )
+                : __( 'Test license generated and activated successfully!', 'writgocms' ),
+            'license_key' => $result['license_key'],
+            'license'     => $result,
         ) );
     }
 }
