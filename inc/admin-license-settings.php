@@ -111,6 +111,7 @@ class WritgoCMS_License_Admin {
 					'error'         => 'Fout',
 					'confirmDeactivate' => 'Weet je zeker dat je de licentie wilt deactiveren?',
 				),
+				'updateUrl' => admin_url( 'update-core.php' ),
 			)
 		);
 	}
@@ -702,7 +703,7 @@ class WritgoCMS_License_Admin {
 
 							if (response.data.has_update) {
 								$result.addClass('has-update');
-								html += '<p><a href="' + ajaxurl.replace('admin-ajax.php', 'update-core.php') + '" class="button button-primary">Ga naar Updates</a></p>';
+								html += '<p><a href="' + writgocmsLicense.updateUrl + '" class="button button-primary">Ga naar Updates</a></p>';
 							}
 
 							$result.html(html).addClass('visible');

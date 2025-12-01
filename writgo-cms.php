@@ -91,7 +91,9 @@ function writgocms_activate() {
 	$social_media_manager->create_tables();
 
 	// Schedule daily license check.
-	require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
+	if ( ! class_exists( 'WritgoCMS_License_Manager' ) ) {
+		require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
+	}
 	$license_manager = WritgoCMS_License_Manager::get_instance();
 	$license_manager->schedule_daily_check();
 }
@@ -111,7 +113,9 @@ function writgocms_deactivate() {
 	$data_handler->unschedule_sync();
 
 	// Unschedule license check.
-	require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
+	if ( ! class_exists( 'WritgoCMS_License_Manager' ) ) {
+		require_once WRITGOCMS_DIR . 'inc/class-license-manager.php';
+	}
 	$license_manager = WritgoCMS_License_Manager::get_instance();
 	$license_manager->unschedule_daily_check();
 }

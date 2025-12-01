@@ -102,7 +102,8 @@ class WritgoCMS_Plugin_Updater {
 	private function __construct() {
 		$this->plugin_file     = WRITGOCMS_DIR . 'writgo-cms.php';
 		$this->plugin_slug     = 'writgo-cms';
-		$this->plugin_basename = 'WritgoAI-/writgo-cms.php';
+		// Use plugin_basename() to get the correct path dynamically.
+		$this->plugin_basename = plugin_basename( $this->plugin_file );
 		$this->current_version = WRITGOCMS_VERSION;
 
 		// Initialize license manager.
@@ -239,20 +240,25 @@ class WritgoCMS_Plugin_Updater {
 
 		$license_key = $this->license_manager->get_license_key();
 
+		// Build URL with query parameters for GET request.
+		$request_url = add_query_arg(
+			array(
+				'license_key'     => $license_key,
+				'site_url'        => home_url(),
+				'product'         => 'writgoai',
+				'current_version' => $this->current_version,
+				'wp_version'      => get_bloginfo( 'version' ),
+				'php_version'     => PHP_VERSION,
+			),
+			$this->update_server_url . '/plugin/info'
+		);
+
 		$response = wp_remote_get(
-			$this->update_server_url . '/plugin/info',
+			$request_url,
 			array(
 				'timeout' => 30,
 				'headers' => array(
 					'Content-Type' => 'application/json',
-				),
-				'body'    => array(
-					'license_key'     => $license_key,
-					'site_url'        => home_url(),
-					'product'         => 'writgoai',
-					'current_version' => $this->current_version,
-					'wp_version'      => get_bloginfo( 'version' ),
-					'php_version'     => PHP_VERSION,
 				),
 			)
 		);
@@ -335,9 +341,11 @@ class WritgoCMS_Plugin_Updater {
 			return $source;
 		}
 
-		$expected_directory = trailingslashit( $remote_source ) . 'WritgoAI-';
+		// Get the expected directory name from the current plugin basename.
+		$current_directory = dirname( $this->plugin_basename );
+		$expected_directory = trailingslashit( $remote_source ) . $current_directory;
 
-		if ( $source !== $expected_directory ) {
+		if ( $source !== $expected_directory && $wp_filesystem ) {
 			if ( $wp_filesystem->move( $source, $expected_directory ) ) {
 				return $expected_directory;
 			}
