@@ -9,7 +9,7 @@
  * - Credit checking before AI operations
  * - Dashboard widget integration
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Credit_Manager
+ * Class WritgoAI_Credit_Manager
  */
-class WritgoCMS_Credit_Manager {
+class WritgoAI_Credit_Manager {
 
     /**
      * Instance
      *
-     * @var WritgoCMS_Credit_Manager
+     * @var WritgoAI_Credit_Manager
      */
     private static $instance = null;
 
@@ -55,14 +55,14 @@ class WritgoCMS_Credit_Manager {
     /**
      * License manager instance
      *
-     * @var WritgoCMS_License_Manager
+     * @var WritgoAI_License_Manager
      */
     private $license_manager;
 
     /**
      * Get instance
      *
-     * @return WritgoCMS_Credit_Manager
+     * @return WritgoAI_Credit_Manager
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -76,14 +76,14 @@ class WritgoCMS_Credit_Manager {
      */
     private function __construct() {
         // Get license manager instance.
-        if ( class_exists( 'WritgoCMS_License_Manager' ) ) {
-            $this->license_manager = WritgoCMS_License_Manager::get_instance();
+        if ( class_exists( 'WritgoAI_License_Manager' ) ) {
+            $this->license_manager = WritgoAI_License_Manager::get_instance();
         }
 
         // AJAX handlers for credit operations.
-        add_action( 'wp_ajax_writgocms_get_credits', array( $this, 'ajax_get_credits' ) );
-        add_action( 'wp_ajax_writgocms_check_credits', array( $this, 'ajax_check_credits' ) );
-        add_action( 'wp_ajax_writgocms_consume_credits', array( $this, 'ajax_consume_credits' ) );
+        add_action( 'wp_ajax_writgoai_get_credits', array( $this, 'ajax_get_credits' ) );
+        add_action( 'wp_ajax_writgoai_check_credits', array( $this, 'ajax_check_credits' ) );
+        add_action( 'wp_ajax_writgoai_consume_credits', array( $this, 'ajax_consume_credits' ) );
 
         // REST API endpoints.
         add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
@@ -98,14 +98,14 @@ class WritgoCMS_Credit_Manager {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 
         // Filter to check credits before AI operations.
-        add_filter( 'writgocms_before_ai_operation', array( $this, 'check_credits_before_operation' ), 10, 2 );
+        add_filter( 'writgoai_before_ai_operation', array( $this, 'check_credits_before_operation' ), 10, 2 );
 
         // Cron for monthly credit reset check.
-        add_action( 'writgocms_check_credit_reset', array( $this, 'maybe_reset_credits' ) );
+        add_action( 'writgoai_check_credit_reset', array( $this, 'maybe_reset_credits' ) );
 
         // Schedule cron if not scheduled.
-        if ( ! wp_next_scheduled( 'writgocms_check_credit_reset' ) ) {
-            wp_schedule_event( time(), 'daily', 'writgocms_check_credit_reset' );
+        if ( ! wp_next_scheduled( 'writgoai_check_credit_reset' ) ) {
+            wp_schedule_event( time(), 'daily', 'writgoai_check_credit_reset' );
         }
     }
 
@@ -172,7 +172,7 @@ class WritgoCMS_Credit_Manager {
             'writgocmsCredits',
             array(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-                'nonce'   => wp_create_nonce( 'writgocms_credits_nonce' ),
+                'nonce'   => wp_create_nonce( 'writgoai_credits_nonce' ),
             )
         );
     }
@@ -184,11 +184,11 @@ class WritgoCMS_Credit_Manager {
      */
     public function check_rest_permissions() {
         if ( ! is_user_logged_in() ) {
-            return new WP_Error( 'unauthorized', __( 'You must be logged in.', 'writgocms' ), array( 'status' => 401 ) );
+            return new WP_Error( 'unauthorized', __( 'You must be logged in.', 'writgoai' ), array( 'status' => 401 ) );
         }
 
         if ( ! current_user_can( 'edit_posts' ) ) {
-            return new WP_Error( 'forbidden', __( 'You do not have permission.', 'writgocms' ), array( 'status' => 403 ) );
+            return new WP_Error( 'forbidden', __( 'You do not have permission.', 'writgoai' ), array( 'status' => 403 ) );
         }
 
         return true;
@@ -201,8 +201,8 @@ class WritgoCMS_Credit_Manager {
      */
     public function get_credit_info() {
         // First try to get from API Client (new credit endpoints).
-        if ( class_exists( 'WritgoCMS_API_Client' ) ) {
-            $api_client = WritgoCMS_API_Client::get_instance();
+        if ( class_exists( 'WritgoAI_API_Client' ) ) {
+            $api_client = WritgoAI_API_Client::get_instance();
             $balance = $api_client->get_credit_balance();
             
             if ( ! is_wp_error( $balance ) ) {
@@ -280,7 +280,7 @@ class WritgoCMS_Credit_Manager {
         if ( $this->license_manager ) {
             return $this->license_manager->get_license_key();
         }
-        return get_option( 'writgocms_license_key', '' );
+        return get_option( 'writgoai_license_key', '' );
     }
 
     /**
@@ -305,7 +305,7 @@ class WritgoCMS_Credit_Manager {
         $credit_info = $this->get_credit_info();
 
         if ( 'inactive' === $credit_info['status'] || 'expired' === $credit_info['status'] ) {
-            return new WP_Error( 'license_inactive', __( 'Your license is not active.', 'writgocms' ) );
+            return new WP_Error( 'license_inactive', __( 'Your license is not active.', 'writgoai' ) );
         }
 
         $required = $amount > 0 ? $amount : $this->get_credit_cost( $action );
@@ -316,7 +316,7 @@ class WritgoCMS_Credit_Manager {
                 'insufficient_credits',
                 sprintf(
                     /* translators: 1: required credits, 2: remaining credits */
-                    __( 'Insufficient credits. Required: %1$d, Available: %2$d', 'writgocms' ),
+                    __( 'Insufficient credits. Required: %1$d, Available: %2$d', 'writgoai' ),
                     $required,
                     $remaining
                 ),
@@ -375,8 +375,8 @@ class WritgoCMS_Credit_Manager {
         }
 
         // Fall back to remote API.
-        if ( class_exists( 'WritgoCMS_License_Client' ) ) {
-            $client = WritgoCMS_License_Client::get_instance();
+        if ( class_exists( 'WritgoAI_License_Client' ) ) {
+            $client = WritgoAI_License_Client::get_instance();
             $result = $client->consume_credits( $credits_to_consume, $action );
 
             if ( is_wp_error( $result ) ) {
@@ -386,7 +386,7 @@ class WritgoCMS_Credit_Manager {
             return true;
         }
 
-        return new WP_Error( 'consume_failed', __( 'Failed to consume credits.', 'writgocms' ) );
+        return new WP_Error( 'consume_failed', __( 'Failed to consume credits.', 'writgoai' ) );
     }
 
     /**
@@ -599,7 +599,7 @@ class WritgoCMS_Credit_Manager {
             <div class="credits-display">
                 <div>
                     <div class="credits-number"><?php echo number_format( $credit_info['credits_remaining'] ); ?></div>
-                    <div class="credits-label"><?php esc_html_e( 'credits remaining', 'writgocms' ); ?></div>
+                    <div class="credits-label"><?php esc_html_e( 'credits remaining', 'writgoai' ); ?></div>
                 </div>
                 <div>
                     <?php if ( ! empty( $credit_info['plan_name'] ) ) : ?>
@@ -614,16 +614,16 @@ class WritgoCMS_Credit_Manager {
 
             <div class="credits-info">
                 <div>
-                    <strong><?php echo number_format( $credit_info['credits_used'] ); ?></strong> <?php esc_html_e( 'used', 'writgocms' ); ?>
+                    <strong><?php echo number_format( $credit_info['credits_used'] ); ?></strong> <?php esc_html_e( 'used', 'writgoai' ); ?>
                 </div>
                 <div>
-                    <strong><?php echo number_format( $credit_info['credits_total'] ); ?></strong> <?php esc_html_e( 'total', 'writgocms' ); ?>
+                    <strong><?php echo number_format( $credit_info['credits_total'] ); ?></strong> <?php esc_html_e( 'total', 'writgoai' ); ?>
                 </div>
                 <?php if ( ! empty( $credit_info['period_end'] ) ) : ?>
                 <div style="grid-column: span 2;">
                     <?php
                     /* translators: %s: date */
-                    echo esc_html( sprintf( __( 'Resets on: %s', 'writgocms' ), $credit_info['period_end'] ) );
+                    echo esc_html( sprintf( __( 'Resets on: %s', 'writgoai' ), $credit_info['period_end'] ) );
                     ?>
                 </div>
                 <?php endif; ?>
@@ -631,7 +631,7 @@ class WritgoCMS_Credit_Manager {
 
             <p style="margin-top: 15px; margin-bottom: 0;">
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license' ) ); ?>" class="button button-small">
-                    <?php esc_html_e( 'View Details', 'writgocms' ); ?>
+                    <?php esc_html_e( 'View Details', 'writgoai' ); ?>
                 </a>
             </p>
         </div>
@@ -661,13 +661,13 @@ class WritgoCMS_Credit_Manager {
             'title' => sprintf(
                 '<span style="display: inline-flex; align-items: center; gap: 5px;">🤖 <strong>%s</strong> %s</span>',
                 number_format( $credit_info['credits_remaining'] ),
-                esc_html__( 'credits', 'writgocms' )
+                esc_html__( 'credits', 'writgoai' )
             ),
             'href'  => admin_url( 'admin.php?page=writgocms-license' ),
             'meta'  => array(
                 'title' => sprintf(
                     /* translators: 1: remaining credits, 2: total credits */
-                    __( '%1$s of %2$s credits remaining', 'writgocms' ),
+                    __( '%1$s of %2$s credits remaining', 'writgoai' ),
                     number_format( $credit_info['credits_remaining'] ),
                     number_format( $credit_info['credits_total'] )
                 ),
@@ -746,10 +746,10 @@ class WritgoCMS_Credit_Manager {
      * @return void
      */
     public function ajax_get_credits() {
-        check_ajax_referer( 'writgocms_credits_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_credits_nonce', 'nonce' );
 
         if ( ! current_user_can( 'edit_posts' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $credit_info = $this->get_credit_info();
@@ -764,10 +764,10 @@ class WritgoCMS_Credit_Manager {
      * @return void
      */
     public function ajax_check_credits() {
-        check_ajax_referer( 'writgocms_credits_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_credits_nonce', 'nonce' );
 
         if ( ! current_user_can( 'edit_posts' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $action = isset( $_POST['action_type'] ) ? sanitize_text_field( wp_unslash( $_POST['action_type'] ) ) : '';
@@ -798,10 +798,10 @@ class WritgoCMS_Credit_Manager {
      * @return void
      */
     public function ajax_consume_credits() {
-        check_ajax_referer( 'writgocms_credits_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_credits_nonce', 'nonce' );
 
         if ( ! current_user_can( 'edit_posts' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $action = isset( $_POST['action_type'] ) ? sanitize_text_field( wp_unslash( $_POST['action_type'] ) ) : '';
@@ -829,10 +829,10 @@ class WritgoCMS_Credit_Manager {
 /**
  * Get credit manager instance
  *
- * @return WritgoCMS_Credit_Manager
+ * @return WritgoAI_Credit_Manager
  */
-function writgocms_credits() {
-    return WritgoCMS_Credit_Manager::get_instance();
+function writgoai_credits() {
+    return WritgoAI_Credit_Manager::get_instance();
 }
 
 /**
@@ -842,8 +842,8 @@ function writgocms_credits() {
  * @param int    $amount Optional custom amount.
  * @return bool|WP_Error
  */
-function writgocms_has_credits( $action, $amount = 0 ) {
-    return writgocms_credits()->has_sufficient_credits( $action, $amount );
+function writgoai_has_credits( $action, $amount = 0 ) {
+    return writgoai_credits()->has_sufficient_credits( $action, $amount );
 }
 
 /**
@@ -853,8 +853,8 @@ function writgocms_has_credits( $action, $amount = 0 ) {
  * @param int    $amount Optional custom amount.
  * @return bool|WP_Error
  */
-function writgocms_consume_credits( $action, $amount = 0 ) {
-    return writgocms_credits()->consume_credits( $action, $amount );
+function writgoai_consume_credits( $action, $amount = 0 ) {
+    return writgoai_credits()->consume_credits( $action, $amount );
 }
 
 /**
@@ -863,11 +863,11 @@ function writgocms_consume_credits( $action, $amount = 0 ) {
  * @param string $action Action type.
  * @return int
  */
-function writgocms_get_credit_cost( $action ) {
-    return writgocms_credits()->get_credit_cost( $action );
+function writgoai_get_credit_cost( $action ) {
+    return writgoai_credits()->get_credit_cost( $action );
 }
 
 // Initialize.
 add_action( 'plugins_loaded', function() {
-    WritgoCMS_Credit_Manager::get_instance();
+    WritgoAI_Credit_Manager::get_instance();
 }, 15 );

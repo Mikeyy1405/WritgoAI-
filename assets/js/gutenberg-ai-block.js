@@ -22,7 +22,7 @@
     var dispatch = wp.data.dispatch;
     var __ = wp.i18n.__;
 
-    var settings = window.writgocmsAimlBlock || {};
+    var settings = window.writgoaiAiBlock || {};
     var i18n = settings.i18n || {};
 
     // Credit costs per action
@@ -35,11 +35,11 @@
         ai_image: 100
     };
 
-    registerBlockType('writgocms/ai-generator', {
+    registerBlockType('writgoai/ai-generator', {
         title: i18n.blockTitle || 'AI Content Generator',
         description: i18n.blockDescription || 'Generate text or images using AI',
         icon: 'admin-customizer',
-        category: 'writgocms-ai',
+        category: 'writgoai-ai',
         keywords: ['ai', 'generate', 'content', 'image', 'text', 'gpt', 'dalle'],
         attributes: {
             content: {
@@ -149,7 +149,7 @@
                 setResult('');
                 setImageResult('');
 
-                var action = mode === 'text' ? 'writgocms_generate_text' : 'writgocms_generate_image';
+                var action = mode === 'text' ? 'writgoai_generate_text' : 'writgoai_generate_image';
 
                 jQuery.ajax({
                     url: settings.ajaxUrl,
@@ -281,7 +281,7 @@
                 ),
                 createElement(
                     'div',
-                    { className: 'writgocms-ai-generator-block' },
+                    { className: 'writgoai-ai-generator-block' },
                     createElement(
                         'div',
                         { className: 'aiml-block-header' },

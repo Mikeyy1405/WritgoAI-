@@ -1,6 +1,6 @@
-# WritgoCMS AI
+# WritgoAI
 
-AI-Powered WordPress Plugin with AIMLAPI Integration.
+AI-Powered WordPress Plugin with WritgoAI API Server Integration.
 
 ![WritgoCMS AI Plugin](screenshot.png)
 
@@ -40,11 +40,11 @@ All plans include full access to:
 - ✅ Analytics
 - ✅ All Future Features
 
-### AI Integration via AIMLAPI
-- **Unified API Access**: Single AIMLAPI key provides access to multiple AI models
-- **Text Generation Models**: GPT-4o, GPT-4, GPT-4 Turbo, GPT-3.5 Turbo, Claude 3 (Opus, Sonnet, Haiku), Mistral (Large, Medium, Small)
-- **Image Generation Models**: DALL-E 3, DALL-E 2, Stable Diffusion XL, Flux Schnell
-- **OpenAI-Compatible API**: Uses the standard chat/completions endpoint format
+### AI Integration via WritgoAI API Server
+- **Unified API Access**: All AI requests go through the WritgoAI API server
+- **Text Generation Models**: GPT-4o, GPT-4, GPT-4 Turbo, GPT-3.5 Turbo, Claude 3 (Opus, Sonnet, Haiku), Mistral (Large, Medium, Small), and more
+- **Image Generation Models**: DALL-E 3, DALL-E 2, Stable Diffusion XL, Flux Pro, Midjourney, and more
+- **Secure Authentication**: Uses license-based authentication through the WritgoAI API server
 
 ### Plugin Features
 - **Gutenberg Block Support**: AI-powered content generation directly in the block editor with credit tracking

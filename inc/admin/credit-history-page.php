@@ -4,7 +4,7 @@
  *
  * Displays credit transaction history and usage details.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Credit_History_Page
+ * Class WritgoAI_Credit_History_Page
  */
-class WritgoCMS_Credit_History_Page {
+class WritgoAI_Credit_History_Page {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Credit_History_Page
+	 * @var WritgoAI_Credit_History_Page
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Credit_History_Page
+	 * @return WritgoAI_Credit_History_Page
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -69,9 +69,9 @@ class WritgoCMS_Credit_History_Page {
 
 		wp_enqueue_style(
 			'writgocms-credit-history',
-			WRITGOCMS_URL . 'assets/css/admin-aiml.css',
+			WRITGOAI_URL . 'assets/css/admin-ai.css',
 			array(),
-			WRITGOCMS_VERSION
+			WRITGOAI_VERSION
 		);
 	}
 
@@ -82,12 +82,12 @@ class WritgoCMS_Credit_History_Page {
 	 */
 	public function render_page() {
 		// Get API client.
-		if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
-			echo '<div class="wrap"><p>' . esc_html__( 'API Client niet beschikbaar.', 'writgocms' ) . '</p></div>';
+		if ( ! class_exists( 'WritgoAI_API_Client' ) ) {
+			echo '<div class="wrap"><p>' . esc_html__( 'API Client niet beschikbaar.', 'writgoai' ) . '</p></div>';
 			return;
 		}
 
-		$api_client = WritgoCMS_API_Client::get_instance();
+		$api_client = WritgoAI_API_Client::get_instance();
 		
 		// Get pagination parameters (already sanitized by max and absint).
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This is a GET parameter for pagination, nonce not required for read-only operations.
@@ -100,16 +100,16 @@ class WritgoCMS_Credit_History_Page {
 		$balance_data = $api_client->get_credit_balance();
 
 		?>
-		<div class="wrap writgocms-aiml-settings">
+		<div class="wrap writgoai-settings">
 			<h1 class="aiml-header">
 				<span class="aiml-logo">💳</span>
-				<?php esc_html_e( 'Credit Geschiedenis', 'writgocms' ); ?>
+				<?php esc_html_e( 'Credit Geschiedenis', 'writgoai' ); ?>
 			</h1>
 
 			<?php if ( is_wp_error( $balance_data ) ) : ?>
 				<div class="notice notice-error">
 					<p>
-						<strong><?php esc_html_e( 'Fout bij ophalen van credit informatie:', 'writgocms' ); ?></strong><br>
+						<strong><?php esc_html_e( 'Fout bij ophalen van credit informatie:', 'writgoai' ); ?></strong><br>
 						<?php echo esc_html( $balance_data->get_error_message() ); ?>
 					</p>
 				</div>
@@ -121,21 +121,21 @@ class WritgoCMS_Credit_History_Page {
 							<div class="balance-icon">💰</div>
 							<div class="balance-content">
 								<div class="balance-value"><?php echo number_format( $balance_data['credits_remaining'] ?? 0 ); ?></div>
-								<div class="balance-label"><?php esc_html_e( 'Credits Beschikbaar', 'writgocms' ); ?></div>
+								<div class="balance-label"><?php esc_html_e( 'Credits Beschikbaar', 'writgoai' ); ?></div>
 							</div>
 						</div>
 						<div class="balance-card">
 							<div class="balance-icon">📊</div>
 							<div class="balance-content">
 								<div class="balance-value"><?php echo number_format( $balance_data['credits_used'] ?? 0 ); ?></div>
-								<div class="balance-label"><?php esc_html_e( 'Credits Gebruikt', 'writgocms' ); ?></div>
+								<div class="balance-label"><?php esc_html_e( 'Credits Gebruikt', 'writgoai' ); ?></div>
 							</div>
 						</div>
 						<div class="balance-card">
 							<div class="balance-icon">📦</div>
 							<div class="balance-content">
 								<div class="balance-value"><?php echo number_format( $balance_data['credits_total'] ?? 0 ); ?></div>
-								<div class="balance-label"><?php esc_html_e( 'Totaal Credits', 'writgocms' ); ?></div>
+								<div class="balance-label"><?php esc_html_e( 'Totaal Credits', 'writgoai' ); ?></div>
 							</div>
 						</div>
 						<?php if ( ! empty( $balance_data['period_end'] ) ) : ?>
@@ -143,7 +143,7 @@ class WritgoCMS_Credit_History_Page {
 							<div class="balance-icon">🔄</div>
 							<div class="balance-content">
 								<div class="balance-value"><?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $balance_data['period_end'] ) ) ); ?></div>
-								<div class="balance-label"><?php esc_html_e( 'Reset Datum', 'writgocms' ); ?></div>
+								<div class="balance-label"><?php esc_html_e( 'Reset Datum', 'writgoai' ); ?></div>
 							</div>
 						</div>
 						<?php endif; ?>
@@ -151,7 +151,7 @@ class WritgoCMS_Credit_History_Page {
 
 					<!-- Credit History Table -->
 					<div class="credit-history-section">
-						<h2><?php esc_html_e( 'Transactie Geschiedenis', 'writgocms' ); ?></h2>
+						<h2><?php esc_html_e( 'Transactie Geschiedenis', 'writgoai' ); ?></h2>
 
 						<?php if ( is_wp_error( $history_data ) ) : ?>
 							<div class="notice notice-error inline">
@@ -159,18 +159,18 @@ class WritgoCMS_Credit_History_Page {
 							</div>
 						<?php elseif ( empty( $history_data['transactions'] ) ) : ?>
 							<div class="no-history">
-								<p><?php esc_html_e( 'Nog geen transacties gevonden.', 'writgocms' ); ?></p>
+								<p><?php esc_html_e( 'Nog geen transacties gevonden.', 'writgoai' ); ?></p>
 							</div>
 						<?php else : ?>
 							<table class="wp-list-table widefat fixed striped credit-history-table">
 								<thead>
 									<tr>
-										<th><?php esc_html_e( 'Datum', 'writgocms' ); ?></th>
-										<th><?php esc_html_e( 'Tijd', 'writgocms' ); ?></th>
-										<th><?php esc_html_e( 'Actie', 'writgocms' ); ?></th>
-										<th><?php esc_html_e( 'Credits', 'writgocms' ); ?></th>
-										<th><?php esc_html_e( 'Saldo', 'writgocms' ); ?></th>
-										<th><?php esc_html_e( 'Details', 'writgocms' ); ?></th>
+										<th><?php esc_html_e( 'Datum', 'writgoai' ); ?></th>
+										<th><?php esc_html_e( 'Tijd', 'writgoai' ); ?></th>
+										<th><?php esc_html_e( 'Actie', 'writgoai' ); ?></th>
+										<th><?php esc_html_e( 'Credits', 'writgoai' ); ?></th>
+										<th><?php esc_html_e( 'Saldo', 'writgoai' ); ?></th>
+										<th><?php esc_html_e( 'Details', 'writgoai' ); ?></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -187,7 +187,7 @@ class WritgoCMS_Credit_History_Page {
 										</td>
 										<td>
 											<?php
-											$action = isset( $transaction['action_type'] ) ? $transaction['action_type'] : __( 'Onbekend', 'writgocms' );
+											$action = isset( $transaction['action_type'] ) ? $transaction['action_type'] : __( 'Onbekend', 'writgoai' );
 											echo '<span class="action-type">' . esc_html( $this->format_action_type( $action ) ) . '</span>';
 											?>
 										</td>
@@ -207,7 +207,7 @@ class WritgoCMS_Credit_History_Page {
 												$metadata = is_array( $transaction['metadata'] ) ? $transaction['metadata'] : json_decode( $transaction['metadata'], true );
 												if ( is_array( $metadata ) ) {
 													echo '<button type="button" class="button button-small view-details" data-details="' . esc_attr( wp_json_encode( $metadata ) ) . '">';
-													echo esc_html__( 'Bekijk', 'writgocms' );
+													echo esc_html__( 'Bekijk', 'writgoai' );
 													echo '</button>';
 												}
 											}
@@ -248,7 +248,7 @@ class WritgoCMS_Credit_History_Page {
 		<div id="transaction-details-modal" class="writgoai-modal" style="display: none;">
 			<div class="modal-content">
 				<span class="close">&times;</span>
-				<h2><?php esc_html_e( 'Transactie Details', 'writgocms' ); ?></h2>
+				<h2><?php esc_html_e( 'Transactie Details', 'writgoai' ); ?></h2>
 				<div id="transaction-details-content"></div>
 			</div>
 		</div>
@@ -361,17 +361,17 @@ class WritgoCMS_Credit_History_Page {
 	 */
 	private function format_action_type( $action_type ) {
 		$labels = array(
-			'text_generation'      => __( 'Tekst Generatie', 'writgocms' ),
-			'image_generation'     => __( 'Afbeelding Generatie', 'writgocms' ),
-			'ai_rewrite_small'     => __( 'Kleine Herschrijving', 'writgocms' ),
-			'ai_rewrite_paragraph' => __( 'Paragraaf Herschrijving', 'writgocms' ),
-			'ai_rewrite_full'      => __( 'Volledige Herschrijving', 'writgocms' ),
-			'ai_image'             => __( 'AI Afbeelding', 'writgocms' ),
-			'seo_analysis'         => __( 'SEO Analyse', 'writgocms' ),
-			'internal_links'       => __( 'Interne Links', 'writgocms' ),
-			'keyword_research'     => __( 'Zoekwoord Onderzoek', 'writgocms' ),
-			'subscription_renewal' => __( 'Abonnement Verlenging', 'writgocms' ),
-			'manual_adjustment'    => __( 'Handmatige Aanpassing', 'writgocms' ),
+			'text_generation'      => __( 'Tekst Generatie', 'writgoai' ),
+			'image_generation'     => __( 'Afbeelding Generatie', 'writgoai' ),
+			'ai_rewrite_small'     => __( 'Kleine Herschrijving', 'writgoai' ),
+			'ai_rewrite_paragraph' => __( 'Paragraaf Herschrijving', 'writgoai' ),
+			'ai_rewrite_full'      => __( 'Volledige Herschrijving', 'writgoai' ),
+			'ai_image'             => __( 'AI Afbeelding', 'writgoai' ),
+			'seo_analysis'         => __( 'SEO Analyse', 'writgoai' ),
+			'internal_links'       => __( 'Interne Links', 'writgoai' ),
+			'keyword_research'     => __( 'Zoekwoord Onderzoek', 'writgoai' ),
+			'subscription_renewal' => __( 'Abonnement Verlenging', 'writgoai' ),
+			'manual_adjustment'    => __( 'Handmatige Aanpassing', 'writgoai' ),
 		);
 
 		return isset( $labels[ $action_type ] ) ? $labels[ $action_type ] : $action_type;
@@ -379,4 +379,4 @@ class WritgoCMS_Credit_History_Page {
 }
 
 // Initialize.
-WritgoCMS_Credit_History_Page::get_instance();
+WritgoAI_Credit_History_Page::get_instance();

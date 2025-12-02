@@ -4,7 +4,7 @@
  *
  * Handles data storage, sync, and opportunity detection for GSC data.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_GSC_Data_Handler
+ * Class WritgoAI_GSC_Data_Handler
  */
-class WritgoCMS_GSC_Data_Handler {
+class WritgoAI_GSC_Data_Handler {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_GSC_Data_Handler
+	 * @var WritgoAI_GSC_Data_Handler
 	 */
 	private static $instance = null;
 
 	/**
 	 * GSC Provider instance
 	 *
-	 * @var WritgoCMS_GSC_Provider
+	 * @var WritgoAI_GSC_Provider
 	 */
 	private $provider;
 
@@ -58,7 +58,7 @@ class WritgoCMS_GSC_Data_Handler {
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_GSC_Data_Handler
+	 * @return WritgoAI_GSC_Data_Handler
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -79,13 +79,13 @@ class WritgoCMS_GSC_Data_Handler {
 			'opportunities' => $wpdb->prefix . 'writgoai_gsc_opportunities',
 		);
 
-		$this->provider = WritgoCMS_GSC_Provider::get_instance();
+		$this->provider = WritgoAI_GSC_Provider::get_instance();
 
-		add_action( 'writgocms_gsc_daily_sync', array( $this, 'run_daily_sync' ) );
-		add_action( 'wp_ajax_writgocms_gsc_sync_now', array( $this, 'ajax_sync_now' ) );
-		add_action( 'wp_ajax_writgocms_gsc_get_opportunities', array( $this, 'ajax_get_opportunities' ) );
-		add_action( 'wp_ajax_writgocms_gsc_get_dashboard_data', array( $this, 'ajax_get_dashboard_data' ) );
-		add_action( 'wp_ajax_writgocms_gsc_get_post_data', array( $this, 'ajax_get_post_data' ) );
+		add_action( 'writgoai_gsc_daily_sync', array( $this, 'run_daily_sync' ) );
+		add_action( 'wp_ajax_writgoai_gsc_sync_now', array( $this, 'ajax_sync_now' ) );
+		add_action( 'wp_ajax_writgoai_gsc_get_opportunities', array( $this, 'ajax_get_opportunities' ) );
+		add_action( 'wp_ajax_writgoai_gsc_get_dashboard_data', array( $this, 'ajax_get_dashboard_data' ) );
+		add_action( 'wp_ajax_writgoai_gsc_get_post_data', array( $this, 'ajax_get_post_data' ) );
 	}
 
 	/**
@@ -162,8 +162,8 @@ class WritgoCMS_GSC_Data_Handler {
 	 * Schedule daily sync
 	 */
 	public function schedule_sync() {
-		if ( ! wp_next_scheduled( 'writgocms_gsc_daily_sync' ) ) {
-			wp_schedule_event( strtotime( 'tomorrow 03:00:00' ), 'daily', 'writgocms_gsc_daily_sync' );
+		if ( ! wp_next_scheduled( 'writgoai_gsc_daily_sync' ) ) {
+			wp_schedule_event( strtotime( 'tomorrow 03:00:00' ), 'daily', 'writgoai_gsc_daily_sync' );
 		}
 	}
 
@@ -171,9 +171,9 @@ class WritgoCMS_GSC_Data_Handler {
 	 * Unschedule sync
 	 */
 	public function unschedule_sync() {
-		$timestamp = wp_next_scheduled( 'writgocms_gsc_daily_sync' );
+		$timestamp = wp_next_scheduled( 'writgoai_gsc_daily_sync' );
 		if ( $timestamp ) {
-			wp_unschedule_event( $timestamp, 'writgocms_gsc_daily_sync' );
+			wp_unschedule_event( $timestamp, 'writgoai_gsc_daily_sync' );
 		}
 	}
 
@@ -199,7 +199,7 @@ class WritgoCMS_GSC_Data_Handler {
 		$this->detect_opportunities();
 		$this->cleanup_old_data();
 
-		update_option( 'writgocms_gsc_last_sync', current_time( 'mysql' ) );
+		update_option( 'writgoai_gsc_last_sync', current_time( 'mysql' ) );
 	}
 
 	/**
@@ -353,7 +353,7 @@ class WritgoCMS_GSC_Data_Handler {
 					'clicks'           => $row->total_clicks,
 					'suggested_action' => sprintf(
 						/* translators: %d: current position */
-						__( 'Dit keyword staat op positie %d. Met content optimalisatie kun je naar pagina 1.', 'writgocms' ),
+						__( 'Dit keyword staat op positie %d. Met content optimalisatie kun je naar pagina 1.', 'writgoai' ),
 						round( $row->avg_position )
 					),
 				)
@@ -419,7 +419,7 @@ class WritgoCMS_GSC_Data_Handler {
 						'clicks'           => $row->total_clicks,
 						'suggested_action' => sprintf(
 							/* translators: 1: current CTR percentage, 2: benchmark CTR percentage */
-							__( 'CTR is %.1f%% terwijl benchmark %.1f%% is. Verbeter je meta title en description.', 'writgocms' ),
+							__( 'CTR is %.1f%% terwijl benchmark %.1f%% is. Verbeter je meta title en description.', 'writgoai' ),
 							$row->avg_ctr * 100,
 							$benchmark_ctr * 100
 						),
@@ -501,7 +501,7 @@ class WritgoCMS_GSC_Data_Handler {
 					'clicks'           => $row->recent_clicks,
 					'suggested_action' => sprintf(
 						/* translators: 1: position change, 2: old position, 3: new position */
-						__( 'Positie daalde met %.1f plaatsen (van %.1f naar %.1f). Update je content.', 'writgocms' ),
+						__( 'Positie daalde met %.1f plaatsen (van %.1f naar %.1f). Update je content.', 'writgoai' ),
 						$row->position_change,
 						$row->old_position,
 						$row->recent_position
@@ -550,7 +550,7 @@ class WritgoCMS_GSC_Data_Handler {
 					'clicks'           => $row->total_clicks,
 					'suggested_action' => sprintf(
 						/* translators: %d: number of impressions */
-						__( '%d impressies maar nog niet op pagina 1. Maak gerichte content voor dit keyword.', 'writgocms' ),
+						__( '%d impressies maar nog niet op pagina 1. Maak gerichte content voor dit keyword.', 'writgoai' ),
 						$row->total_impressions
 					),
 				)
@@ -683,7 +683,7 @@ class WritgoCMS_GSC_Data_Handler {
 			'top_queries'         => $top_queries,
 			'top_pages'           => $top_pages,
 			'opportunity_counts'  => $opportunity_counts,
-			'last_sync'           => get_option( 'writgocms_gsc_last_sync', '' ),
+			'last_sync'           => get_option( 'writgoai_gsc_last_sync', '' ),
 		);
 	}
 
@@ -814,17 +814,17 @@ class WritgoCMS_GSC_Data_Handler {
 	 * AJAX handler for sync now
 	 */
 	public function ajax_sync_now() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$this->run_daily_sync();
 
 		wp_send_json_success( array(
-			'message'   => __( 'Synchronisatie voltooid.', 'writgocms' ),
-			'last_sync' => get_option( 'writgocms_gsc_last_sync', '' ),
+			'message'   => __( 'Synchronisatie voltooid.', 'writgoai' ),
+			'last_sync' => get_option( 'writgoai_gsc_last_sync', '' ),
 		) );
 	}
 
@@ -832,10 +832,10 @@ class WritgoCMS_GSC_Data_Handler {
 	 * AJAX handler for get opportunities
 	 */
 	public function ajax_get_opportunities() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$type   = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
@@ -851,10 +851,10 @@ class WritgoCMS_GSC_Data_Handler {
 	 * AJAX handler for get dashboard data
 	 */
 	public function ajax_get_dashboard_data() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$days = isset( $_POST['days'] ) ? absint( $_POST['days'] ) : 28;
@@ -867,22 +867,22 @@ class WritgoCMS_GSC_Data_Handler {
 	 * AJAX handler for get post data
 	 */
 	public function ajax_get_post_data() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 
 		if ( ! $post_id ) {
-			wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgoai' ) ) );
 		}
 
 		$data = $this->get_post_data( $post_id );
 
 		if ( ! $data ) {
-			wp_send_json_error( array( 'message' => __( 'Geen data gevonden voor deze post.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen data gevonden voor deze post.', 'writgoai' ) ) );
 		}
 
 		wp_send_json_success( $data );
@@ -890,4 +890,4 @@ class WritgoCMS_GSC_Data_Handler {
 }
 
 // Initialize.
-WritgoCMS_GSC_Data_Handler::get_instance();
+WritgoAI_GSC_Data_Handler::get_instance();

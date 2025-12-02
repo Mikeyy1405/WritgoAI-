@@ -4,7 +4,7 @@
  *
  * Handles communication with WritgoAI API server for credit management.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_API_Client
+ * Class WritgoAI_API_Client
  */
-class WritgoCMS_API_Client {
+class WritgoAI_API_Client {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_API_Client
+	 * @var WritgoAI_API_Client
 	 */
 	private static $instance = null;
 
@@ -40,7 +40,7 @@ class WritgoCMS_API_Client {
 	/**
 	 * Auth Manager instance
 	 *
-	 * @var WritgoCMS_Auth_Manager
+	 * @var WritgoAI_Auth_Manager
 	 */
 	private $auth_manager;
 
@@ -54,7 +54,7 @@ class WritgoCMS_API_Client {
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_API_Client
+	 * @return WritgoAI_API_Client
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -68,14 +68,14 @@ class WritgoCMS_API_Client {
 	 */
 	private function __construct() {
 		// Get API URL from options or use default.
-		$this->api_url = get_option( 'writgocms_api_url', 'https://api.writgoai.com' );
+		$this->api_url = get_option( 'writgoai_api_url', 'https://api.writgoai.com' );
 		
 		// Get license key from options (backward compatibility).
-		$this->license_key = get_option( 'writgocms_license_key', '' );
+		$this->license_key = get_option( 'writgoai_license_key', '' );
 
 		// Get AuthManager instance.
-		if ( class_exists( 'WritgoCMS_Auth_Manager' ) ) {
-			$this->auth_manager = WritgoCMS_Auth_Manager::get_instance();
+		if ( class_exists( 'WritgoAI_Auth_Manager' ) ) {
+			$this->auth_manager = WritgoAI_Auth_Manager::get_instance();
 		}
 	}
 
@@ -119,7 +119,7 @@ class WritgoCMS_API_Client {
 
 		if ( is_wp_error( $response ) ) {
 			// Return cached data as fallback if available.
-			$cached = get_option( 'writgocms_cached_credit_balance', false );
+			$cached = get_option( 'writgoai_cached_credit_balance', false );
 			if ( false !== $cached ) {
 				return $cached;
 			}
@@ -195,7 +195,7 @@ class WritgoCMS_API_Client {
 
 		if ( is_wp_error( $response ) ) {
 			// Return cached data as fallback if available.
-			$cached = get_option( "writgocms_cached_{$cache_key}", false );
+			$cached = get_option( "writgoai_cached_{$cache_key}", false );
 			if ( false !== $cached ) {
 				return $cached;
 			}
@@ -228,7 +228,7 @@ class WritgoCMS_API_Client {
 
 		if ( is_wp_error( $response ) ) {
 			// Return cached data as fallback if available.
-			$cached = get_option( 'writgocms_cached_subscription_status', false );
+			$cached = get_option( 'writgoai_cached_subscription_status', false );
 			if ( false !== $cached ) {
 				return $cached;
 			}
@@ -253,7 +253,7 @@ class WritgoCMS_API_Client {
 		// Prepare headers.
 		$headers = array(
 			'Content-Type' => 'application/json',
-			'User-Agent'   => 'WritgoCMS/' . WRITGOCMS_VERSION,
+			'User-Agent'   => 'WritgoAI/' . WRITGOAI_VERSION,
 		);
 
 		// Use AuthManager if available, otherwise fall back to license key.
@@ -269,7 +269,7 @@ class WritgoCMS_API_Client {
 		} else {
 			return new WP_Error(
 				'NOT_AUTHENTICATED',
-				__( 'Niet ingelogd. Log in om door te gaan.', 'writgocms' )
+				__( 'Niet ingelogd. Log in om door te gaan.', 'writgoai' )
 			);
 		}
 
@@ -297,7 +297,7 @@ class WritgoCMS_API_Client {
 				'API_ERROR',
 				sprintf(
 					/* translators: %s: error message */
-					__( 'API communicatie fout: %s', 'writgocms' ),
+					__( 'API communicatie fout: %s', 'writgoai' ),
 					$response->get_error_message()
 				)
 			);
@@ -332,11 +332,11 @@ class WritgoCMS_API_Client {
 
 		// Map API error codes to Dutch messages.
 		$error_messages = array(
-			'INSUFFICIENT_CREDITS'  => __( 'Onvoldoende credits. Upgrade je abonnement of wacht tot je maandelijkse limiet reset.', 'writgocms' ),
-			'INVALID_LICENSE'       => __( 'Ongeldige licentie sleutel. Controleer je licentie in de instellingen.', 'writgocms' ),
-			'RATE_LIMIT_EXCEEDED'   => __( 'Te veel verzoeken. Probeer het over enkele minuten opnieuw.', 'writgocms' ),
-			'SUBSCRIPTION_EXPIRED'  => __( 'Je abonnement is verlopen. Verleng je abonnement om door te gaan.', 'writgocms' ),
-			'SUBSCRIPTION_CANCELED' => __( 'Je abonnement is geannuleerd. Heractiveer je abonnement om door te gaan.', 'writgocms' ),
+			'INSUFFICIENT_CREDITS'  => __( 'Onvoldoende credits. Upgrade je abonnement of wacht tot je maandelijkse limiet reset.', 'writgoai' ),
+			'INVALID_LICENSE'       => __( 'Ongeldige licentie sleutel. Controleer je licentie in de instellingen.', 'writgoai' ),
+			'RATE_LIMIT_EXCEEDED'   => __( 'Te veel verzoeken. Probeer het over enkele minuten opnieuw.', 'writgoai' ),
+			'SUBSCRIPTION_EXPIRED'  => __( 'Je abonnement is verlopen. Verleng je abonnement om door te gaan.', 'writgoai' ),
+			'SUBSCRIPTION_CANCELED' => __( 'Je abonnement is geannuleerd. Heractiveer je abonnement om door te gaan.', 'writgoai' ),
 		);
 
 		// Use Dutch message if available, otherwise use API message or generic message.
@@ -347,7 +347,7 @@ class WritgoCMS_API_Client {
 		} else {
 			$message = sprintf(
 				/* translators: %d: HTTP status code */
-				__( 'API fout (code: %d). Probeer het later opnieuw.', 'writgocms' ),
+				__( 'API fout (code: %d). Probeer het later opnieuw.', 'writgoai' ),
 				$code
 			);
 		}
@@ -367,7 +367,7 @@ class WritgoCMS_API_Client {
 			'data'       => $data,
 			'expires_at' => time() + $this->cache_duration,
 		);
-		update_option( "writgocms_cached_{$key}", $cache_data, false );
+		update_option( "writgoai_cached_{$key}", $cache_data, false );
 	}
 
 	/**
@@ -377,7 +377,7 @@ class WritgoCMS_API_Client {
 	 * @return mixed|false Cached data or false if not found/expired.
 	 */
 	private function get_cached_data( $key ) {
-		$cache_data = get_option( "writgocms_cached_{$key}", false );
+		$cache_data = get_option( "writgoai_cached_{$key}", false );
 
 		if ( false === $cache_data ) {
 			return false;
@@ -398,7 +398,7 @@ class WritgoCMS_API_Client {
 	 * @return void
 	 */
 	private function invalidate_cache( $key ) {
-		delete_option( "writgocms_cached_{$key}" );
+		delete_option( "writgoai_cached_{$key}" );
 	}
 
 	/**
@@ -419,7 +419,7 @@ class WritgoCMS_API_Client {
 		// Also clear credit history caches (pattern match).
 		// Use WordPress options API with pattern matching.
 		global $wpdb;
-		$pattern = $wpdb->esc_like( 'writgocms_cached_credit_history_' ) . '%';
+		$pattern = $wpdb->esc_like( 'writgoai_cached_credit_history_' ) . '%';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
 			$wpdb->prepare(
@@ -433,8 +433,8 @@ class WritgoCMS_API_Client {
 /**
  * Get API Client instance
  *
- * @return WritgoCMS_API_Client
+ * @return WritgoAI_API_Client
  */
-function writgocms_api_client() {
-	return WritgoCMS_API_Client::get_instance();
+function writgoai_api_client() {
+	return WritgoAI_API_Client::get_instance();
 }

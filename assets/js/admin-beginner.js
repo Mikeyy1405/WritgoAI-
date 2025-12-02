@@ -62,7 +62,7 @@
 				if (success) {
 					// Navigate to next step
 					const nextStep = step + 1;
-					window.location.href = adminUrl + '?page=writgocms-setup-wizard&step=' + nextStep;
+					window.location.href = adminUrl + '?page=writgoai-setup-wizard&step=' + nextStep;
 				}
 			});
 		},
@@ -74,16 +74,16 @@
 		handleSkip: function(e) {
 			e.preventDefault();
 			
-			if (!confirm(writgocmsAdmin.i18n.skipConfirm || 'Weet je zeker dat je de setup wilt overslaan?')) {
+			if (!confirm(writgoaiAdmin.i18n.skipConfirm || 'Weet je zeker dat je de setup wilt overslaan?')) {
 				return;
 			}
 
 			$.ajax({
-				url: writgocmsAdmin.ajaxUrl,
+				url: writgoaiAdmin.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'writgocms_skip_wizard',
-					nonce: writgocmsAdmin.nonce
+					action: 'writgoai_skip_wizard',
+					nonce: writgoaiAdmin.nonce
 				},
 				success: function(response) {
 					if (response.success) {
@@ -100,7 +100,7 @@
 
 			this.saveStepData(step, function(success) {
 				if (success) {
-					window.location.href = adminUrl + '?page=writgocms-aiml';
+					window.location.href = adminUrl + '?page=writgoai-ai';
 				}
 			});
 		},
@@ -166,11 +166,11 @@
 			});
 
 			$.ajax({
-				url: writgocmsAdmin.ajaxUrl,
+				url: writgoaiAdmin.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'writgocms_save_wizard_step',
-					nonce: writgocmsAdmin.nonce,
+					action: 'writgoai_save_wizard_step',
+					nonce: writgoaiAdmin.nonce,
 					step: step,
 					data: data
 				},
@@ -180,7 +180,7 @@
 					}
 				},
 				error: function() {
-					alert(writgocmsAdmin.i18n.error);
+					alert(writgoaiAdmin.i18n.error);
 					if (callback) {
 						callback(false);
 					}
@@ -203,16 +203,16 @@
 				return;
 			}
 
-			$button.prop('disabled', true).text(writgocmsAdmin.i18n.validating);
+			$button.prop('disabled', true).text(writgoaiAdmin.i18n.validating);
 
 			// This would call the existing license validation endpoint
 			$.ajax({
-				url: writgocmsAdmin.ajaxUrl,
+				url: writgoaiAdmin.ajaxUrl,
 				type: 'POST',
 				data: {
 					action: 'writgoai_validate_license',
 					license_key: licenseKey,
-					nonce: writgocmsAdmin.nonce
+					nonce: writgoaiAdmin.nonce
 				},
 				success: function(response) {
 					if (response.success) {
@@ -228,7 +228,7 @@
 					}
 				},
 				error: function() {
-					alert(writgocmsAdmin.i18n.error);
+					alert(writgoaiAdmin.i18n.error);
 				},
 				complete: function() {
 					$button.prop('disabled', false).text('Valideren');
@@ -253,15 +253,15 @@
 			$message.removeClass('success error').text('');
 
 			// Use auth nonce if available, otherwise fall back to admin nonce
-			const authNonce = (typeof writgocmsAuth !== 'undefined' && writgocmsAuth.nonce) 
-				? writgocmsAuth.nonce 
-				: writgocmsAdmin.nonce;
+			const authNonce = (typeof writgoaiAuth !== 'undefined' && writgoaiAuth.nonce) 
+				? writgoaiAuth.nonce 
+				: writgoaiAdmin.nonce;
 
 			$.ajax({
-				url: writgocmsAdmin.ajaxUrl,
+				url: writgoaiAdmin.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'writgocms_login',
+					action: 'writgoai_login',
 					nonce: authNonce,
 					email: email,
 					password: password
@@ -429,7 +429,7 @@
 	 */
 	$(document).ready(function() {
 		// Admin URL should be passed via wp_localize_script
-		const adminUrl = writgocmsAdmin.ajaxUrl.replace('/admin-ajax.php', '') + '/admin.php';
+		const adminUrl = writgoaiAdmin.ajaxUrl.replace('/admin-ajax.php', '') + '/admin.php';
 		window.adminUrl = adminUrl;
 
 		// Initialize components

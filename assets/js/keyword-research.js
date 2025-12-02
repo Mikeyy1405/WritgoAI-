@@ -34,7 +34,7 @@
 				const keyword = $('#keyword-search-input').val().trim();
 				
 				if (!keyword) {
-					alert(writgocmsKeywordResearch.i18n.noResults);
+					alert(writgoaiKeywordResearch.i18n.noResults);
 					return;
 				}
 
@@ -45,11 +45,11 @@
 				$('#serp-results').hide();
 
 				$.ajax({
-					url: writgocmsKeywordResearch.ajaxUrl,
+					url: writgoaiKeywordResearch.ajaxUrl,
 					method: 'POST',
 					data: {
-						action: 'writgocms_search_keyword',
-						nonce: writgocmsKeywordResearch.nonce,
+						action: 'writgoai_search_keyword',
+						nonce: writgoaiKeywordResearch.nonce,
 						keyword: keyword
 					},
 					success: function(response) {
@@ -59,13 +59,13 @@
 							KeywordResearch.displayResults(response.data);
 							KeywordResearch.currentKeywordData = response.data;
 						} else {
-							alert(writgocmsKeywordResearch.i18n.error + ': ' + response.data.message);
+							alert(writgoaiKeywordResearch.i18n.error + ': ' + response.data.message);
 						}
 					},
 					error: function(xhr, status, error) {
 						$('#keyword-loading').hide();
 						console.error('Keyword search error:', error);
-						alert(writgocmsKeywordResearch.i18n.error);
+						alert(writgoaiKeywordResearch.i18n.error);
 					}
 				});
 			},
@@ -109,26 +109,26 @@
 				}
 
 				const $btn = $(e.currentTarget);
-				$btn.prop('disabled', true).text(writgocmsKeywordResearch.i18n.searching);
+				$btn.prop('disabled', true).text(writgoaiKeywordResearch.i18n.searching);
 
 				$.ajax({
-					url: writgocmsKeywordResearch.ajaxUrl,
+					url: writgoaiKeywordResearch.ajaxUrl,
 					method: 'POST',
 					data: {
-						action: 'writgocms_get_related_keywords',
-						nonce: writgocmsKeywordResearch.nonce,
+						action: 'writgoai_get_related_keywords',
+						nonce: writgoaiKeywordResearch.nonce,
 						keyword: this.currentKeyword
 					},
 					success: function(response) {
 						if (response.success && response.data.length > 0) {
 							KeywordResearch.displayRelatedKeywords(response.data);
 						} else {
-							alert(writgocmsKeywordResearch.i18n.noResults);
+							alert(writgoaiKeywordResearch.i18n.noResults);
 						}
 					},
 					error: function(xhr, status, error) {
 						console.error('Related keywords error:', error);
-						alert(writgocmsKeywordResearch.i18n.error);
+						alert(writgoaiKeywordResearch.i18n.error);
 					},
 					complete: function() {
 						$btn.prop('disabled', false).text('Load Related Keywords (5 credits)');
@@ -159,26 +159,26 @@
 				}
 
 				const $btn = $(e.currentTarget);
-				$btn.prop('disabled', true).text(writgocmsKeywordResearch.i18n.searching);
+				$btn.prop('disabled', true).text(writgoaiKeywordResearch.i18n.searching);
 
 				$.ajax({
-					url: writgocmsKeywordResearch.ajaxUrl,
+					url: writgoaiKeywordResearch.ajaxUrl,
 					method: 'POST',
 					data: {
-						action: 'writgocms_get_serp_data',
-						nonce: writgocmsKeywordResearch.nonce,
+						action: 'writgoai_get_serp_data',
+						nonce: writgoaiKeywordResearch.nonce,
 						keyword: this.currentKeyword
 					},
 					success: function(response) {
 						if (response.success && response.data.length > 0) {
 							KeywordResearch.displaySerpResults(response.data);
 						} else {
-							alert(writgocmsKeywordResearch.i18n.noResults);
+							alert(writgoaiKeywordResearch.i18n.noResults);
 						}
 					},
 					error: function(xhr, status, error) {
 						console.error('SERP data error:', error);
-						alert(writgocmsKeywordResearch.i18n.error);
+						alert(writgoaiKeywordResearch.i18n.error);
 					},
 					complete: function() {
 						$btn.prop('disabled', false).text('📊 View SERP (10 credits)');
@@ -218,25 +218,25 @@
 				$btn.prop('disabled', true).text('Saving...');
 
 				$.ajax({
-					url: writgocmsKeywordResearch.ajaxUrl,
+					url: writgoaiKeywordResearch.ajaxUrl,
 					method: 'POST',
 					data: {
-						action: 'writgocms_save_keyword',
-						nonce: writgocmsKeywordResearch.nonce,
+						action: 'writgoai_save_keyword',
+						nonce: writgoaiKeywordResearch.nonce,
 						keyword_data: this.currentKeywordData
 					},
 					success: function(response) {
 						if (response.success) {
-							alert(writgocmsKeywordResearch.i18n.saved);
+							alert(writgoaiKeywordResearch.i18n.saved);
 							// Reload to show in saved keywords list
 							location.reload();
 						} else {
-							alert(writgocmsKeywordResearch.i18n.error + ': ' + response.data.message);
+							alert(writgoaiKeywordResearch.i18n.error + ': ' + response.data.message);
 						}
 					},
 					error: function(xhr, status, error) {
 						console.error('Save keyword error:', error);
-						alert(writgocmsKeywordResearch.i18n.error);
+						alert(writgoaiKeywordResearch.i18n.error);
 					},
 					complete: function() {
 						$btn.prop('disabled', false).text('💾 Save to Plan');
@@ -261,7 +261,7 @@
 		};
 
 		// Initialize keyword research
-		if ($('.writgocms-keyword-research').length) {
+		if ($('.writgoai-keyword-research').length) {
 			KeywordResearch.init();
 		}
 	});

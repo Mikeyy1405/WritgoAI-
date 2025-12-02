@@ -4,7 +4,7 @@
  *
  * Analyzes meta content and suggests improvements using AI.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,35 +12,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_CTR_Optimizer
+ * Class WritgoAI_CTR_Optimizer
  */
-class WritgoCMS_CTR_Optimizer {
+class WritgoAI_CTR_Optimizer {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_CTR_Optimizer
+	 * @var WritgoAI_CTR_Optimizer
 	 */
 	private static $instance = null;
 
 	/**
 	 * AIML Provider instance
 	 *
-	 * @var WritgoCMS_AIML_Provider
+	 * @var WritgoAI_AI_Provider
 	 */
 	private $ai_provider;
 
 	/**
 	 * GSC Data Handler instance
 	 *
-	 * @var WritgoCMS_GSC_Data_Handler
+	 * @var WritgoAI_GSC_Data_Handler
 	 */
 	private $data_handler;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_CTR_Optimizer
+	 * @return WritgoAI_CTR_Optimizer
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -53,11 +53,11 @@ class WritgoCMS_CTR_Optimizer {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->ai_provider  = WritgoCMS_AIML_Provider::get_instance();
-		$this->data_handler = WritgoCMS_GSC_Data_Handler::get_instance();
+		$this->ai_provider  = WritgoAI_AI_Provider::get_instance();
+		$this->data_handler = WritgoAI_GSC_Data_Handler::get_instance();
 
-		add_action( 'wp_ajax_writgocms_ctr_analyze', array( $this, 'ajax_analyze' ) );
-		add_action( 'wp_ajax_writgocms_ctr_generate_suggestions', array( $this, 'ajax_generate_suggestions' ) );
+		add_action( 'wp_ajax_writgoai_ctr_analyze', array( $this, 'ajax_analyze' ) );
+		add_action( 'wp_ajax_writgoai_ctr_generate_suggestions', array( $this, 'ajax_generate_suggestions' ) );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class WritgoCMS_CTR_Optimizer {
 	public function analyze_post( $post_id ) {
 		$post = get_post( $post_id );
 		if ( ! $post ) {
-			return new WP_Error( 'invalid_post', __( 'Post niet gevonden.', 'writgocms' ) );
+			return new WP_Error( 'invalid_post', __( 'Post niet gevonden.', 'writgoai' ) );
 		}
 
 		// Get current meta data.
@@ -181,19 +181,19 @@ class WritgoCMS_CTR_Optimizer {
 		if ( $length < 30 ) {
 			$issues[] = array(
 				'type'    => 'warning',
-				'message' => __( 'Title is te kort. Optimale lengte is 50-60 karakters.', 'writgocms' ),
+				'message' => __( 'Title is te kort. Optimale lengte is 50-60 karakters.', 'writgoai' ),
 			);
 		} elseif ( $length > 60 ) {
 			$issues[] = array(
 				'type'    => 'warning',
-				'message' => __( 'Title is te lang en wordt mogelijk afgekort in zoekresultaten.', 'writgocms' ),
+				'message' => __( 'Title is te lang en wordt mogelijk afgekort in zoekresultaten.', 'writgoai' ),
 			);
 		}
 
 		if ( empty( $title ) ) {
 			$issues[] = array(
 				'type'    => 'error',
-				'message' => __( 'Geen meta title ingesteld.', 'writgocms' ),
+				'message' => __( 'Geen meta title ingesteld.', 'writgoai' ),
 			);
 		}
 
@@ -210,7 +210,7 @@ class WritgoCMS_CTR_Optimizer {
 		if ( ! $has_power_word ) {
 			$issues[] = array(
 				'type'    => 'suggestion',
-				'message' => __( 'Overweeg power words toe te voegen voor betere CTR.', 'writgocms' ),
+				'message' => __( 'Overweeg power words toe te voegen voor betere CTR.', 'writgoai' ),
 			);
 		}
 
@@ -218,7 +218,7 @@ class WritgoCMS_CTR_Optimizer {
 		if ( ! preg_match( '/\d/', $title ) ) {
 			$issues[] = array(
 				'type'    => 'suggestion',
-				'message' => __( 'Getallen in titles verhogen vaak de CTR.', 'writgocms' ),
+				'message' => __( 'Getallen in titles verhogen vaak de CTR.', 'writgoai' ),
 			);
 		}
 
@@ -238,17 +238,17 @@ class WritgoCMS_CTR_Optimizer {
 		if ( empty( $description ) ) {
 			$issues[] = array(
 				'type'    => 'error',
-				'message' => __( 'Geen meta description ingesteld. Google zal zelf tekst kiezen.', 'writgocms' ),
+				'message' => __( 'Geen meta description ingesteld. Google zal zelf tekst kiezen.', 'writgoai' ),
 			);
 		} elseif ( $length < 120 ) {
 			$issues[] = array(
 				'type'    => 'warning',
-				'message' => __( 'Description is te kort. Optimale lengte is 150-160 karakters.', 'writgocms' ),
+				'message' => __( 'Description is te kort. Optimale lengte is 150-160 karakters.', 'writgoai' ),
 			);
 		} elseif ( $length > 160 ) {
 			$issues[] = array(
 				'type'    => 'warning',
-				'message' => __( 'Description is te lang en wordt mogelijk afgekort.', 'writgocms' ),
+				'message' => __( 'Description is te lang en wordt mogelijk afgekort.', 'writgoai' ),
 			);
 		}
 
@@ -265,7 +265,7 @@ class WritgoCMS_CTR_Optimizer {
 		if ( ! $has_cta && ! empty( $description ) ) {
 			$issues[] = array(
 				'type'    => 'suggestion',
-				'message' => __( 'Voeg een call-to-action toe om de CTR te verhogen.', 'writgocms' ),
+				'message' => __( 'Voeg een call-to-action toe om de CTR te verhogen.', 'writgoai' ),
 			);
 		}
 
@@ -284,24 +284,24 @@ class WritgoCMS_CTR_Optimizer {
 			$percentage = round( ( $current_ctr / $benchmark_ctr ) * 100 );
 			return array(
 				'status'  => 'good',
-				'label'   => __( 'Uitstekend', 'writgocms' ),
+				'label'   => __( 'Uitstekend', 'writgoai' ),
 				'message' => sprintf(
 					/* translators: %d: percentage above benchmark */
-					__( 'CTR is %d%% van de benchmark.', 'writgocms' ),
+					__( 'CTR is %d%% van de benchmark.', 'writgoai' ),
 					$percentage
 				),
 			);
 		} elseif ( $current_ctr >= $benchmark_ctr * 0.7 ) {
 			return array(
 				'status'  => 'average',
-				'label'   => __( 'Gemiddeld', 'writgocms' ),
-				'message' => __( 'CTR is enigszins onder de benchmark.', 'writgocms' ),
+				'label'   => __( 'Gemiddeld', 'writgoai' ),
+				'message' => __( 'CTR is enigszins onder de benchmark.', 'writgoai' ),
 			);
 		} else {
 			return array(
 				'status'  => 'poor',
-				'label'   => __( 'Verbetering nodig', 'writgocms' ),
-				'message' => __( 'CTR is significant onder de benchmark.', 'writgocms' ),
+				'label'   => __( 'Verbetering nodig', 'writgoai' ),
+				'message' => __( 'CTR is significant onder de benchmark.', 'writgoai' ),
 			);
 		}
 	}
@@ -336,7 +336,7 @@ class WritgoCMS_CTR_Optimizer {
 	public function generate_suggestions( $post_id, $keyword = '', $analysis = array() ) {
 		$post = get_post( $post_id );
 		if ( ! $post ) {
-			return new WP_Error( 'invalid_post', __( 'Post niet gevonden.', 'writgocms' ) );
+			return new WP_Error( 'invalid_post', __( 'Post niet gevonden.', 'writgoai' ) );
 		}
 
 		$current_title       = isset( $analysis['current_title'] ) ? $analysis['current_title'] : $this->get_meta_title( $post_id );
@@ -434,7 +434,7 @@ Antwoord alleen met valid JSON, geen andere tekst. Alles in het Nederlands.',
 
 		return array(
 			'error'       => true,
-			'message'     => __( 'Kon AI antwoord niet verwerken. Probeer opnieuw.', 'writgocms' ),
+			'message'     => __( 'Kon AI antwoord niet verwerken. Probeer opnieuw.', 'writgoai' ),
 			'raw_content' => $content,
 		);
 	}
@@ -443,16 +443,16 @@ Antwoord alleen met valid JSON, geen andere tekst. Alles in het Nederlands.',
 	 * AJAX handler for analyze
 	 */
 	public function ajax_analyze() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 
 		if ( ! $post_id ) {
-			wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgoai' ) ) );
 		}
 
 		$analysis = $this->analyze_post( $post_id );
@@ -468,17 +468,17 @@ Antwoord alleen met valid JSON, geen andere tekst. Alles in het Nederlands.',
 	 * AJAX handler for generate suggestions
 	 */
 	public function ajax_generate_suggestions() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 		$keyword = isset( $_POST['keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['keyword'] ) ) : '';
 
 		if ( ! $post_id ) {
-			wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgoai' ) ) );
 		}
 
 		$analysis    = $this->analyze_post( $post_id );
@@ -496,4 +496,4 @@ Antwoord alleen met valid JSON, geen andere tekst. Alles in het Nederlands.',
 }
 
 // Initialize.
-WritgoCMS_CTR_Optimizer::get_instance();
+WritgoAI_CTR_Optimizer::get_instance();

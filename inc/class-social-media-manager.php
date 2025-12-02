@@ -5,7 +5,7 @@
  * AI-powered Social Media multi-channel posting with automatic image generation.
  * Nederlandse versie - Dutch interface for WritgoAI.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,21 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Social_Media_Manager
+ * Class WritgoAI_Social_Media_Manager
  */
-class WritgoCMS_Social_Media_Manager {
+class WritgoAI_Social_Media_Manager {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Social_Media_Manager
+	 * @var WritgoAI_Social_Media_Manager
 	 */
 	private static $instance = null;
 
 	/**
 	 * Provider instance
 	 *
-	 * @var WritgoCMS_AIML_Provider
+	 * @var WritgoAI_AI_Provider
 	 */
 	private $provider;
 
@@ -153,7 +153,7 @@ class WritgoCMS_Social_Media_Manager {
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Social_Media_Manager
+	 * @return WritgoAI_Social_Media_Manager
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -166,19 +166,19 @@ class WritgoCMS_Social_Media_Manager {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->provider = WritgoCMS_AIML_Provider::get_instance();
+		$this->provider = WritgoAI_AI_Provider::get_instance();
 
 		// AJAX handlers.
-		add_action( 'wp_ajax_writgocms_generate_social_posts', array( $this, 'ajax_generate_social_posts' ) );
-		add_action( 'wp_ajax_writgocms_save_social_post', array( $this, 'ajax_save_social_post' ) );
-		add_action( 'wp_ajax_writgocms_schedule_social_post', array( $this, 'ajax_schedule_social_post' ) );
-		add_action( 'wp_ajax_writgocms_get_scheduled_posts', array( $this, 'ajax_get_scheduled_posts' ) );
-		add_action( 'wp_ajax_writgocms_delete_scheduled_post', array( $this, 'ajax_delete_scheduled_post' ) );
-		add_action( 'wp_ajax_writgocms_save_hashtag_set', array( $this, 'ajax_save_hashtag_set' ) );
-		add_action( 'wp_ajax_writgocms_get_hashtag_sets', array( $this, 'ajax_get_hashtag_sets' ) );
-		add_action( 'wp_ajax_writgocms_suggest_hashtags', array( $this, 'ajax_suggest_hashtags' ) );
-		add_action( 'wp_ajax_writgocms_get_social_analytics', array( $this, 'ajax_get_social_analytics' ) );
-		add_action( 'wp_ajax_writgocms_get_blog_posts', array( $this, 'ajax_get_blog_posts' ) );
+		add_action( 'wp_ajax_writgoai_generate_social_posts', array( $this, 'ajax_generate_social_posts' ) );
+		add_action( 'wp_ajax_writgoai_save_social_post', array( $this, 'ajax_save_social_post' ) );
+		add_action( 'wp_ajax_writgoai_schedule_social_post', array( $this, 'ajax_schedule_social_post' ) );
+		add_action( 'wp_ajax_writgoai_get_scheduled_posts', array( $this, 'ajax_get_scheduled_posts' ) );
+		add_action( 'wp_ajax_writgoai_delete_scheduled_post', array( $this, 'ajax_delete_scheduled_post' ) );
+		add_action( 'wp_ajax_writgoai_save_hashtag_set', array( $this, 'ajax_save_hashtag_set' ) );
+		add_action( 'wp_ajax_writgoai_get_hashtag_sets', array( $this, 'ajax_get_hashtag_sets' ) );
+		add_action( 'wp_ajax_writgoai_suggest_hashtags', array( $this, 'ajax_suggest_hashtags' ) );
+		add_action( 'wp_ajax_writgoai_get_social_analytics', array( $this, 'ajax_get_social_analytics' ) );
+		add_action( 'wp_ajax_writgoai_get_blog_posts', array( $this, 'ajax_get_blog_posts' ) );
 	}
 
 	/**
@@ -786,7 +786,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Generate social posts
 	 */
 	public function ajax_generate_social_posts() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -828,7 +828,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Save social post
 	 */
 	public function ajax_save_social_post() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -862,7 +862,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Schedule social post
 	 */
 	public function ajax_schedule_social_post() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -897,7 +897,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Get scheduled posts
 	 */
 	public function ajax_get_scheduled_posts() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -921,7 +921,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Delete scheduled post
 	 */
 	public function ajax_delete_scheduled_post() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -946,7 +946,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Save hashtag set
 	 */
 	public function ajax_save_hashtag_set() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -976,7 +976,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Get hashtag sets
 	 */
 	public function ajax_get_hashtag_sets() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -993,7 +993,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Suggest hashtags
 	 */
 	public function ajax_suggest_hashtags() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -1023,7 +1023,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Get social analytics
 	 */
 	public function ajax_get_social_analytics() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -1040,7 +1040,7 @@ Focus op een mix van populaire en niche hashtags.',
 	 * AJAX: Get blog posts for selection
 	 */
 	public function ajax_get_blog_posts() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -1078,4 +1078,4 @@ Focus op een mix van populaire en niche hashtags.',
 }
 
 // Initialize.
-WritgoCMS_Social_Media_Manager::get_instance();
+WritgoAI_Social_Media_Manager::get_instance();

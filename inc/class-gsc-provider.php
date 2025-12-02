@@ -4,7 +4,7 @@
  *
  * Handles OAuth 2.0 authentication and API communication with Google Search Console.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_GSC_Provider
+ * Class WritgoAI_GSC_Provider
  */
-class WritgoCMS_GSC_Provider {
+class WritgoAI_GSC_Provider {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_GSC_Provider
+	 * @var WritgoAI_GSC_Provider
 	 */
 	private static $instance = null;
 
@@ -58,12 +58,12 @@ class WritgoCMS_GSC_Provider {
 	 *
 	 * @var string
 	 */
-	private $rate_limit_option = 'writgocms_gsc_rate_limits';
+	private $rate_limit_option = 'writgoai_gsc_rate_limits';
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_GSC_Provider
+	 * @return WritgoAI_GSC_Provider
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -76,11 +76,11 @@ class WritgoCMS_GSC_Provider {
 	 * Constructor
 	 */
 	private function __construct() {
-		add_action( 'wp_ajax_writgocms_gsc_auth', array( $this, 'ajax_handle_auth' ) );
-		add_action( 'wp_ajax_writgocms_gsc_disconnect', array( $this, 'ajax_disconnect' ) );
-		add_action( 'wp_ajax_writgocms_gsc_fetch_data', array( $this, 'ajax_fetch_data' ) );
-		add_action( 'wp_ajax_writgocms_gsc_get_sites', array( $this, 'ajax_get_sites' ) );
-		add_action( 'wp_ajax_writgocms_gsc_select_site', array( $this, 'ajax_select_site' ) );
+		add_action( 'wp_ajax_writgoai_gsc_auth', array( $this, 'ajax_handle_auth' ) );
+		add_action( 'wp_ajax_writgoai_gsc_disconnect', array( $this, 'ajax_disconnect' ) );
+		add_action( 'wp_ajax_writgoai_gsc_fetch_data', array( $this, 'ajax_fetch_data' ) );
+		add_action( 'wp_ajax_writgoai_gsc_get_sites', array( $this, 'ajax_get_sites' ) );
+		add_action( 'wp_ajax_writgoai_gsc_select_site', array( $this, 'ajax_select_site' ) );
 		add_action( 'admin_init', array( $this, 'handle_oauth_callback' ) );
 	}
 
@@ -90,7 +90,7 @@ class WritgoCMS_GSC_Provider {
 	 * @return string
 	 */
 	public function get_client_id() {
-		return get_option( 'writgocms_gsc_client_id', '' );
+		return get_option( 'writgoai_gsc_client_id', '' );
 	}
 
 	/**
@@ -99,7 +99,7 @@ class WritgoCMS_GSC_Provider {
 	 * @return string
 	 */
 	public function get_client_secret() {
-		return get_option( 'writgocms_gsc_client_secret', '' );
+		return get_option( 'writgoai_gsc_client_secret', '' );
 	}
 
 	/**
@@ -108,7 +108,7 @@ class WritgoCMS_GSC_Provider {
 	 * @return string
 	 */
 	public function get_access_token() {
-		return get_option( 'writgocms_gsc_access_token', '' );
+		return get_option( 'writgoai_gsc_access_token', '' );
 	}
 
 	/**
@@ -117,7 +117,7 @@ class WritgoCMS_GSC_Provider {
 	 * @return string
 	 */
 	public function get_refresh_token() {
-		return get_option( 'writgocms_gsc_refresh_token', '' );
+		return get_option( 'writgoai_gsc_refresh_token', '' );
 	}
 
 	/**
@@ -126,7 +126,7 @@ class WritgoCMS_GSC_Provider {
 	 * @return int
 	 */
 	public function get_token_expiry() {
-		return (int) get_option( 'writgocms_gsc_token_expiry', 0 );
+		return (int) get_option( 'writgoai_gsc_token_expiry', 0 );
 	}
 
 	/**
@@ -135,7 +135,7 @@ class WritgoCMS_GSC_Provider {
 	 * @return string
 	 */
 	public function get_selected_site() {
-		return get_option( 'writgocms_gsc_selected_site', '' );
+		return get_option( 'writgoai_gsc_selected_site', '' );
 	}
 
 	/**
@@ -179,8 +179,8 @@ class WritgoCMS_GSC_Provider {
 			return '';
 		}
 
-		$state = wp_create_nonce( 'writgocms_gsc_oauth' );
-		update_option( 'writgocms_gsc_oauth_state', $state );
+		$state = wp_create_nonce( 'writgoai_gsc_oauth' );
+		update_option( 'writgoai_gsc_oauth_state', $state );
 
 		$params = array(
 			'client_id'     => $client_id,
@@ -217,16 +217,16 @@ class WritgoCMS_GSC_Provider {
 		// OAuth state parameter serves as CSRF protection.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
-		$saved_state = get_option( 'writgocms_gsc_oauth_state', '' );
+		$saved_state = get_option( 'writgoai_gsc_oauth_state', '' );
 
 		if ( empty( $state ) || $state !== $saved_state ) {
 			add_action( 'admin_notices', function() {
-				echo '<div class="notice notice-error"><p>' . esc_html__( 'Ongeldige OAuth state. Probeer opnieuw.', 'writgocms' ) . '</p></div>';
+				echo '<div class="notice notice-error"><p>' . esc_html__( 'Ongeldige OAuth state. Probeer opnieuw.', 'writgoai' ) . '</p></div>';
 			} );
 			return;
 		}
 
-		delete_option( 'writgocms_gsc_oauth_state' );
+		delete_option( 'writgoai_gsc_oauth_state' );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$code = sanitize_text_field( wp_unslash( $_GET['code'] ) );
@@ -277,18 +277,18 @@ class WritgoCMS_GSC_Provider {
 		}
 
 		if ( ! isset( $body['access_token'] ) ) {
-			return new WP_Error( 'invalid_response', __( 'Ongeldig antwoord van Google.', 'writgocms' ) );
+			return new WP_Error( 'invalid_response', __( 'Ongeldig antwoord van Google.', 'writgoai' ) );
 		}
 
 		// Save tokens.
-		update_option( 'writgocms_gsc_access_token', sanitize_text_field( $body['access_token'] ) );
+		update_option( 'writgoai_gsc_access_token', sanitize_text_field( $body['access_token'] ) );
 
 		if ( isset( $body['refresh_token'] ) ) {
-			update_option( 'writgocms_gsc_refresh_token', sanitize_text_field( $body['refresh_token'] ) );
+			update_option( 'writgoai_gsc_refresh_token', sanitize_text_field( $body['refresh_token'] ) );
 		}
 
 		$expires_in = isset( $body['expires_in'] ) ? (int) $body['expires_in'] : 3600;
-		update_option( 'writgocms_gsc_token_expiry', time() + $expires_in - 60 );
+		update_option( 'writgoai_gsc_token_expiry', time() + $expires_in - 60 );
 
 		return $body;
 	}
@@ -301,7 +301,7 @@ class WritgoCMS_GSC_Provider {
 	public function refresh_access_token() {
 		$refresh_token = $this->get_refresh_token();
 		if ( empty( $refresh_token ) ) {
-			return new WP_Error( 'no_refresh_token', __( 'Geen refresh token beschikbaar.', 'writgocms' ) );
+			return new WP_Error( 'no_refresh_token', __( 'Geen refresh token beschikbaar.', 'writgoai' ) );
 		}
 
 		$response = wp_remote_post(
@@ -329,13 +329,13 @@ class WritgoCMS_GSC_Provider {
 		}
 
 		if ( ! isset( $body['access_token'] ) ) {
-			return new WP_Error( 'invalid_response', __( 'Ongeldig antwoord van Google.', 'writgocms' ) );
+			return new WP_Error( 'invalid_response', __( 'Ongeldig antwoord van Google.', 'writgoai' ) );
 		}
 
-		update_option( 'writgocms_gsc_access_token', sanitize_text_field( $body['access_token'] ) );
+		update_option( 'writgoai_gsc_access_token', sanitize_text_field( $body['access_token'] ) );
 
 		$expires_in = isset( $body['expires_in'] ) ? (int) $body['expires_in'] : 3600;
-		update_option( 'writgocms_gsc_token_expiry', time() + $expires_in - 60 );
+		update_option( 'writgoai_gsc_token_expiry', time() + $expires_in - 60 );
 
 		return true;
 	}
@@ -347,7 +347,7 @@ class WritgoCMS_GSC_Provider {
 	 */
 	public function ensure_valid_token() {
 		if ( ! $this->is_connected() ) {
-			return new WP_Error( 'not_connected', __( 'Niet verbonden met Google Search Console.', 'writgocms' ) );
+			return new WP_Error( 'not_connected', __( 'Niet verbonden met Google Search Console.', 'writgoai' ) );
 		}
 
 		if ( $this->is_token_expired() ) {
@@ -419,7 +419,7 @@ class WritgoCMS_GSC_Provider {
 		}
 
 		if ( ! $this->check_rate_limit() ) {
-			return new WP_Error( 'rate_limited', __( 'Rate limit bereikt. Probeer later opnieuw.', 'writgocms' ) );
+			return new WP_Error( 'rate_limited', __( 'Rate limit bereikt. Probeer later opnieuw.', 'writgoai' ) );
 		}
 
 		$url = $this->api_base_url . $endpoint;
@@ -449,7 +449,7 @@ class WritgoCMS_GSC_Provider {
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( $code >= 400 ) {
-			$error_message = isset( $data['error']['message'] ) ? $data['error']['message'] : __( 'API fout opgetreden.', 'writgocms' );
+			$error_message = isset( $data['error']['message'] ) ? $data['error']['message'] : __( 'API fout opgetreden.', 'writgoai' );
 			return new WP_Error( 'api_error', $error_message );
 		}
 
@@ -524,26 +524,26 @@ class WritgoCMS_GSC_Provider {
 	 * Disconnect from Google Search Console
 	 */
 	public function disconnect() {
-		delete_option( 'writgocms_gsc_access_token' );
-		delete_option( 'writgocms_gsc_refresh_token' );
-		delete_option( 'writgocms_gsc_token_expiry' );
-		delete_option( 'writgocms_gsc_selected_site' );
-		delete_option( 'writgocms_gsc_oauth_state' );
+		delete_option( 'writgoai_gsc_access_token' );
+		delete_option( 'writgoai_gsc_refresh_token' );
+		delete_option( 'writgoai_gsc_token_expiry' );
+		delete_option( 'writgoai_gsc_selected_site' );
+		delete_option( 'writgoai_gsc_oauth_state' );
 	}
 
 	/**
 	 * AJAX handler for authentication
 	 */
 	public function ajax_handle_auth() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$auth_url = $this->get_auth_url();
 		if ( empty( $auth_url ) ) {
-			wp_send_json_error( array( 'message' => __( 'Configureer eerst de OAuth credentials.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Configureer eerst de OAuth credentials.', 'writgoai' ) ) );
 		}
 
 		wp_send_json_success( array( 'auth_url' => $auth_url ) );
@@ -553,25 +553,25 @@ class WritgoCMS_GSC_Provider {
 	 * AJAX handler for disconnect
 	 */
 	public function ajax_disconnect() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$this->disconnect();
 
-		wp_send_json_success( array( 'message' => __( 'Verbinding verbroken.', 'writgocms' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Verbinding verbroken.', 'writgoai' ) ) );
 	}
 
 	/**
 	 * AJAX handler for fetching data
 	 */
 	public function ajax_fetch_data() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$site_url   = $this->get_selected_site();
@@ -579,7 +579,7 @@ class WritgoCMS_GSC_Provider {
 		$end_date   = isset( $_POST['end_date'] ) ? sanitize_text_field( wp_unslash( $_POST['end_date'] ) ) : gmdate( 'Y-m-d', strtotime( '-1 day' ) );
 
 		if ( empty( $site_url ) ) {
-			wp_send_json_error( array( 'message' => __( 'Selecteer eerst een site.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Selecteer eerst een site.', 'writgoai' ) ) );
 		}
 
 		$data = $this->get_search_analytics( $site_url, $start_date, $end_date );
@@ -595,10 +595,10 @@ class WritgoCMS_GSC_Provider {
 	 * AJAX handler for getting sites
 	 */
 	public function ajax_get_sites() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$sites = $this->get_sites();
@@ -614,23 +614,23 @@ class WritgoCMS_GSC_Provider {
 	 * AJAX handler for selecting site
 	 */
 	public function ajax_select_site() {
-		check_ajax_referer( 'writgocms_gsc_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_gsc_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 		}
 
 		$site_url = isset( $_POST['site_url'] ) ? sanitize_url( wp_unslash( $_POST['site_url'] ) ) : '';
 
 		if ( empty( $site_url ) ) {
-			wp_send_json_error( array( 'message' => __( 'Site URL is vereist.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Site URL is vereist.', 'writgoai' ) ) );
 		}
 
-		update_option( 'writgocms_gsc_selected_site', $site_url );
+		update_option( 'writgoai_gsc_selected_site', $site_url );
 
-		wp_send_json_success( array( 'message' => __( 'Site geselecteerd.', 'writgocms' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Site geselecteerd.', 'writgoai' ) ) );
 	}
 }
 
 // Initialize.
-WritgoCMS_GSC_Provider::get_instance();
+WritgoAI_GSC_Provider::get_instance();

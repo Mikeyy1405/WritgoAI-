@@ -23,7 +23,7 @@
             this.bindDisconnect();
 
             // Load dashboard data if connected.
-            if (writgocmsGsc.isConnected && writgocmsGsc.selectedSite) {
+            if (writgoaiGsc.isConnected && writgoaiGsc.selectedSite) {
                 this.loadDashboardData();
                 this.loadOpportunities('quick_win');
             }
@@ -57,20 +57,20 @@
                 var $button = $(this);
                 var $container = $('#sites-list');
 
-                $button.prop('disabled', true).text(writgocmsGsc.i18n.loading);
+                $button.prop('disabled', true).text(writgoaiGsc.i18n.loading);
 
                 $.ajax({
-                    url: writgocmsGsc.ajaxUrl,
+                    url: writgoaiGsc.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_gsc_get_sites',
-                        nonce: writgocmsGsc.nonce
+                        action: 'writgoai_gsc_get_sites',
+                        nonce: writgoaiGsc.nonce
                     },
                     success: function(response) {
                         if (response.success && response.data.siteEntry) {
                             var html = '';
                             response.data.siteEntry.forEach(function(site) {
-                                var isSelected = site.siteUrl === writgocmsGsc.selectedSite;
+                                var isSelected = site.siteUrl === writgoaiGsc.selectedSite;
                                 html += '<div class="site-item' + (isSelected ? ' selected' : '') + '" data-url="' + self.escapeHtml(site.siteUrl) + '">';
                                 html += '<span class="site-url">' + self.escapeHtml(site.siteUrl) + '</span>';
                                 html += '<button type="button" class="button button-small select-site-btn">' + (isSelected ? '✓ Geselecteerd' : 'Selecteer') + '</button>';
@@ -78,11 +78,11 @@
                             });
                             $container.html(html).show();
                         } else {
-                            $container.html('<p>' + (response.data ? response.data.message : writgocmsGsc.i18n.noData) + '</p>').show();
+                            $container.html('<p>' + (response.data ? response.data.message : writgoaiGsc.i18n.noData) + '</p>').show();
                         }
                     },
                     error: function() {
-                        $container.html('<p class="error">' + writgocmsGsc.i18n.error + '</p>').show();
+                        $container.html('<p class="error">' + writgoaiGsc.i18n.error + '</p>').show();
                     },
                     complete: function() {
                         $button.prop('disabled', false).text('🔄 Laad Sites');
@@ -96,14 +96,14 @@
                 var $item = $button.closest('.site-item');
                 var siteUrl = $item.data('url');
 
-                $button.prop('disabled', true).text(writgocmsGsc.i18n.loading);
+                $button.prop('disabled', true).text(writgoaiGsc.i18n.loading);
 
                 $.ajax({
-                    url: writgocmsGsc.ajaxUrl,
+                    url: writgoaiGsc.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_gsc_select_site',
-                        nonce: writgocmsGsc.nonce,
+                        action: 'writgoai_gsc_select_site',
+                        nonce: writgoaiGsc.nonce,
                         site_url: siteUrl
                     },
                     success: function(response) {
@@ -115,7 +115,7 @@
                         }
                     },
                     error: function() {
-                        self.showNotification(writgocmsGsc.i18n.error, 'error');
+                        self.showNotification(writgoaiGsc.i18n.error, 'error');
                         $button.prop('disabled', false).text('Selecteer');
                     }
                 });
@@ -131,18 +131,18 @@
             $('#sync-now-btn').on('click', function() {
                 var $button = $(this);
 
-                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsGsc.i18n.syncing);
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgoaiGsc.i18n.syncing);
 
                 $.ajax({
-                    url: writgocmsGsc.ajaxUrl,
+                    url: writgoaiGsc.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_gsc_sync_now',
-                        nonce: writgocmsGsc.nonce
+                        action: 'writgoai_gsc_sync_now',
+                        nonce: writgoaiGsc.nonce
                     },
                     success: function(response) {
                         if (response.success) {
-                            self.showNotification(writgocmsGsc.i18n.syncComplete, 'success');
+                            self.showNotification(writgoaiGsc.i18n.syncComplete, 'success');
                             self.loadDashboardData();
                             self.loadOpportunities(self.currentOpportunityType);
                         } else {
@@ -150,7 +150,7 @@
                         }
                     },
                     error: function() {
-                        self.showNotification(writgocmsGsc.i18n.error, 'error');
+                        self.showNotification(writgoaiGsc.i18n.error, 'error');
                     },
                     complete: function() {
                         $button.prop('disabled', false).html('🔄 Synchroniseer Nu');
@@ -220,14 +220,14 @@
                 var $button = $(this);
                 var keyword = $('#target-keyword').val();
 
-                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsGsc.i18n.generating);
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgoaiGsc.i18n.generating);
 
                 $.ajax({
-                    url: writgocmsGsc.ajaxUrl,
+                    url: writgoaiGsc.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_ctr_generate_suggestions',
-                        nonce: writgocmsGsc.nonce,
+                        action: 'writgoai_ctr_generate_suggestions',
+                        nonce: writgoaiGsc.nonce,
                         post_id: self.selectedPostId,
                         keyword: keyword
                     },
@@ -240,7 +240,7 @@
                         }
                     },
                     error: function() {
-                        self.showNotification(writgocmsGsc.i18n.error, 'error');
+                        self.showNotification(writgoaiGsc.i18n.error, 'error');
                     },
                     complete: function() {
                         $button.prop('disabled', false).html('✨ Genereer AI Suggesties');
@@ -256,7 +256,7 @@
             var self = this;
 
             $('#disconnect-gsc-btn').on('click', function() {
-                if (!confirm(writgocmsGsc.i18n.confirmDisconnect)) {
+                if (!confirm(writgoaiGsc.i18n.confirmDisconnect)) {
                     return;
                 }
 
@@ -264,11 +264,11 @@
                 $button.prop('disabled', true);
 
                 $.ajax({
-                    url: writgocmsGsc.ajaxUrl,
+                    url: writgoaiGsc.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_gsc_disconnect',
-                        nonce: writgocmsGsc.nonce
+                        action: 'writgoai_gsc_disconnect',
+                        nonce: writgoaiGsc.nonce
                     },
                     success: function(response) {
                         if (response.success) {
@@ -279,7 +279,7 @@
                         }
                     },
                     error: function() {
-                        self.showNotification(writgocmsGsc.i18n.error, 'error');
+                        self.showNotification(writgoaiGsc.i18n.error, 'error');
                         $button.prop('disabled', false);
                     }
                 });
@@ -293,11 +293,11 @@
             var self = this;
 
             $.ajax({
-                url: writgocmsGsc.ajaxUrl,
+                url: writgoaiGsc.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_gsc_get_dashboard_data',
-                    nonce: writgocmsGsc.nonce,
+                    action: 'writgoai_gsc_get_dashboard_data',
+                    nonce: writgoaiGsc.nonce,
                     days: 28
                 },
                 success: function(response) {
@@ -330,7 +330,7 @@
             var $container = $('#top-queries');
 
             if (!queries || queries.length === 0) {
-                $container.html('<p>' + writgocmsGsc.i18n.noData + '</p>');
+                $container.html('<p>' + writgoaiGsc.i18n.noData + '</p>');
                 return;
             }
 
@@ -360,7 +360,7 @@
             var $container = $('#top-pages');
 
             if (!pages || pages.length === 0) {
-                $container.html('<p>' + writgocmsGsc.i18n.noData + '</p>');
+                $container.html('<p>' + writgoaiGsc.i18n.noData + '</p>');
                 return;
             }
 
@@ -407,14 +407,14 @@
             var self = this;
             var $container = $('#opportunities-list');
 
-            $container.html('<p class="loading-text">' + writgocmsGsc.i18n.loading + '</p>');
+            $container.html('<p class="loading-text">' + writgoaiGsc.i18n.loading + '</p>');
 
             $.ajax({
-                url: writgocmsGsc.ajaxUrl,
+                url: writgoaiGsc.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_gsc_get_opportunities',
-                    nonce: writgocmsGsc.nonce,
+                    action: 'writgoai_gsc_get_opportunities',
+                    nonce: writgoaiGsc.nonce,
                     type: type,
                     limit: 20
                 },
@@ -422,11 +422,11 @@
                     if (response.success) {
                         self.renderOpportunities(response.data.opportunities);
                     } else {
-                        $container.html('<p>' + writgocmsGsc.i18n.noData + '</p>');
+                        $container.html('<p>' + writgoaiGsc.i18n.noData + '</p>');
                     }
                 },
                 error: function() {
-                    $container.html('<p class="error">' + writgocmsGsc.i18n.error + '</p>');
+                    $container.html('<p class="error">' + writgoaiGsc.i18n.error + '</p>');
                 }
             });
         },
@@ -439,7 +439,7 @@
             var $container = $('#opportunities-list');
 
             if (!opportunities || opportunities.length === 0) {
-                $container.html('<p>' + writgocmsGsc.i18n.noData + '</p>');
+                $container.html('<p>' + writgoaiGsc.i18n.noData + '</p>');
                 return;
             }
 
@@ -490,15 +490,15 @@
             var $content = $('#ctr-analysis-content');
 
             $panel.show();
-            $content.html('<p class="loading-text">' + writgocmsGsc.i18n.analyzing + '</p>');
+            $content.html('<p class="loading-text">' + writgoaiGsc.i18n.analyzing + '</p>');
             $('#ctr-suggestions').hide();
 
             $.ajax({
-                url: writgocmsGsc.ajaxUrl,
+                url: writgoaiGsc.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_ctr_analyze',
-                    nonce: writgocmsGsc.nonce,
+                    action: 'writgoai_ctr_analyze',
+                    nonce: writgoaiGsc.nonce,
                     post_id: postId
                 },
                 success: function(response) {
@@ -509,7 +509,7 @@
                     }
                 },
                 error: function() {
-                    $content.html('<p class="error">' + writgocmsGsc.i18n.error + '</p>');
+                    $content.html('<p class="error">' + writgoaiGsc.i18n.error + '</p>');
                 }
             });
         },

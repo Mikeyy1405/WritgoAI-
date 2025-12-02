@@ -9,7 +9,7 @@
 (function(window, $) {
     'use strict';
 
-    var settings = window.writgocmsAiToolbar || {};
+    var settings = window.writgoaiAiToolbar || {};
     var i18n = settings.i18n || {};
 
     /**

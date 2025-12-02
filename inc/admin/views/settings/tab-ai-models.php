@@ -4,40 +4,40 @@
  *
  * Contains AI model selection and parameters.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$provider = WritgoCMS_AIML_Provider::get_instance();
+$provider = WritgoAI_AI_Provider::get_instance();
 $text_models = $provider->get_text_models();
 $image_models = $provider->get_image_models();
 
-$default_model = get_option( 'writgocms_default_model', 'gpt-4o-mini' );
-$default_image_model = get_option( 'writgocms_default_image_model', 'dall-e-3' );
-$temperature = get_option( 'writgocms_text_temperature', 0.7 );
-$max_tokens = get_option( 'writgocms_text_max_tokens', 2000 );
+$default_model = get_option( 'writgoai_default_model', 'gpt-4o-mini' );
+$default_image_model = get_option( 'writgoai_default_image_model', 'dall-e-3' );
+$temperature = get_option( 'writgoai_text_temperature', 0.7 );
+$max_tokens = get_option( 'writgoai_text_max_tokens', 2000 );
 ?>
 
 <div class="settings-tab-content" id="tab-ai-models" style="display: none;">
-	<h2><?php esc_html_e( 'AI Model Voorkeuren', 'writgocms' ); ?></h2>
+	<h2><?php esc_html_e( 'AI Model Voorkeuren', 'writgoai' ); ?></h2>
 
 	<!-- Text AI Model -->
 	<div class="writgo-card">
 		<h3>
-			<?php esc_html_e( 'Tekst AI Model', 'writgocms' ); ?>
-			<span class="writgo-tooltip" data-tooltip="<?php esc_attr_e( 'Het AI model dat gebruikt wordt voor tekstgeneratie', 'writgocms' ); ?>">
+			<?php esc_html_e( 'Tekst AI Model', 'writgoai' ); ?>
+			<span class="writgo-tooltip" data-tooltip="<?php esc_attr_e( 'Het AI model dat gebruikt wordt voor tekstgeneratie', 'writgoai' ); ?>">
 				<span class="dashicons dashicons-info"></span>
 			</span>
 		</h3>
 		
 		<div class="form-field">
-			<label for="writgocms_default_model">
-				<?php esc_html_e( 'Standaard Model', 'writgocms' ); ?>
+			<label for="writgoai_default_model">
+				<?php esc_html_e( 'Standaard Model', 'writgoai' ); ?>
 			</label>
-			<select id="writgocms_default_model" name="writgocms_default_model" class="regular-text">
+			<select id="writgoai_default_model" name="writgoai_default_model" class="regular-text">
 				<?php foreach ( $text_models as $model_key => $model_info ) : ?>
 					<option value="<?php echo esc_attr( $model_key ); ?>" <?php selected( $default_model, $model_key ); ?>>
 						<?php echo esc_html( $model_info['name'] ); ?>
@@ -48,16 +48,16 @@ $max_tokens = get_option( 'writgocms_text_max_tokens', 2000 );
 				<?php endforeach; ?>
 			</select>
 			<p class="description">
-				<?php esc_html_e( 'Snellere modellen zijn goedkoper maar minder geavanceerd. Krachtigere modellen leveren betere resultaten.', 'writgocms' ); ?>
+				<?php esc_html_e( 'Snellere modellen zijn goedkoper maar minder geavanceerd. Krachtigere modellen leveren betere resultaten.', 'writgoai' ); ?>
 			</p>
 		</div>
 
 		<div class="model-recommendations">
-			<h4><?php esc_html_e( 'Aanbevelingen:', 'writgocms' ); ?></h4>
+			<h4><?php esc_html_e( 'Aanbevelingen:', 'writgoai' ); ?></h4>
 			<ul>
-				<li><strong>GPT-4o Mini:</strong> <?php esc_html_e( 'Snel en betaalbaar voor dagelijks gebruik', 'writgocms' ); ?></li>
-				<li><strong>GPT-4o:</strong> <?php esc_html_e( 'Beste balans tussen kwaliteit en snelheid', 'writgocms' ); ?></li>
-				<li><strong>Claude 3 Opus:</strong> <?php esc_html_e( 'Hoogste kwaliteit voor belangrijke content', 'writgocms' ); ?></li>
+				<li><strong>GPT-4o Mini:</strong> <?php esc_html_e( 'Snel en betaalbaar voor dagelijks gebruik', 'writgoai' ); ?></li>
+				<li><strong>GPT-4o:</strong> <?php esc_html_e( 'Beste balans tussen kwaliteit en snelheid', 'writgoai' ); ?></li>
+				<li><strong>Claude 3 Opus:</strong> <?php esc_html_e( 'Hoogste kwaliteit voor belangrijke content', 'writgoai' ); ?></li>
 			</ul>
 		</div>
 	</div>
@@ -65,17 +65,17 @@ $max_tokens = get_option( 'writgocms_text_max_tokens', 2000 );
 	<!-- Image AI Model -->
 	<div class="writgo-card">
 		<h3>
-			<?php esc_html_e( 'Afbeelding AI Model', 'writgocms' ); ?>
-			<span class="writgo-tooltip" data-tooltip="<?php esc_attr_e( 'Het AI model voor het genereren van afbeeldingen', 'writgocms' ); ?>">
+			<?php esc_html_e( 'Afbeelding AI Model', 'writgoai' ); ?>
+			<span class="writgo-tooltip" data-tooltip="<?php esc_attr_e( 'Het AI model voor het genereren van afbeeldingen', 'writgoai' ); ?>">
 				<span class="dashicons dashicons-info"></span>
 			</span>
 		</h3>
 		
 		<div class="form-field">
-			<label for="writgocms_default_image_model">
-				<?php esc_html_e( 'Standaard Afbeelding Model', 'writgocms' ); ?>
+			<label for="writgoai_default_image_model">
+				<?php esc_html_e( 'Standaard Afbeelding Model', 'writgoai' ); ?>
 			</label>
-			<select id="writgocms_default_image_model" name="writgocms_default_image_model" class="regular-text">
+			<select id="writgoai_default_image_model" name="writgoai_default_image_model" class="regular-text">
 				<?php foreach ( $image_models as $model_key => $model_info ) : ?>
 					<option value="<?php echo esc_attr( $model_key ); ?>" <?php selected( $default_image_model, $model_key ); ?>>
 						<?php echo esc_html( $model_info['name'] ); ?>
@@ -83,7 +83,7 @@ $max_tokens = get_option( 'writgocms_text_max_tokens', 2000 );
 				<?php endforeach; ?>
 			</select>
 			<p class="description">
-				<?php esc_html_e( 'Kies het model voor afbeeldinggeneratie.', 'writgocms' ); ?>
+				<?php esc_html_e( 'Kies het model voor afbeeldinggeneratie.', 'writgoai' ); ?>
 			</p>
 		</div>
 	</div>
@@ -91,21 +91,21 @@ $max_tokens = get_option( 'writgocms_text_max_tokens', 2000 );
 	<!-- Creativity Level (Temperature) -->
 	<div class="writgo-card">
 		<h3>
-			<?php esc_html_e( 'Creativiteit Niveau', 'writgocms' ); ?>
-			<span class="writgo-tooltip" data-tooltip="<?php esc_attr_e( 'Hoe creatief en gevarieerd de AI schrijft', 'writgocms' ); ?>">
+			<?php esc_html_e( 'Creativiteit Niveau', 'writgoai' ); ?>
+			<span class="writgo-tooltip" data-tooltip="<?php esc_attr_e( 'Hoe creatief en gevarieerd de AI schrijft', 'writgoai' ); ?>">
 				<span class="dashicons dashicons-info"></span>
 			</span>
 		</h3>
 		
 		<div class="form-field">
-			<label for="writgocms_text_temperature">
-				<?php esc_html_e( 'Creativiteit (0.0 = voorspelbaar, 1.0 = creatief)', 'writgocms' ); ?>
+			<label for="writgoai_text_temperature">
+				<?php esc_html_e( 'Creativiteit (0.0 = voorspelbaar, 1.0 = creatief)', 'writgoai' ); ?>
 			</label>
 			<div class="range-input-group">
 				<input 
 					type="range" 
-					id="writgocms_text_temperature" 
-					name="writgocms_text_temperature" 
+					id="writgoai_text_temperature" 
+					name="writgoai_text_temperature" 
 					min="0" 
 					max="1" 
 					step="0.1" 
@@ -115,7 +115,7 @@ $max_tokens = get_option( 'writgocms_text_max_tokens', 2000 );
 				<span class="range-value"><?php echo esc_html( $temperature ); ?></span>
 			</div>
 			<p class="description">
-				<?php esc_html_e( 'Een lager getal (0.3-0.5) is beter voor feitelijke content. Een hoger getal (0.7-0.9) is beter voor creatieve content.', 'writgocms' ); ?>
+				<?php esc_html_e( 'Een lager getal (0.3-0.5) is beter voor feitelijke content. Een hoger getal (0.7-0.9) is beter voor creatieve content.', 'writgoai' ); ?>
 			</p>
 		</div>
 	</div>
@@ -123,20 +123,20 @@ $max_tokens = get_option( 'writgocms_text_max_tokens', 2000 );
 	<!-- Max Text Length -->
 	<div class="writgo-card">
 		<h3>
-			<?php esc_html_e( 'Maximale Tekstlengte', 'writgocms' ); ?>
-			<span class="writgo-tooltip" data-tooltip="<?php esc_attr_e( 'Het maximale aantal woorden dat AI in één keer genereert', 'writgocms' ); ?>">
+			<?php esc_html_e( 'Maximale Tekstlengte', 'writgoai' ); ?>
+			<span class="writgo-tooltip" data-tooltip="<?php esc_attr_e( 'Het maximale aantal woorden dat AI in één keer genereert', 'writgoai' ); ?>">
 				<span class="dashicons dashicons-info"></span>
 			</span>
 		</h3>
 		
 		<div class="form-field">
-			<label for="writgocms_text_max_tokens">
-				<?php esc_html_e( 'Maximum aantal woorden', 'writgocms' ); ?>
+			<label for="writgoai_text_max_tokens">
+				<?php esc_html_e( 'Maximum aantal woorden', 'writgoai' ); ?>
 			</label>
 			<input 
 				type="number" 
-				id="writgocms_text_max_tokens" 
-				name="writgocms_text_max_tokens" 
+				id="writgoai_text_max_tokens" 
+				name="writgoai_text_max_tokens" 
 				value="<?php echo esc_attr( $max_tokens ); ?>" 
 				min="100" 
 				max="4000" 
@@ -144,21 +144,21 @@ $max_tokens = get_option( 'writgocms_text_max_tokens', 2000 );
 				class="small-text"
 			/>
 			<p class="description">
-				<?php esc_html_e( 'Hogere waarden genereren langere teksten, maar kosten meer credits.', 'writgocms' ); ?>
+				<?php esc_html_e( 'Hogere waarden genereren langere teksten, maar kosten meer credits.', 'writgoai' ); ?>
 			</p>
 		</div>
 
 		<div class="tokens-info">
-			<p><strong><?php esc_html_e( 'Richtlijn:', 'writgocms' ); ?></strong></p>
+			<p><strong><?php esc_html_e( 'Richtlijn:', 'writgoai' ); ?></strong></p>
 			<ul>
-				<li>500-1000: <?php esc_html_e( 'Korte paragrafen', 'writgocms' ); ?></li>
-				<li>1000-2000: <?php esc_html_e( 'Gemiddelde secties', 'writgocms' ); ?></li>
-				<li>2000-4000: <?php esc_html_e( 'Lange artikelen', 'writgocms' ); ?></li>
+				<li>500-1000: <?php esc_html_e( 'Korte paragrafen', 'writgoai' ); ?></li>
+				<li>1000-2000: <?php esc_html_e( 'Gemiddelde secties', 'writgoai' ); ?></li>
+				<li>2000-4000: <?php esc_html_e( 'Lange artikelen', 'writgoai' ); ?></li>
 			</ul>
 		</div>
 	</div>
 
-	<?php submit_button( __( 'Instellingen Opslaan', 'writgocms' ) ); ?>
+	<?php submit_button( __( 'Instellingen Opslaan', 'writgoai' ) ); ?>
 </div>
 
 <script>

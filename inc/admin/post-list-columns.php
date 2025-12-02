@@ -4,7 +4,7 @@
  *
  * Adds SEO score, ranking, and traffic columns to the WordPress posts list.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Post_List_Columns
+ * Class WritgoAI_Post_List_Columns
  */
-class WritgoCMS_Post_List_Columns {
+class WritgoAI_Post_List_Columns {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Post_List_Columns
+	 * @var WritgoAI_Post_List_Columns
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Post_List_Columns
+	 * @return WritgoAI_Post_List_Columns
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -61,10 +61,10 @@ class WritgoCMS_Post_List_Columns {
 
 			// Add our columns after the title column.
 			if ( 'title' === $key ) {
-				$new_columns['writgocms_seo_score'] = __( 'SEO Score', 'writgocms' );
-				$new_columns['writgocms_ranking']   = __( 'Ranking', 'writgocms' );
-				$new_columns['writgocms_traffic']   = __( 'Traffic (30d)', 'writgocms' );
-				$new_columns['writgocms_status']    = __( 'Status', 'writgocms' );
+				$new_columns['writgoai_seo_score'] = __( 'SEO Score', 'writgoai' );
+				$new_columns['writgoai_ranking']   = __( 'Ranking', 'writgoai' );
+				$new_columns['writgoai_traffic']   = __( 'Traffic (30d)', 'writgoai' );
+				$new_columns['writgoai_status']    = __( 'Status', 'writgoai' );
 			}
 		}
 
@@ -79,16 +79,16 @@ class WritgoCMS_Post_List_Columns {
 	 */
 	public function render_column( $column, $post_id ) {
 		switch ( $column ) {
-			case 'writgocms_seo_score':
+			case 'writgoai_seo_score':
 				$this->render_seo_score( $post_id );
 				break;
-			case 'writgocms_ranking':
+			case 'writgoai_ranking':
 				$this->render_ranking( $post_id );
 				break;
-			case 'writgocms_traffic':
+			case 'writgoai_traffic':
 				$this->render_traffic( $post_id );
 				break;
-			case 'writgocms_status':
+			case 'writgoai_status':
 				$this->render_status( $post_id );
 				break;
 		}
@@ -127,7 +127,7 @@ class WritgoCMS_Post_List_Columns {
 	 * @param int $post_id Post ID.
 	 */
 	private function render_ranking( $post_id ) {
-		$ranking = get_post_meta( $post_id, '_writgocms_avg_ranking', true );
+		$ranking = get_post_meta( $post_id, '_writgoai_avg_ranking', true );
 
 		if ( $ranking ) {
 			echo '<span class="ranking">' . esc_html( number_format( $ranking, 1 ) ) . '</span>';
@@ -181,18 +181,18 @@ class WritgoCMS_Post_List_Columns {
 		);
 
 		if ( ! $score_data ) {
-			echo '<span class="status-badge status-not-analyzed">⚪ ' . esc_html__( 'Not Analyzed', 'writgocms' ) . '</span>';
+			echo '<span class="status-badge status-not-analyzed">⚪ ' . esc_html__( 'Not Analyzed', 'writgoai' ) . '</span>';
 			return;
 		}
 
 		$score = $score_data['seo_score'];
 
 		if ( $score >= 70 ) {
-			echo '<span class="status-badge status-good">✅ ' . esc_html__( 'Optimized', 'writgocms' ) . '</span>';
+			echo '<span class="status-badge status-good">✅ ' . esc_html__( 'Optimized', 'writgoai' ) . '</span>';
 		} elseif ( $score >= 40 ) {
-			echo '<span class="status-badge status-warning">⚠️ ' . esc_html__( 'Needs Work', 'writgocms' ) . '</span>';
+			echo '<span class="status-badge status-warning">⚠️ ' . esc_html__( 'Needs Work', 'writgoai' ) . '</span>';
 		} else {
-			echo '<span class="status-badge status-poor">❌ ' . esc_html__( 'Poor', 'writgocms' ) . '</span>';
+			echo '<span class="status-badge status-poor">❌ ' . esc_html__( 'Poor', 'writgoai' ) . '</span>';
 		}
 	}
 
@@ -219,9 +219,9 @@ class WritgoCMS_Post_List_Columns {
 	 * @return array Modified sortable columns.
 	 */
 	public function make_sortable( $columns ) {
-		$columns['writgocms_seo_score'] = 'writgocms_seo_score';
-		$columns['writgocms_ranking']   = 'writgocms_ranking';
-		$columns['writgocms_traffic']   = 'writgocms_traffic';
+		$columns['writgoai_seo_score'] = 'writgoai_seo_score';
+		$columns['writgoai_ranking']   = 'writgoai_ranking';
+		$columns['writgoai_traffic']   = 'writgoai_traffic';
 		return $columns;
 	}
 
@@ -232,7 +232,7 @@ class WritgoCMS_Post_List_Columns {
 	 * @return array Modified bulk actions.
 	 */
 	public function add_bulk_actions( $actions ) {
-		$actions['writgocms_analyze'] = __( 'Analyze with WritgoAI', 'writgocms' );
+		$actions['writgoai_analyze'] = __( 'Analyze with WritgoAI', 'writgoai' );
 		return $actions;
 	}
 
@@ -245,15 +245,15 @@ class WritgoCMS_Post_List_Columns {
 	 * @return string Modified redirect URL.
 	 */
 	public function handle_bulk_actions( $redirect_to, $doaction, $post_ids ) {
-		if ( 'writgocms_analyze' !== $doaction ) {
+		if ( 'writgoai_analyze' !== $doaction ) {
 			return $redirect_to;
 		}
 
-		if ( ! class_exists( 'WritgoCMS_Site_Analyzer' ) ) {
+		if ( ! class_exists( 'WritgoAI_Site_Analyzer' ) ) {
 			return $redirect_to;
 		}
 
-		$analyzer = WritgoCMS_Site_Analyzer::get_instance();
+		$analyzer = WritgoAI_Site_Analyzer::get_instance();
 		$analyzed = 0;
 
 		foreach ( $post_ids as $post_id ) {
@@ -261,7 +261,7 @@ class WritgoCMS_Post_List_Columns {
 			++$analyzed;
 		}
 
-		$redirect_to = add_query_arg( 'writgocms_analyzed', $analyzed, $redirect_to );
+		$redirect_to = add_query_arg( 'writgoai_analyzed', $analyzed, $redirect_to );
 		return $redirect_to;
 	}
 
@@ -333,4 +333,4 @@ class WritgoCMS_Post_List_Columns {
 }
 
 // Initialize.
-WritgoCMS_Post_List_Columns::get_instance();
+WritgoAI_Post_List_Columns::get_instance();

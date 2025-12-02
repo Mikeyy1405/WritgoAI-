@@ -4,7 +4,7 @@
  *
  * Handles API communication with DataForSEO for keyword research.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_DataForSEO_API
+ * Class WritgoAI_DataForSEO_API
  */
-class WritgoCMS_DataForSEO_API {
+class WritgoAI_DataForSEO_API {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_DataForSEO_API
+	 * @var WritgoAI_DataForSEO_API
 	 */
 	private static $instance = null;
 
@@ -33,7 +33,7 @@ class WritgoCMS_DataForSEO_API {
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_DataForSEO_API
+	 * @return WritgoAI_DataForSEO_API
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -56,8 +56,8 @@ class WritgoCMS_DataForSEO_API {
 	 */
 	private function get_credentials() {
 		return array(
-			'login'    => get_option( 'writgocms_dataforseo_login', '' ),
-			'password' => get_option( 'writgocms_dataforseo_password', '' ),
+			'login'    => get_option( 'writgoai_dataforseo_login', '' ),
+			'password' => get_option( 'writgoai_dataforseo_password', '' ),
 		);
 	}
 
@@ -323,4 +323,4 @@ class WritgoCMS_DataForSEO_API {
 }
 
 // Initialize.
-WritgoCMS_DataForSEO_API::get_instance();
+WritgoAI_DataForSEO_API::get_instance();

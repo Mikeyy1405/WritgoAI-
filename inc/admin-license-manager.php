@@ -9,7 +9,7 @@
  * - Manage credits
  * - View activity logs
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,21 +17,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Admin_License_Manager
+ * Class WritgoAI_Admin_License_Manager
  */
-class WritgoCMS_Admin_License_Manager {
+class WritgoAI_Admin_License_Manager {
 
     /**
      * Instance
      *
-     * @var WritgoCMS_Admin_License_Manager
+     * @var WritgoAI_Admin_License_Manager
      */
     private static $instance = null;
 
     /**
      * Get instance
      *
-     * @return WritgoCMS_Admin_License_Manager
+     * @return WritgoAI_Admin_License_Manager
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -46,10 +46,10 @@ class WritgoCMS_Admin_License_Manager {
     private function __construct() {
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 20 );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-        add_action( 'wp_ajax_writgocms_admin_update_license', array( $this, 'ajax_update_license' ) );
-        add_action( 'wp_ajax_writgocms_admin_delete_license', array( $this, 'ajax_delete_license' ) );
-        add_action( 'wp_ajax_writgocms_admin_add_credits', array( $this, 'ajax_add_credits' ) );
-        add_action( 'wp_ajax_writgocms_admin_generate_test_license', array( $this, 'ajax_generate_test_license' ) );
+        add_action( 'wp_ajax_writgoai_admin_update_license', array( $this, 'ajax_update_license' ) );
+        add_action( 'wp_ajax_writgoai_admin_delete_license', array( $this, 'ajax_delete_license' ) );
+        add_action( 'wp_ajax_writgoai_admin_add_credits', array( $this, 'ajax_add_credits' ) );
+        add_action( 'wp_ajax_writgoai_admin_generate_test_license', array( $this, 'ajax_generate_test_license' ) );
     }
 
     /**
@@ -78,16 +78,16 @@ class WritgoCMS_Admin_License_Manager {
 
         wp_enqueue_style(
             'writgocms-license-manager',
-            WRITGOCMS_URL . 'assets/css/admin-aiml.css',
+            WRITGOAI_URL . 'assets/css/admin-ai.css',
             array(),
-            WRITGOCMS_VERSION
+            WRITGOAI_VERSION
         );
 
         wp_enqueue_script(
             'writgocms-license-manager',
-            WRITGOCMS_URL . 'assets/js/admin-aiml.js',
+            WRITGOAI_URL . 'assets/js/admin-ai.js',
             array( 'jquery' ),
-            WRITGOCMS_VERSION,
+            WRITGOAI_VERSION,
             true
         );
 
@@ -96,12 +96,12 @@ class WritgoCMS_Admin_License_Manager {
             'writgocmsLicenseManager',
             array(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-                'nonce'   => wp_create_nonce( 'writgocms_license_manager_nonce' ),
+                'nonce'   => wp_create_nonce( 'writgoai_license_manager_nonce' ),
                 'i18n'    => array(
-                    'confirmDelete' => __( 'Are you sure you want to delete this license?', 'writgocms' ),
-                    'saving'        => __( 'Saving...', 'writgocms' ),
-                    'saved'         => __( 'Saved!', 'writgocms' ),
-                    'error'         => __( 'Error', 'writgocms' ),
+                    'confirmDelete' => __( 'Are you sure you want to delete this license?', 'writgoai' ),
+                    'saving'        => __( 'Saving...', 'writgoai' ),
+                    'saved'         => __( 'Saved!', 'writgoai' ),
+                    'error'         => __( 'Error', 'writgoai' ),
                 ),
             )
         );
@@ -128,29 +128,29 @@ class WritgoCMS_Admin_License_Manager {
         $tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'licenses';
 
         ?>
-        <div class="wrap writgocms-aiml-settings">
+        <div class="wrap writgoai-settings">
             <h1 class="aiml-header">
                 <span class="aiml-logo">📋</span>
-                <?php esc_html_e( 'License Manager', 'writgocms' ); ?>
+                <?php esc_html_e( 'License Manager', 'writgoai' ); ?>
             </h1>
 
             <!-- Tabs -->
             <nav class="nav-tab-wrapper">
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license-manager&tab=licenses' ) ); ?>" 
                    class="nav-tab <?php echo 'licenses' === $tab ? 'nav-tab-active' : ''; ?>">
-                    <?php esc_html_e( 'All Licenses', 'writgocms' ); ?>
+                    <?php esc_html_e( 'All Licenses', 'writgoai' ); ?>
                 </a>
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license-manager&tab=activity' ) ); ?>" 
                    class="nav-tab <?php echo 'activity' === $tab ? 'nav-tab-active' : ''; ?>">
-                    <?php esc_html_e( 'Activity Log', 'writgocms' ); ?>
+                    <?php esc_html_e( 'Activity Log', 'writgoai' ); ?>
                 </a>
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license-manager&tab=credits' ) ); ?>" 
                    class="nav-tab <?php echo 'credits' === $tab ? 'nav-tab-active' : ''; ?>">
-                    <?php esc_html_e( 'Credit Usage', 'writgocms' ); ?>
+                    <?php esc_html_e( 'Credit Usage', 'writgoai' ); ?>
                 </a>
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license-manager&tab=stats' ) ); ?>" 
                    class="nav-tab <?php echo 'stats' === $tab ? 'nav-tab-active' : ''; ?>">
-                    <?php esc_html_e( 'Statistics', 'writgocms' ); ?>
+                    <?php esc_html_e( 'Statistics', 'writgoai' ); ?>
                 </a>
             </nav>
 
@@ -186,28 +186,28 @@ class WritgoCMS_Admin_License_Manager {
         ?>
         <div class="planner-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="margin: 0;"><?php esc_html_e( 'All Licenses', 'writgocms' ); ?> <span class="count">(<?php echo count( $licenses ); ?>)</span></h2>
+                <h2 style="margin: 0;"><?php esc_html_e( 'All Licenses', 'writgoai' ); ?> <span class="count">(<?php echo count( $licenses ); ?>)</span></h2>
                 <?php if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
                     <button type="button" class="button button-primary" id="generate-test-license-btn">
                         <span class="dashicons dashicons-admin-network" style="margin-top: 3px;"></span>
-                        <?php esc_html_e( 'Generate Test License', 'writgocms' ); ?>
+                        <?php esc_html_e( 'Generate Test License', 'writgoai' ); ?>
                     </button>
                 <?php endif; ?>
             </div>
 
             <?php if ( empty( $licenses ) ) : ?>
-                <p class="description"><?php esc_html_e( 'No licenses found. Licenses are created automatically when customers purchase a subscription.', 'writgocms' ); ?></p>
+                <p class="description"><?php esc_html_e( 'No licenses found. Licenses are created automatically when customers purchase a subscription.', 'writgoai' ); ?></p>
             <?php else : ?>
                 <table class="widefat striped">
                     <thead>
                         <tr>
-                            <th><?php esc_html_e( 'License Key', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Email', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Plan', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Credits', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Status', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Expires', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Actions', 'writgocms' ); ?></th>
+                            <th><?php esc_html_e( 'License Key', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Email', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Plan', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Credits', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Status', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Expires', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Actions', 'writgoai' ); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -245,10 +245,10 @@ class WritgoCMS_Admin_License_Manager {
                                 </td>
                                 <td>
                                     <button type="button" class="button button-small view-license" data-license-key="<?php echo esc_attr( $key ); ?>">
-                                        <?php esc_html_e( 'View', 'writgocms' ); ?>
+                                        <?php esc_html_e( 'View', 'writgoai' ); ?>
                                     </button>
                                     <button type="button" class="button button-small add-credits" data-license-key="<?php echo esc_attr( $key ); ?>">
-                                        <?php esc_html_e( '+ Credits', 'writgocms' ); ?>
+                                        <?php esc_html_e( '+ Credits', 'writgoai' ); ?>
                                     </button>
                                 </td>
                             </tr>
@@ -262,7 +262,7 @@ class WritgoCMS_Admin_License_Manager {
         <div id="license-detail-modal" class="writgoai-modal" style="display: none;">
             <div class="writgoai-modal-content">
                 <span class="writgoai-modal-close">&times;</span>
-                <h2><?php esc_html_e( 'License Details', 'writgocms' ); ?></h2>
+                <h2><?php esc_html_e( 'License Details', 'writgoai' ); ?></h2>
                 <div id="license-detail-content"></div>
             </div>
         </div>
@@ -271,19 +271,19 @@ class WritgoCMS_Admin_License_Manager {
         <div id="add-credits-modal" class="writgoai-modal" style="display: none;">
             <div class="writgoai-modal-content">
                 <span class="writgoai-modal-close">&times;</span>
-                <h2><?php esc_html_e( 'Add Credits', 'writgocms' ); ?></h2>
+                <h2><?php esc_html_e( 'Add Credits', 'writgoai' ); ?></h2>
                 <form id="add-credits-form">
                     <input type="hidden" id="add-credits-license-key" name="license_key" value="">
                     <p>
-                        <label for="add-credits-amount"><?php esc_html_e( 'Credits to Add:', 'writgocms' ); ?></label>
+                        <label for="add-credits-amount"><?php esc_html_e( 'Credits to Add:', 'writgoai' ); ?></label>
                         <input type="number" id="add-credits-amount" name="amount" min="1" max="10000" value="100" class="regular-text">
                     </p>
                     <p>
-                        <label for="add-credits-reason"><?php esc_html_e( 'Reason:', 'writgocms' ); ?></label>
-                        <input type="text" id="add-credits-reason" name="reason" class="regular-text" placeholder="<?php esc_attr_e( 'Optional reason for adding credits', 'writgocms' ); ?>">
+                        <label for="add-credits-reason"><?php esc_html_e( 'Reason:', 'writgoai' ); ?></label>
+                        <input type="text" id="add-credits-reason" name="reason" class="regular-text" placeholder="<?php esc_attr_e( 'Optional reason for adding credits', 'writgoai' ); ?>">
                     </p>
                     <p class="submit">
-                        <button type="submit" class="button button-primary"><?php esc_html_e( 'Add Credits', 'writgocms' ); ?></button>
+                        <button type="submit" class="button button-primary"><?php esc_html_e( 'Add Credits', 'writgoai' ); ?></button>
                     </p>
                 </form>
             </div>
@@ -293,36 +293,36 @@ class WritgoCMS_Admin_License_Manager {
         <div id="generate-test-license-modal" class="writgoai-modal" style="display: none;">
             <div class="writgoai-modal-content">
                 <span class="writgoai-modal-close">&times;</span>
-                <h2><?php esc_html_e( 'Generate Test License', 'writgocms' ); ?></h2>
+                <h2><?php esc_html_e( 'Generate Test License', 'writgoai' ); ?></h2>
                 <?php if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) : ?>
-                    <p class="description"><?php esc_html_e( 'Generate a test license for development and testing. This feature is only available when WP_DEBUG is enabled.', 'writgocms' ); ?></p>
+                    <p class="description"><?php esc_html_e( 'Generate a test license for development and testing. This feature is only available when WP_DEBUG is enabled.', 'writgoai' ); ?></p>
                     <form id="generate-test-license-form">
                         <p>
                             <label>
                                 <input type="checkbox" id="test-license-use-demo" name="use_demo" value="1">
-                                <?php esc_html_e( 'Use fixed demo license (TEST-DEMO-1234-5678)', 'writgocms' ); ?>
+                                <?php esc_html_e( 'Use fixed demo license (TEST-DEMO-1234-5678)', 'writgoai' ); ?>
                             </label>
                         </p>
                         <div id="test-license-custom-fields">
                             <p>
-                                <label for="test-license-email"><?php esc_html_e( 'Email:', 'writgocms' ); ?></label>
+                                <label for="test-license-email"><?php esc_html_e( 'Email:', 'writgoai' ); ?></label>
                                 <input type="email" id="test-license-email" name="email" class="regular-text" value="<?php echo esc_attr( get_option( 'admin_email' ) ); ?>" required>
                             </p>
                             <p>
-                                <label for="test-license-plan"><?php esc_html_e( 'Plan:', 'writgocms' ); ?></label>
+                                <label for="test-license-plan"><?php esc_html_e( 'Plan:', 'writgoai' ); ?></label>
                                 <select id="test-license-plan" name="plan" class="regular-text">
-                                    <option value="starter"><?php esc_html_e( 'Starter (1,000 credits)', 'writgocms' ); ?></option>
-                                    <option value="pro" selected><?php esc_html_e( 'Pro (3,000 credits)', 'writgocms' ); ?></option>
-                                    <option value="enterprise"><?php esc_html_e( 'Enterprise (10,000 credits)', 'writgocms' ); ?></option>
+                                    <option value="starter"><?php esc_html_e( 'Starter (1,000 credits)', 'writgoai' ); ?></option>
+                                    <option value="pro" selected><?php esc_html_e( 'Pro (3,000 credits)', 'writgoai' ); ?></option>
+                                    <option value="enterprise"><?php esc_html_e( 'Enterprise (10,000 credits)', 'writgoai' ); ?></option>
                                 </select>
                             </p>
                         </div>
                         <p class="submit">
-                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Generate License', 'writgocms' ); ?></button>
+                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Generate License', 'writgoai' ); ?></button>
                         </p>
                     </form>
                 <?php else : ?>
-                    <p style="color: #dc3545;"><?php esc_html_e( 'Test license generation is only available when WP_DEBUG is enabled in wp-config.php', 'writgocms' ); ?></p>
+                    <p style="color: #dc3545;"><?php esc_html_e( 'Test license generation is only available when WP_DEBUG is enabled in wp-config.php', 'writgoai' ); ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -391,23 +391,23 @@ class WritgoCMS_Admin_License_Manager {
                 var percentage = license.credits_total > 0 ? (remaining / license.credits_total) * 100 : 0;
                 
                 var html = '<table class="widefat">';
-                html += '<tr><th><?php esc_html_e( 'License Key', 'writgocms' ); ?></th><td><code>' + key + '</code></td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Email', 'writgocms' ); ?></th><td>' + license.email + '</td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Plan', 'writgocms' ); ?></th><td>' + license.plan_name + '</td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Status', 'writgocms' ); ?></th><td>' + license.status + '</td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Credits Used', 'writgocms' ); ?></th><td>' + license.credits_used + '</td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Credits Total', 'writgocms' ); ?></th><td>' + license.credits_total + '</td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Credits Remaining', 'writgocms' ); ?></th><td>' + remaining + ' (' + percentage.toFixed(1) + '%)</td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Period Start', 'writgocms' ); ?></th><td>' + (license.period_start || '-') + '</td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Period End', 'writgocms' ); ?></th><td>' + (license.period_end || '-') + '</td></tr>';
-                html += '<tr><th><?php esc_html_e( 'Activated At', 'writgocms' ); ?></th><td>' + (license.activated_at || '-') + '</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'License Key', 'writgoai' ); ?></th><td><code>' + key + '</code></td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Email', 'writgoai' ); ?></th><td>' + license.email + '</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Plan', 'writgoai' ); ?></th><td>' + license.plan_name + '</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Status', 'writgoai' ); ?></th><td>' + license.status + '</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Credits Used', 'writgoai' ); ?></th><td>' + license.credits_used + '</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Credits Total', 'writgoai' ); ?></th><td>' + license.credits_total + '</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Credits Remaining', 'writgoai' ); ?></th><td>' + remaining + ' (' + percentage.toFixed(1) + '%)</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Period Start', 'writgoai' ); ?></th><td>' + (license.period_start || '-') + '</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Period End', 'writgoai' ); ?></th><td>' + (license.period_end || '-') + '</td></tr>';
+                html += '<tr><th><?php esc_html_e( 'Activated At', 'writgoai' ); ?></th><td>' + (license.activated_at || '-') + '</td></tr>';
                 if (license.order_id) {
-                    html += '<tr><th><?php esc_html_e( 'Order ID', 'writgocms' ); ?></th><td><a href="<?php echo esc_url( admin_url( 'post.php?action=edit&post=' ) ); ?>' + license.order_id + '">#' + license.order_id + '</a></td></tr>';
+                    html += '<tr><th><?php esc_html_e( 'Order ID', 'writgoai' ); ?></th><td><a href="<?php echo esc_url( admin_url( 'post.php?action=edit&post=' ) ); ?>' + license.order_id + '">#' + license.order_id + '</a></td></tr>';
                 }
                 html += '</table>';
                 
                 if (license.features && license.features.length) {
-                    html += '<h3><?php esc_html_e( 'Features', 'writgocms' ); ?></h3><ul>';
+                    html += '<h3><?php esc_html_e( 'Features', 'writgoai' ); ?></h3><ul>';
                     for (var i = 0; i < license.features.length; i++) {
                         html += '<li>✅ ' + license.features[i] + '</li>';
                     }
@@ -445,13 +445,13 @@ class WritgoCMS_Admin_License_Manager {
                 var amount = $('#add-credits-amount').val();
                 var reason = $('#add-credits-reason').val();
                 
-                $btn.prop('disabled', true).text('<?php esc_html_e( 'Adding...', 'writgocms' ); ?>');
+                $btn.prop('disabled', true).text('<?php esc_html_e( 'Adding...', 'writgoai' ); ?>');
                 
                 $.ajax({
                     url: writgocmsLicenseManager.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_admin_add_credits',
+                        action: 'writgoai_admin_add_credits',
                         nonce: writgocmsLicenseManager.nonce,
                         license_key: key,
                         amount: amount,
@@ -466,10 +466,10 @@ class WritgoCMS_Admin_License_Manager {
                         }
                     },
                     error: function() {
-                        alert('<?php esc_html_e( 'An error occurred.', 'writgocms' ); ?>');
+                        alert('<?php esc_html_e( 'An error occurred.', 'writgoai' ); ?>');
                     },
                     complete: function() {
-                        $btn.prop('disabled', false).text('<?php esc_html_e( 'Add Credits', 'writgocms' ); ?>');
+                        $btn.prop('disabled', false).text('<?php esc_html_e( 'Add Credits', 'writgoai' ); ?>');
                     }
                 });
             });
@@ -499,13 +499,13 @@ class WritgoCMS_Admin_License_Manager {
                 var email = $('#test-license-email').val();
                 var plan = $('#test-license-plan').val();
                 
-                $btn.prop('disabled', true).text('<?php esc_html_e( 'Generating...', 'writgocms' ); ?>');
+                $btn.prop('disabled', true).text('<?php esc_html_e( 'Generating...', 'writgoai' ); ?>');
                 
                 $.ajax({
                     url: writgocmsLicenseManager.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_admin_generate_test_license',
+                        action: 'writgoai_admin_generate_test_license',
                         nonce: writgocmsLicenseManager.nonce,
                         use_demo: useDemo ? '1' : '0',
                         email: email,
@@ -520,10 +520,10 @@ class WritgoCMS_Admin_License_Manager {
                         }
                     },
                     error: function() {
-                        alert('<?php esc_html_e( 'An error occurred.', 'writgocms' ); ?>');
+                        alert('<?php esc_html_e( 'An error occurred.', 'writgoai' ); ?>');
                     },
                     complete: function() {
-                        $btn.prop('disabled', false).text('<?php esc_html_e( 'Generate License', 'writgocms' ); ?>');
+                        $btn.prop('disabled', false).text('<?php esc_html_e( 'Generate License', 'writgoai' ); ?>');
                     }
                 });
             });
@@ -546,19 +546,19 @@ class WritgoCMS_Admin_License_Manager {
 
         ?>
         <div class="planner-card">
-            <h2><?php esc_html_e( 'License Activity Log', 'writgocms' ); ?></h2>
+            <h2><?php esc_html_e( 'License Activity Log', 'writgoai' ); ?></h2>
 
             <?php if ( empty( $activity_log ) ) : ?>
-                <p class="description"><?php esc_html_e( 'No activity recorded yet.', 'writgocms' ); ?></p>
+                <p class="description"><?php esc_html_e( 'No activity recorded yet.', 'writgoai' ); ?></p>
             <?php else : ?>
                 <table class="widefat striped">
                     <thead>
                         <tr>
-                            <th><?php esc_html_e( 'Date', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'License Key', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Activity', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Details', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'IP Address', 'writgocms' ); ?></th>
+                            <th><?php esc_html_e( 'Date', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'License Key', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Activity', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Details', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'IP Address', 'writgoai' ); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -615,19 +615,19 @@ class WritgoCMS_Admin_License_Manager {
 
         ?>
         <div class="planner-card">
-            <h2><?php esc_html_e( 'Credit Usage Log', 'writgocms' ); ?></h2>
+            <h2><?php esc_html_e( 'Credit Usage Log', 'writgoai' ); ?></h2>
 
             <?php if ( empty( $credit_log ) ) : ?>
-                <p class="description"><?php esc_html_e( 'No credit usage recorded yet.', 'writgocms' ); ?></p>
+                <p class="description"><?php esc_html_e( 'No credit usage recorded yet.', 'writgoai' ); ?></p>
             <?php else : ?>
                 <table class="widefat striped">
                     <thead>
                         <tr>
-                            <th><?php esc_html_e( 'Date', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'License Key', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Action', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'Credits', 'writgocms' ); ?></th>
-                            <th><?php esc_html_e( 'User', 'writgocms' ); ?></th>
+                            <th><?php esc_html_e( 'Date', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'License Key', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Action', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'Credits', 'writgoai' ); ?></th>
+                            <th><?php esc_html_e( 'User', 'writgoai' ); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -700,36 +700,36 @@ class WritgoCMS_Admin_License_Manager {
 
         ?>
         <div class="planner-card">
-            <h2><?php esc_html_e( 'License Statistics', 'writgocms' ); ?></h2>
+            <h2><?php esc_html_e( 'License Statistics', 'writgoai' ); ?></h2>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
                     <div style="font-size: 36px; font-weight: bold; color: #667eea;"><?php echo number_format( $total_licenses ); ?></div>
-                    <div style="color: #666;"><?php esc_html_e( 'Total Licenses', 'writgocms' ); ?></div>
+                    <div style="color: #666;"><?php esc_html_e( 'Total Licenses', 'writgoai' ); ?></div>
                 </div>
                 <div style="background: #d4edda; padding: 20px; border-radius: 10px; text-align: center;">
                     <div style="font-size: 36px; font-weight: bold; color: #155724;"><?php echo number_format( $active_licenses ); ?></div>
-                    <div style="color: #666;"><?php esc_html_e( 'Active Licenses', 'writgocms' ); ?></div>
+                    <div style="color: #666;"><?php esc_html_e( 'Active Licenses', 'writgoai' ); ?></div>
                 </div>
                 <div style="background: #fff3cd; padding: 20px; border-radius: 10px; text-align: center;">
                     <div style="font-size: 36px; font-weight: bold; color: #856404;"><?php echo number_format( $total_credits_used ); ?></div>
-                    <div style="color: #666;"><?php esc_html_e( 'Total Credits Used', 'writgocms' ); ?></div>
+                    <div style="color: #666;"><?php esc_html_e( 'Total Credits Used', 'writgoai' ); ?></div>
                 </div>
                 <div style="background: #cce5ff; padding: 20px; border-radius: 10px; text-align: center;">
                     <div style="font-size: 36px; font-weight: bold; color: #004085;"><?php echo number_format( $recent_credits ); ?></div>
-                    <div style="color: #666;"><?php esc_html_e( 'Credits Used (7 days)', 'writgocms' ); ?></div>
+                    <div style="color: #666;"><?php esc_html_e( 'Credits Used (7 days)', 'writgoai' ); ?></div>
                 </div>
             </div>
         </div>
 
         <?php if ( ! empty( $credits_by_action ) ) : ?>
         <div class="planner-card">
-            <h2><?php esc_html_e( 'Credits by Action Type', 'writgocms' ); ?></h2>
+            <h2><?php esc_html_e( 'Credits by Action Type', 'writgoai' ); ?></h2>
             <table class="widefat striped" style="max-width: 500px;">
                 <thead>
                     <tr>
-                        <th><?php esc_html_e( 'Action', 'writgocms' ); ?></th>
-                        <th style="text-align: right;"><?php esc_html_e( 'Credits Used', 'writgocms' ); ?></th>
+                        <th><?php esc_html_e( 'Action', 'writgoai' ); ?></th>
+                        <th style="text-align: right;"><?php esc_html_e( 'Credits Used', 'writgoai' ); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -771,13 +771,13 @@ class WritgoCMS_Admin_License_Manager {
      */
     private function get_activity_label( $type ) {
         $labels = array(
-            'created'          => __( 'License Created', 'writgocms' ),
-            'renewed'          => __( 'Subscription Renewed', 'writgocms' ),
-            'cancelled'        => __( 'Subscription Cancelled', 'writgocms' ),
-            'expired'          => __( 'License Expired', 'writgocms' ),
-            'suspended'        => __( 'License Suspended', 'writgocms' ),
-            'credits_added'    => __( 'Credits Added', 'writgocms' ),
-            'credits_consumed' => __( 'Credits Consumed', 'writgocms' ),
+            'created'          => __( 'License Created', 'writgoai' ),
+            'renewed'          => __( 'Subscription Renewed', 'writgoai' ),
+            'cancelled'        => __( 'Subscription Cancelled', 'writgoai' ),
+            'expired'          => __( 'License Expired', 'writgoai' ),
+            'suspended'        => __( 'License Suspended', 'writgoai' ),
+            'credits_added'    => __( 'Credits Added', 'writgoai' ),
+            'credits_consumed' => __( 'Credits Consumed', 'writgoai' ),
         );
         return isset( $labels[ $type ] ) ? $labels[ $type ] : ucfirst( str_replace( '_', ' ', $type ) );
     }
@@ -790,15 +790,15 @@ class WritgoCMS_Admin_License_Manager {
      */
     private function get_action_label( $action ) {
         $labels = array(
-            'ai_rewrite_small'     => __( 'AI Rewrite (Small)', 'writgocms' ),
-            'ai_rewrite_paragraph' => __( 'AI Rewrite (Paragraph)', 'writgocms' ),
-            'ai_rewrite_full'      => __( 'AI Rewrite (Full)', 'writgocms' ),
-            'ai_image'             => __( 'AI Image', 'writgocms' ),
-            'seo_analysis'         => __( 'SEO Analysis', 'writgocms' ),
-            'internal_links'       => __( 'Internal Links', 'writgocms' ),
-            'keyword_research'     => __( 'Keyword Research', 'writgocms' ),
-            'text_generation'      => __( 'Text Generation', 'writgocms' ),
-            'image_generation'     => __( 'Image Generation', 'writgocms' ),
+            'ai_rewrite_small'     => __( 'AI Rewrite (Small)', 'writgoai' ),
+            'ai_rewrite_paragraph' => __( 'AI Rewrite (Paragraph)', 'writgoai' ),
+            'ai_rewrite_full'      => __( 'AI Rewrite (Full)', 'writgoai' ),
+            'ai_image'             => __( 'AI Image', 'writgoai' ),
+            'seo_analysis'         => __( 'SEO Analysis', 'writgoai' ),
+            'internal_links'       => __( 'Internal Links', 'writgoai' ),
+            'keyword_research'     => __( 'Keyword Research', 'writgoai' ),
+            'text_generation'      => __( 'Text Generation', 'writgoai' ),
+            'image_generation'     => __( 'Image Generation', 'writgoai' ),
         );
         return isset( $labels[ $action ] ) ? $labels[ $action ] : ucfirst( str_replace( '_', ' ', $action ) );
     }
@@ -809,29 +809,29 @@ class WritgoCMS_Admin_License_Manager {
      * @return void
      */
     public function ajax_update_license() {
-        check_ajax_referer( 'writgocms_license_manager_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_license_manager_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $license_key = isset( $_POST['license_key'] ) ? sanitize_text_field( wp_unslash( $_POST['license_key'] ) ) : '';
         $status      = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : '';
 
         if ( empty( $license_key ) || empty( $status ) ) {
-            wp_send_json_error( array( 'message' => __( 'Missing required fields.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Missing required fields.', 'writgoai' ) ) );
         }
 
         $licenses = get_option( 'writgoai_licenses', array() );
 
         if ( ! isset( $licenses[ $license_key ] ) ) {
-            wp_send_json_error( array( 'message' => __( 'License not found.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'License not found.', 'writgoai' ) ) );
         }
 
         $licenses[ $license_key ]['status'] = $status;
         update_option( 'writgoai_licenses', $licenses );
 
-        wp_send_json_success( array( 'message' => __( 'License updated successfully.', 'writgocms' ) ) );
+        wp_send_json_success( array( 'message' => __( 'License updated successfully.', 'writgoai' ) ) );
     }
 
     /**
@@ -840,28 +840,28 @@ class WritgoCMS_Admin_License_Manager {
      * @return void
      */
     public function ajax_delete_license() {
-        check_ajax_referer( 'writgocms_license_manager_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_license_manager_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $license_key = isset( $_POST['license_key'] ) ? sanitize_text_field( wp_unslash( $_POST['license_key'] ) ) : '';
 
         if ( empty( $license_key ) ) {
-            wp_send_json_error( array( 'message' => __( 'License key is required.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'License key is required.', 'writgoai' ) ) );
         }
 
         $licenses = get_option( 'writgoai_licenses', array() );
 
         if ( ! isset( $licenses[ $license_key ] ) ) {
-            wp_send_json_error( array( 'message' => __( 'License not found.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'License not found.', 'writgoai' ) ) );
         }
 
         unset( $licenses[ $license_key ] );
         update_option( 'writgoai_licenses', $licenses );
 
-        wp_send_json_success( array( 'message' => __( 'License deleted successfully.', 'writgocms' ) ) );
+        wp_send_json_success( array( 'message' => __( 'License deleted successfully.', 'writgoai' ) ) );
     }
 
     /**
@@ -870,10 +870,10 @@ class WritgoCMS_Admin_License_Manager {
      * @return void
      */
     public function ajax_add_credits() {
-        check_ajax_referer( 'writgocms_license_manager_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_license_manager_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $license_key = isset( $_POST['license_key'] ) ? sanitize_text_field( wp_unslash( $_POST['license_key'] ) ) : '';
@@ -881,13 +881,13 @@ class WritgoCMS_Admin_License_Manager {
         $reason      = isset( $_POST['reason'] ) ? sanitize_text_field( wp_unslash( $_POST['reason'] ) ) : '';
 
         if ( empty( $license_key ) || $amount < 1 ) {
-            wp_send_json_error( array( 'message' => __( 'Invalid license key or amount.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Invalid license key or amount.', 'writgoai' ) ) );
         }
 
         $licenses = get_option( 'writgoai_licenses', array() );
 
         if ( ! isset( $licenses[ $license_key ] ) ) {
-            wp_send_json_error( array( 'message' => __( 'License not found.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'License not found.', 'writgoai' ) ) );
         }
 
         // Add credits by increasing total.
@@ -911,7 +911,7 @@ class WritgoCMS_Admin_License_Manager {
 
         wp_send_json_success( array(
             /* translators: %d: number of credits added */
-            'message' => sprintf( __( '%d credits added successfully.', 'writgocms' ), $amount ),
+            'message' => sprintf( __( '%d credits added successfully.', 'writgoai' ), $amount ),
         ) );
     }
 
@@ -926,7 +926,7 @@ class WritgoCMS_Admin_License_Manager {
      */
     public function generate_test_license( $email = '', $plan = 'pro', $use_demo = false ) {
         if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
-            return new WP_Error( 'not_debug', __( 'Test licenses can only be generated in debug mode.', 'writgocms' ) );
+            return new WP_Error( 'not_debug', __( 'Test licenses can only be generated in debug mode.', 'writgoai' ) );
         }
 
         // Plan credits mapping
@@ -946,12 +946,12 @@ class WritgoCMS_Admin_License_Manager {
         } else {
             // Validate plan
             if ( ! isset( $plan_credits[ $plan ] ) ) {
-                return new WP_Error( 'invalid_plan', __( 'Invalid plan type.', 'writgocms' ) );
+                return new WP_Error( 'invalid_plan', __( 'Invalid plan type.', 'writgoai' ) );
             }
 
             // Validate email
             if ( empty( $email ) || ! is_email( $email ) ) {
-                return new WP_Error( 'invalid_email', __( 'Valid email address is required.', 'writgocms' ) );
+                return new WP_Error( 'invalid_email', __( 'Valid email address is required.', 'writgoai' ) );
             }
 
             // Genereer license key
@@ -967,7 +967,7 @@ class WritgoCMS_Admin_License_Manager {
         // Check if license already exists
         $licenses = get_option( 'writgoai_licenses', array() );
         if ( isset( $licenses[ $license_key ] ) ) {
-            return new WP_Error( 'license_exists', __( 'This license key already exists.', 'writgocms' ) );
+            return new WP_Error( 'license_exists', __( 'This license key already exists.', 'writgoai' ) );
         }
 
         $license_data = array(
@@ -1022,10 +1022,10 @@ class WritgoCMS_Admin_License_Manager {
      * @return void
      */
     public function ajax_generate_test_license() {
-        check_ajax_referer( 'writgocms_license_manager_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_license_manager_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $use_demo = isset( $_POST['use_demo'] ) && '1' === $_POST['use_demo'];
@@ -1040,8 +1040,8 @@ class WritgoCMS_Admin_License_Manager {
 
         wp_send_json_success( array(
             'message'     => $use_demo
-                ? __( 'Demo license generated and activated successfully!', 'writgocms' )
-                : __( 'Test license generated and activated successfully!', 'writgocms' ),
+                ? __( 'Demo license generated and activated successfully!', 'writgoai' )
+                : __( 'Test license generated and activated successfully!', 'writgoai' ),
             'license_key' => $result['license_key'],
             'license'     => $result,
         ) );
@@ -1050,5 +1050,5 @@ class WritgoCMS_Admin_License_Manager {
 
 // Initialize.
 add_action( 'plugins_loaded', function() {
-    WritgoCMS_Admin_License_Manager::get_instance();
+    WritgoAI_Admin_License_Manager::get_instance();
 }, 20 );

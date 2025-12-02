@@ -52,15 +52,15 @@
             var self = this;
             var $dashboard = $('#usage-dashboard');
             
-            if (!$dashboard.length || !writgocmsAiml.restUrl) {
+            if (!$dashboard.length || !writgoaiAi.restUrl) {
                 return;
             }
 
             $.ajax({
-                url: writgocmsAiml.restUrl + 'usage',
+                url: writgoaiAi.restUrl + 'usage',
                 type: 'GET',
                 beforeSend: function(xhr) {
-                    xhr.setRequestHeader('X-WP-Nonce', writgocmsAiml.restNonce);
+                    xhr.setRequestHeader('X-WP-Nonce', writgoaiAi.restNonce);
                 },
                 success: function(response) {
                     if (response) {
@@ -114,21 +114,21 @@
                 var $status = $('.analysis-status');
                 var manualTheme = $('#manual-theme').val();
 
-                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsAiml.i18n.analyzing);
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgoaiAi.i18n.analyzing);
                 $status.text('').removeClass('error success');
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_analyze_sitemap',
-                        nonce: writgocmsAiml.nonce,
+                        action: 'writgoai_analyze_sitemap',
+                        nonce: writgoaiAi.nonce,
                         manual_theme: manualTheme
                     },
                     success: function(response) {
                         if (response.success) {
-                            $status.text(writgocmsAiml.i18n.analysisComplete).addClass('success');
-                            self.showNotification(writgocmsAiml.i18n.analysisComplete, 'success');
+                            $status.text(writgoaiAi.i18n.analysisComplete).addClass('success');
+                            self.showNotification(writgoaiAi.i18n.analysisComplete, 'success');
                             // Reload page to show results
                             location.reload();
                         } else {
@@ -137,11 +137,11 @@
                         }
                     },
                     error: function() {
-                        $status.text(writgocmsAiml.i18n.analysisError).addClass('error');
+                        $status.text(writgoaiAi.i18n.analysisError).addClass('error');
                         self.showNotification('Verbindingsfout', 'error');
                     },
                     complete: function() {
-                        $button.prop('disabled', false).html('🔍 ' + writgocmsAiml.i18n.refreshAnalysis);
+                        $button.prop('disabled', false).html('🔍 ' + writgoaiAi.i18n.refreshAnalysis);
                     }
                 });
             });
@@ -151,22 +151,22 @@
                 var $button = $(this);
                 var $status = $('.content-plan-status');
 
-                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsAiml.i18n.generatingMap);
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgoaiAi.i18n.generatingMap);
                 $status.text('').removeClass('error success');
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_generate_categorized_plan',
-                        nonce: writgocmsAiml.nonce
+                        action: 'writgoai_generate_categorized_plan',
+                        nonce: writgoaiAi.nonce
                     },
                     success: function(response) {
                         if (response.success) {
-                            $status.text(writgocmsAiml.i18n.success).addClass('success');
+                            $status.text(writgoaiAi.i18n.success).addClass('success');
                             self.showNotification('Contentplan succesvol gegenereerd!', 'success');
                             // Redirect to content plan page
-                            window.location.href = writgocmsAiml.ajaxUrl.replace('admin-ajax.php', 'admin.php?page=writgocms-aiml-contentplan');
+                            window.location.href = writgoaiAi.ajaxUrl.replace('admin-ajax.php', 'admin.php?page=writgoai-ai-contentplan');
                         } else {
                             $status.text(response.data.message).addClass('error');
                             self.showNotification(response.data.message, 'error');
@@ -199,14 +199,14 @@
                     return;
                 }
 
-                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsAiml.i18n.generating);
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgoaiAi.i18n.generating);
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_generate_article_content',
-                        nonce: writgocmsAiml.nonce,
+                        action: 'writgoai_generate_article_content',
+                        nonce: writgoaiAi.nonce,
                         item: JSON.stringify(itemData)
                     },
                     success: function(response) {
@@ -243,11 +243,11 @@
                 $button.prop('disabled', true).html('<span class="loading-spinner"></span> Publiceren...');
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_publish_content',
-                        nonce: writgocmsAiml.nonce,
+                        action: 'writgoai_publish_content',
+                        nonce: writgoaiAi.nonce,
                         content: JSON.stringify(contentData),
                         status: status
                     },
@@ -318,11 +318,11 @@
             var self = this;
 
             $.ajax({
-                url: writgocmsAiml.ajaxUrl,
+                url: writgoaiAi.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_publish_content',
-                    nonce: writgocmsAiml.nonce,
+                    action: 'writgoai_publish_content',
+                    nonce: writgoaiAi.nonce,
                     content: JSON.stringify(content),
                     status: status
                 },
@@ -361,12 +361,12 @@
                 // Update placeholder and model options
                 var $modelSelect = $('#test-model');
                 if (self.testType === 'text') {
-                    $('#test-prompt').attr('placeholder', writgocmsAiml.i18n.testPrompt);
+                    $('#test-prompt').attr('placeholder', writgoaiAi.i18n.testPrompt);
                     $modelSelect.find('.text-models').show();
                     $modelSelect.find('.image-models').hide();
                     $modelSelect.find('.text-models option:first').prop('selected', true);
                 } else {
-                    $('#test-prompt').attr('placeholder', writgocmsAiml.i18n.imagePrompt);
+                    $('#test-prompt').attr('placeholder', writgoaiAi.i18n.imagePrompt);
                     $modelSelect.find('.text-models').hide();
                     $modelSelect.find('.image-models').show();
                     $modelSelect.find('.image-models option:first').prop('selected', true);
@@ -387,23 +387,23 @@
                     return;
                 }
 
-                $button.prop('disabled', true).addClass('loading').html('<span class="loading-spinner"></span>' + writgocmsAiml.i18n.generating);
+                $button.prop('disabled', true).addClass('loading').html('<span class="loading-spinner"></span>' + writgoaiAi.i18n.generating);
                 $status.text('').removeClass('error success');
                 $result.hide();
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_test_generation',
-                        nonce: writgocmsAiml.nonce,
+                        action: 'writgoai_test_generation',
+                        nonce: writgoaiAi.nonce,
                         type: self.testType,
                         prompt: prompt,
                         model: model
                     },
                     success: function(response) {
                         if (response.success) {
-                            $status.text(writgocmsAiml.i18n.success).addClass('success');
+                            $status.text(writgoaiAi.i18n.success).addClass('success');
 
                             if (self.testType === 'text') {
                                 $resultContent.text(response.data.content);
@@ -443,19 +443,19 @@
                 var targetAudience = $('#planner-audience').val();
 
                 if (!niche) {
-                    self.showNotification(writgocmsAiml.i18n.noNiche, 'error');
+                    self.showNotification(writgoaiAi.i18n.noNiche, 'error');
                     return;
                 }
 
-                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsAiml.i18n.generatingMap);
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgoaiAi.i18n.generatingMap);
                 $('.planner-status').text('').removeClass('error success');
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_generate_topical_map',
-                        nonce: writgocmsAiml.nonce,
+                        action: 'writgoai_generate_topical_map',
+                        nonce: writgoaiAi.nonce,
                         niche: niche,
                         website_type: websiteType,
                         target_audience: targetAudience
@@ -465,7 +465,7 @@
                             self.currentTopicalMap = response.data.topical_map;
                             self.renderTopicalMap(response.data.topical_map);
                             $('.content-planner-results').show();
-                            self.showNotification(writgocmsAiml.i18n.success, 'success');
+                            self.showNotification(writgoaiAi.i18n.success, 'success');
                         } else {
                             $('.planner-status').text(response.data.message).addClass('error');
                             self.showNotification(response.data.message, 'error');
@@ -497,7 +497,7 @@
                 var planName = $('#plan-name').val();
 
                 if (!planName) {
-                    self.showNotification(writgocmsAiml.i18n.noPlanName, 'error');
+                    self.showNotification(writgoaiAi.i18n.noPlanName, 'error');
                     return;
                 }
 
@@ -507,11 +507,11 @@
                 }
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_save_content_plan',
-                        nonce: writgocmsAiml.nonce,
+                        action: 'writgoai_save_content_plan',
+                        nonce: writgoaiAi.nonce,
                         plan_name: planName,
                         plan_data: JSON.stringify(self.currentTopicalMap)
                     },
@@ -520,7 +520,7 @@
                             $('#save-plan-modal').hide();
                             $('#plan-name').val('');
                             self.loadSavedPlans();
-                            self.showNotification(writgocmsAiml.i18n.planSaved, 'success');
+                            self.showNotification(writgoaiAi.i18n.planSaved, 'success');
                         } else {
                             self.showNotification(response.data.message, 'error');
                         }
@@ -563,14 +563,14 @@
                 var topic = $button.data('topic');
                 var keywords = $button.data('keywords') || [];
 
-                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsAiml.i18n.generatingPlan);
+                $button.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgoaiAi.i18n.generatingPlan);
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_generate_content_plan',
-                        nonce: writgocmsAiml.nonce,
+                        action: 'writgoai_generate_content_plan',
+                        nonce: writgoaiAi.nonce,
                         topic: topic,
                         content_type: 'article',
                         keywords: keywords
@@ -579,7 +579,7 @@
                         if (response.success) {
                             self.renderContentPlan(response.data.content_plan);
                             $('#content-detail-panel').show();
-                            self.showNotification(writgocmsAiml.i18n.success, 'success');
+                            self.showNotification(writgoaiAi.i18n.success, 'success');
                         } else {
                             self.showNotification(response.data.message, 'error');
                         }
@@ -588,7 +588,7 @@
                         self.showNotification('Verbindingsfout', 'error');
                     },
                     complete: function() {
-                        $button.prop('disabled', false).html('📋 ' + writgocmsAiml.i18n.generateDetailedPlan);
+                        $button.prop('disabled', false).html('📋 ' + writgoaiAi.i18n.generateDetailedPlan);
                     }
                 });
             });
@@ -598,22 +598,22 @@
                 var $button = $(this);
                 var planId = $button.data('plan-id');
 
-                if (!confirm(writgocmsAiml.i18n.confirmDelete)) {
+                if (!confirm(writgoaiAi.i18n.confirmDelete)) {
                     return;
                 }
 
                 $.ajax({
-                    url: writgocmsAiml.ajaxUrl,
+                    url: writgoaiAi.ajaxUrl,
                     type: 'POST',
                     data: {
-                        action: 'writgocms_delete_content_plan',
-                        nonce: writgocmsAiml.nonce,
+                        action: 'writgoai_delete_content_plan',
+                        nonce: writgoaiAi.nonce,
                         plan_id: planId
                     },
                     success: function(response) {
                         if (response.success) {
                             self.loadSavedPlans();
-                            self.showNotification(writgocmsAiml.i18n.planDeleted, 'success');
+                            self.showNotification(writgoaiAi.i18n.planDeleted, 'success');
                         } else {
                             self.showNotification(response.data.message, 'error');
                         }
@@ -649,11 +649,11 @@
             }
 
             $.ajax({
-                url: writgocmsAiml.ajaxUrl,
+                url: writgoaiAi.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_get_saved_plans',
-                    nonce: writgocmsAiml.nonce
+                    action: 'writgoai_get_saved_plans',
+                    nonce: writgoaiAi.nonce
                 },
                 success: function(response) {
                     if (response.success && response.data.plans) {
@@ -709,7 +709,7 @@
             // Pillar content
             if (data.pillar_content && data.pillar_content.length > 0) {
                 html += '<div class="pillar-content-section">';
-                html += '<h4>' + writgocmsAiml.i18n.pillarContent + '</h4>';
+                html += '<h4>' + writgoaiAi.i18n.pillarContent + '</h4>';
 
                 data.pillar_content.forEach(function(pillar, index) {
                     html += '<div class="pillar-item">';
@@ -722,7 +722,7 @@
                     // Keywords
                     if (pillar.keywords && pillar.keywords.length > 0) {
                         html += '<div class="keywords-list">';
-                        html += '<span class="keywords-label">' + writgocmsAiml.i18n.keywords + ': </span>';
+                        html += '<span class="keywords-label">' + writgoaiAi.i18n.keywords + ': </span>';
                         pillar.keywords.forEach(function(keyword) {
                             html += '<span class="keyword-tag">' + self.escapeHtml(keyword) + '</span>';
                         });
@@ -736,12 +736,12 @@
                     // Cluster articles
                     if (pillar.cluster_articles && pillar.cluster_articles.length > 0) {
                         html += '<div class="cluster-articles">';
-                        html += '<h6>' + writgocmsAiml.i18n.clusterArticles + '</h6>';
+                        html += '<h6>' + writgoaiAi.i18n.clusterArticles + '</h6>';
                         html += '<ul>';
 
                         pillar.cluster_articles.forEach(function(article) {
                             var priorityClass = 'priority-' + (article.priority || 'medium');
-                            var priorityLabel = writgocmsAiml.i18n[article.priority] || article.priority || 'Gemiddeld';
+                            var priorityLabel = writgoaiAi.i18n[article.priority] || article.priority || 'Gemiddeld';
 
                             html += '<li class="cluster-article ' + priorityClass + '">';
                             html += '<div class="article-info">';
@@ -775,7 +775,7 @@
             // Content gaps
             if (data.content_gaps && data.content_gaps.length > 0) {
                 html += '<div class="content-gaps-section">';
-                html += '<h4>🔍 ' + writgocmsAiml.i18n.contentGaps + '</h4>';
+                html += '<h4>🔍 ' + writgoaiAi.i18n.contentGaps + '</h4>';
                 html += '<ul>';
                 data.content_gaps.forEach(function(gap) {
                     html += '<li>' + self.escapeHtml(gap) + '</li>';
@@ -787,7 +787,7 @@
             // Recommended order
             if (data.recommended_order && data.recommended_order.length > 0) {
                 html += '<div class="recommended-order-section">';
-                html += '<h4>📅 ' + writgocmsAiml.i18n.recommendedOrder + '</h4>';
+                html += '<h4>📅 ' + writgoaiAi.i18n.recommendedOrder + '</h4>';
                 html += '<ol>';
                 data.recommended_order.forEach(function(item) {
                     html += '<li>' + self.escapeHtml(item) + '</li>';
@@ -944,7 +944,7 @@
             return '<button type="button" class="button button-small generate-detail-btn" ' +
                 'data-topic="' + this.escapeHtml(topic) + '" ' +
                 'data-keywords="' + this.escapeJsonAttr(keywords || []) + '">' +
-                '📋 ' + writgocmsAiml.i18n.generateDetailedPlan + '</button>';
+                '📋 ' + writgoaiAi.i18n.generateDetailedPlan + '</button>';
         },
 
         /**
@@ -972,7 +972,7 @@
         currentPage: 1,
 
         init: function() {
-            if (!$('.writgocms-post-updater').length) {
+            if (!$('.writgoai-post-updater').length) {
                 return;
             }
 
@@ -984,8 +984,8 @@
          * Get translation string safely
          */
         getTranslation: function(key, fallback) {
-            if (writgocmsAiml && writgocmsAiml.i18n && writgocmsAiml.i18n.postUpdater && writgocmsAiml.i18n.postUpdater[key]) {
-                return writgocmsAiml.i18n.postUpdater[key];
+            if (writgoaiAi && writgoaiAi.i18n && writgoaiAi.i18n.postUpdater && writgoaiAi.i18n.postUpdater[key]) {
+                return writgoaiAi.i18n.postUpdater[key];
             }
             return fallback || key;
         },
@@ -1087,11 +1087,11 @@
             $list.html('<div class="loading-state"><span class="spinner is-active"></span><p>' + self.getTranslation('loading', 'Laden...') + '</p></div>');
 
             $.ajax({
-                url: writgocmsAiml.ajaxUrl,
+                url: writgoaiAi.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_get_posts_for_update',
-                    nonce: writgocmsAiml.nonce,
+                    action: 'writgoai_get_posts_for_update',
+                    nonce: writgoaiAi.nonce,
                     page: self.currentPage,
                     per_page: 20,
                     months_old: $('#filter-months').val(),
@@ -1232,11 +1232,11 @@
             $btn.prop('disabled', true).html('<span class="loading-spinner"></span> Verbeteren...');
 
             $.ajax({
-                url: writgocmsAiml.ajaxUrl,
+                url: writgoaiAi.ajaxUrl,
                 type: 'POST',
                 data: $.extend({
-                    action: 'writgocms_improve_post',
-                    nonce: writgocmsAiml.nonce,
+                    action: 'writgoai_improve_post',
+                    nonce: writgoaiAi.nonce,
                     post_id: self.currentPostId
                 }, options),
                 success: function(response) {
@@ -1337,11 +1337,11 @@
             $btn.prop('disabled', true).html('<span class="loading-spinner"></span> Opslaan...');
 
             $.ajax({
-                url: writgocmsAiml.ajaxUrl,
+                url: writgoaiAi.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_save_improved_post',
-                    nonce: writgocmsAiml.nonce,
+                    action: 'writgoai_save_improved_post',
+                    nonce: writgoaiAi.nonce,
                     post_id: self.currentPostId,
                     improved_data: JSON.stringify(self.improvedData.improved),
                     status: status
@@ -1391,11 +1391,11 @@
             $progressText.text('Verbeteren van posts...');
 
             $.ajax({
-                url: writgocmsAiml.ajaxUrl,
+                url: writgoaiAi.ajaxUrl,
                 type: 'POST',
                 data: $.extend({
-                    action: 'writgocms_bulk_improve_posts',
-                    nonce: writgocmsAiml.nonce,
+                    action: 'writgoai_bulk_improve_posts',
+                    nonce: writgoaiAi.nonce,
                     post_ids: self.selectedPosts
                 }, options),
                 success: function(response) {
@@ -1459,11 +1459,11 @@
             var action = forceRefresh ? 'writgoai_refresh_credits' : 'writgoai_get_credits';
 
             $.ajax({
-                url: writgocmsAiml.ajaxUrl,
+                url: writgoaiAi.ajaxUrl,
                 type: 'POST',
                 data: {
                     action: action,
-                    nonce: writgocmsAiml.nonce
+                    nonce: writgoaiAi.nonce
                 },
                 success: function(response) {
                     if (response.success && response.data) {
@@ -1472,7 +1472,7 @@
                 },
                 error: function(xhr, status, error) {
                     // Silently fail - credit display is non-critical
-                    if (typeof console !== 'undefined' && console.warn && writgocmsAiml.debug) {
+                    if (typeof console !== 'undefined' && console.warn && writgoaiAi.debug) {
                         console.warn('Credit load failed:', error);
                     }
                 }

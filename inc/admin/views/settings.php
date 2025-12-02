@@ -4,7 +4,7 @@
  *
  * Tabbed interface for all WritgoAI settings.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <div class="wrap writgo-settings-container">
-	<h1><?php esc_html_e( 'WritgoAI Instellingen', 'writgocms' ); ?></h1>
+	<h1><?php esc_html_e( 'WritgoAI Instellingen', 'writgoai' ); ?></h1>
 	<p class="description">
-		<?php esc_html_e( 'Configureer WritgoAI naar jouw wensen. Alle instellingen zijn logisch gegroepeerd.', 'writgocms' ); ?>
+		<?php esc_html_e( 'Configureer WritgoAI naar jouw wensen. Alle instellingen zijn logisch gegroepeerd.', 'writgoai' ); ?>
 	</p>
 
 	<div class="writgo-card">
@@ -23,33 +23,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="settings-tabs">
 			<button type="button" class="settings-tab active" data-tab="tab-basic">
 				<span class="dashicons dashicons-admin-settings"></span>
-				<?php esc_html_e( 'Basis', 'writgocms' ); ?>
+				<?php esc_html_e( 'Basis', 'writgoai' ); ?>
 			</button>
 			<button type="button" class="settings-tab" data-tab="tab-ai-models">
 				<span class="dashicons dashicons-chart-area"></span>
-				<?php esc_html_e( 'AI Modellen', 'writgocms' ); ?>
+				<?php esc_html_e( 'AI Modellen', 'writgoai' ); ?>
 			</button>
 			<button type="button" class="settings-tab" data-tab="tab-content">
 				<span class="dashicons dashicons-edit"></span>
-				<?php esc_html_e( 'Content', 'writgocms' ); ?>
+				<?php esc_html_e( 'Content', 'writgoai' ); ?>
 			</button>
 			<button type="button" class="settings-tab" data-tab="tab-advanced">
 				<span class="dashicons dashicons-admin-tools"></span>
-				<?php esc_html_e( 'Geavanceerd', 'writgocms' ); ?>
+				<?php esc_html_e( 'Geavanceerd', 'writgoai' ); ?>
 			</button>
 		</div>
 
 		<!-- Form Container -->
 		<form method="post" action="options.php" class="settings-form">
-			<?php settings_fields( 'writgocms_aiml_settings' ); ?>
+			<?php settings_fields( 'writgoai_ai_settings' ); ?>
 			
 			<!-- Tab Content Panels -->
 			<?php
 			// Include each tab.
-			include WRITGOCMS_DIR . 'inc/admin/views/settings/tab-basic.php';
-			include WRITGOCMS_DIR . 'inc/admin/views/settings/tab-ai-models.php';
-			include WRITGOCMS_DIR . 'inc/admin/views/settings/tab-content.php';
-			include WRITGOCMS_DIR . 'inc/admin/views/settings/tab-advanced.php';
+			include WRITGOAI_DIR . 'inc/admin/views/settings/tab-basic.php';
+			include WRITGOAI_DIR . 'inc/admin/views/settings/tab-ai-models.php';
+			include WRITGOAI_DIR . 'inc/admin/views/settings/tab-content.php';
+			include WRITGOAI_DIR . 'inc/admin/views/settings/tab-advanced.php';
 			?>
 		</form>
 	</div>

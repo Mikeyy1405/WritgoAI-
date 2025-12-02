@@ -41,7 +41,7 @@
 					url: ajaxurl,
 					method: 'POST',
 					data: {
-						action: 'writgocms_analyze_site',
+						action: 'writgoai_analyze_site',
 						nonce: $btn.data('nonce')
 					},
 					success: function(response) {
@@ -79,7 +79,7 @@
 					url: ajaxurl,
 					method: 'POST',
 					data: {
-						action: 'writgocms_analyze_post',
+						action: 'writgoai_analyze_post',
 						nonce: nonce,
 						post_id: postId
 					},

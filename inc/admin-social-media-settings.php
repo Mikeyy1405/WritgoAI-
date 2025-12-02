@@ -5,7 +5,7 @@
  * Admin interface for Social Media Manager.
  * Nederlandse versie - Dutch interface for WritgoAI.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,28 +13,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Social_Media_Admin
+ * Class WritgoAI_Social_Media_Admin
  */
-class WritgoCMS_Social_Media_Admin {
+class WritgoAI_Social_Media_Admin {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Social_Media_Admin
+	 * @var WritgoAI_Social_Media_Admin
 	 */
 	private static $instance = null;
 
 	/**
 	 * Social Media Manager instance
 	 *
-	 * @var WritgoCMS_Social_Media_Manager
+	 * @var WritgoAI_Social_Media_Manager
 	 */
 	private $manager;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Social_Media_Admin
+	 * @return WritgoAI_Social_Media_Admin
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -47,7 +47,7 @@ class WritgoCMS_Social_Media_Admin {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->manager = WritgoCMS_Social_Media_Manager::get_instance();
+		$this->manager = WritgoAI_Social_Media_Manager::get_instance();
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 20 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 	}
@@ -57,7 +57,7 @@ class WritgoCMS_Social_Media_Admin {
 	 */
 	public function add_admin_menu() {
 		add_submenu_page(
-			'writgocms-aiml',
+			'writgoai',
 			'Social Media',
 			'📱 Social Media',
 			'manage_options',
@@ -78,16 +78,16 @@ class WritgoCMS_Social_Media_Admin {
 
 		wp_enqueue_style(
 			'writgocms-social-media',
-			WRITGOCMS_URL . 'assets/css/social-media.css',
+			WRITGOAI_URL . 'assets/css/social-media.css',
 			array(),
-			WRITGOCMS_VERSION
+			WRITGOAI_VERSION
 		);
 
 		wp_enqueue_script(
 			'writgocms-social-media',
-			WRITGOCMS_URL . 'assets/js/social-media.js',
+			WRITGOAI_URL . 'assets/js/social-media.js',
 			array( 'jquery' ),
-			WRITGOCMS_VERSION,
+			WRITGOAI_VERSION,
 			true
 		);
 
@@ -96,7 +96,7 @@ class WritgoCMS_Social_Media_Admin {
 			'writgocmsSocialMedia',
 			array(
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( 'writgocms_aiml_nonce' ),
+				'nonce'     => wp_create_nonce( 'writgoai_ai_nonce' ),
 				'platforms' => $this->manager->get_platforms(),
 				'tones'     => $this->manager->get_content_tones(),
 				'templates' => $this->manager->get_template_types(),
@@ -686,4 +686,4 @@ class WritgoCMS_Social_Media_Admin {
 }
 
 // Initialize admin.
-WritgoCMS_Social_Media_Admin::get_instance();
+WritgoAI_Social_Media_Admin::get_instance();

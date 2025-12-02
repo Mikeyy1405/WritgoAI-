@@ -4,7 +4,7 @@
  *
  * Handles database table creation and migrations for WritgoAI.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_DB_Schema
+ * Class WritgoAI_DB_Schema
  */
-class WritgoCMS_DB_Schema {
+class WritgoAI_DB_Schema {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_DB_Schema
+	 * @var WritgoAI_DB_Schema
 	 */
 	private static $instance = null;
 
@@ -28,7 +28,7 @@ class WritgoCMS_DB_Schema {
 	 *
 	 * @var string
 	 */
-	private $db_version_key = 'writgocms_db_version';
+	private $db_version_key = 'writgoai_db_version';
 
 	/**
 	 * Current database version
@@ -40,7 +40,7 @@ class WritgoCMS_DB_Schema {
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_DB_Schema
+	 * @return WritgoAI_DB_Schema
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -302,4 +302,4 @@ class WritgoCMS_DB_Schema {
 }
 
 // Initialize.
-WritgoCMS_DB_Schema::get_instance();
+WritgoAI_DB_Schema::get_instance();

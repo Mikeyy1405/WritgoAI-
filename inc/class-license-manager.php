@@ -10,7 +10,7 @@
  * - API key injection at download
  * - Stop paying = stop working
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,14 +18,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_License_Manager
+ * Class WritgoAI_License_Manager
  */
-class WritgoCMS_License_Manager {
+class WritgoAI_License_Manager {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_License_Manager
+	 * @var WritgoAI_License_Manager
 	 */
 	private static $instance = null;
 
@@ -41,7 +41,7 @@ class WritgoCMS_License_Manager {
 	 *
 	 * @var string
 	 */
-	private $cache_key = 'writgocms_license_status';
+	private $cache_key = 'writgoai_license_status';
 
 	/**
 	 * License cache expiration in seconds (12 hours)
@@ -66,7 +66,7 @@ class WritgoCMS_License_Manager {
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_License_Manager
+	 * @return WritgoAI_License_Manager
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -80,19 +80,19 @@ class WritgoCMS_License_Manager {
 	 */
 	private function __construct() {
 		// AJAX handlers for license management.
-		add_action( 'wp_ajax_writgocms_activate_license', array( $this, 'ajax_activate_license' ) );
-		add_action( 'wp_ajax_writgocms_deactivate_license', array( $this, 'ajax_deactivate_license' ) );
-		add_action( 'wp_ajax_writgocms_check_license', array( $this, 'ajax_check_license' ) );
-		add_action( 'wp_ajax_writgocms_refresh_license', array( $this, 'ajax_refresh_license' ) );
+		add_action( 'wp_ajax_writgoai_activate_license', array( $this, 'ajax_activate_license' ) );
+		add_action( 'wp_ajax_writgoai_deactivate_license', array( $this, 'ajax_deactivate_license' ) );
+		add_action( 'wp_ajax_writgoai_check_license', array( $this, 'ajax_check_license' ) );
+		add_action( 'wp_ajax_writgoai_refresh_license', array( $this, 'ajax_refresh_license' ) );
 
 		// Schedule daily license check.
-		add_action( 'writgocms_daily_license_check', array( $this, 'daily_license_check' ) );
+		add_action( 'writgoai_daily_license_check', array( $this, 'daily_license_check' ) );
 
 		// Admin notices for license status.
 		add_action( 'admin_notices', array( $this, 'display_license_notices' ) );
 
 		// Filter to check license before AI operations.
-		add_filter( 'writgocms_can_use_ai', array( $this, 'check_can_use_ai' ), 10, 1 );
+		add_filter( 'writgoai_can_use_ai', array( $this, 'check_can_use_ai' ), 10, 1 );
 	}
 
 	/**
@@ -101,7 +101,7 @@ class WritgoCMS_License_Manager {
 	 * @return string
 	 */
 	public function get_license_key() {
-		return get_option( 'writgocms_license_key', '' );
+		return get_option( 'writgoai_license_key', '' );
 	}
 
 	/**
@@ -110,7 +110,7 @@ class WritgoCMS_License_Manager {
 	 * @return string
 	 */
 	public function get_license_email() {
-		return get_option( 'writgocms_license_email', '' );
+		return get_option( 'writgoai_license_email', '' );
 	}
 
 	/**
@@ -229,7 +229,7 @@ class WritgoCMS_License_Manager {
 						'site_url'    => $site_url,
 						'email'       => $email,
 						'product'     => 'writgoai',
-						'version'     => WRITGOCMS_VERSION,
+						'version'     => WRITGOAI_VERSION,
 					)
 				),
 			)
@@ -315,7 +315,7 @@ class WritgoCMS_License_Manager {
 						'site_url'    => $site_url,
 						'site_name'   => get_bloginfo( 'name' ),
 						'product'     => 'writgoai',
-						'version'     => WRITGOCMS_VERSION,
+						'version'     => WRITGOAI_VERSION,
 					)
 				),
 			)
@@ -334,13 +334,13 @@ class WritgoCMS_License_Manager {
 		}
 
 		// Save license details.
-		update_option( 'writgocms_license_key', sanitize_text_field( $license_key ) );
-		update_option( 'writgocms_license_email', sanitize_email( $email ) );
-		update_option( 'writgocms_license_activated_at', current_time( 'mysql' ) );
+		update_option( 'writgoai_license_key', sanitize_text_field( $license_key ) );
+		update_option( 'writgoai_license_email', sanitize_email( $email ) );
+		update_option( 'writgoai_license_activated_at', current_time( 'mysql' ) );
 
 		// If API key is provided, save it.
 		if ( isset( $body['api_key'] ) && ! empty( $body['api_key'] ) ) {
-			update_option( 'writgocms_aimlapi_key', sanitize_text_field( $body['api_key'] ) );
+			update_option( 'writgoai_aiapi_key', sanitize_text_field( $body['api_key'] ) );
 		}
 
 		// Clear cache and refresh status.
@@ -385,10 +385,10 @@ class WritgoCMS_License_Manager {
 		);
 
 		// Even if server request fails, clear local license data.
-		delete_option( 'writgocms_license_key' );
-		delete_option( 'writgocms_license_email' );
-		delete_option( 'writgocms_license_activated_at' );
-		delete_option( 'writgocms_aimlapi_key' );
+		delete_option( 'writgoai_license_key' );
+		delete_option( 'writgoai_license_email' );
+		delete_option( 'writgoai_license_activated_at' );
+		delete_option( 'writgoai_aiapi_key' );
 		delete_transient( $this->cache_key );
 
 		if ( is_wp_error( $response ) ) {
@@ -424,8 +424,8 @@ class WritgoCMS_License_Manager {
 	 * Schedule daily license check
 	 */
 	public function schedule_daily_check() {
-		if ( ! wp_next_scheduled( 'writgocms_daily_license_check' ) ) {
-			wp_schedule_event( time(), 'daily', 'writgocms_daily_license_check' );
+		if ( ! wp_next_scheduled( 'writgoai_daily_license_check' ) ) {
+			wp_schedule_event( time(), 'daily', 'writgoai_daily_license_check' );
 		}
 	}
 
@@ -433,9 +433,9 @@ class WritgoCMS_License_Manager {
 	 * Unschedule daily license check
 	 */
 	public function unschedule_daily_check() {
-		$timestamp = wp_next_scheduled( 'writgocms_daily_license_check' );
+		$timestamp = wp_next_scheduled( 'writgoai_daily_license_check' );
 		if ( $timestamp ) {
-			wp_unschedule_event( $timestamp, 'writgocms_daily_license_check' );
+			wp_unschedule_event( $timestamp, 'writgoai_daily_license_check' );
 		}
 	}
 
@@ -451,7 +451,7 @@ class WritgoCMS_License_Manager {
 
 		// Only show on plugin pages.
 		$screen = get_current_screen();
-		if ( ! $screen || strpos( $screen->id, 'writgocms' ) === false ) {
+		if ( ! $screen || strpos( $screen->id, 'writgoai' ) === false ) {
 			return;
 		}
 
@@ -460,9 +460,9 @@ class WritgoCMS_License_Manager {
 		if ( empty( $license_key ) ) {
 			echo '<div class="notice notice-warning is-dismissible">';
 			echo '<p><strong>WritgoAI:</strong> ';
-			echo esc_html__( 'Activeer je licentie om WritgoAI te gebruiken.', 'writgocms' );
+			echo esc_html__( 'Activeer je licentie om WritgoAI te gebruiken.', 'writgoai' );
 			echo ' <a href="' . esc_url( admin_url( 'admin.php?page=writgocms-license' ) ) . '">';
-			echo esc_html__( 'Licentie activeren', 'writgocms' );
+			echo esc_html__( 'Licentie activeren', 'writgoai' );
 			echo '</a></p></div>';
 			return;
 		}
@@ -472,18 +472,18 @@ class WritgoCMS_License_Manager {
 		if ( isset( $status['status'] ) && 'expired' === $status['status'] ) {
 			echo '<div class="notice notice-error">';
 			echo '<p><strong>WritgoAI:</strong> ';
-			echo esc_html__( 'Je licentie is verlopen. Verleng je abonnement om te blijven gebruiken.', 'writgocms' );
+			echo esc_html__( 'Je licentie is verlopen. Verleng je abonnement om te blijven gebruiken.', 'writgoai' );
 			echo ' <a href="https://writgoai.com/account" target="_blank">';
-			echo esc_html__( 'Abonnement verlengen', 'writgocms' );
+			echo esc_html__( 'Abonnement verlengen', 'writgoai' );
 			echo '</a></p></div>';
 		} elseif ( isset( $status['status'] ) && 'trial' === $status['status'] ) {
 			$expires = isset( $status['expires'] ) ? $status['expires'] : '';
 			echo '<div class="notice notice-info is-dismissible">';
 			echo '<p><strong>WritgoAI:</strong> ';
 			/* translators: %s: expiration date */
-			echo esc_html( sprintf( __( 'Je proefperiode loopt af op %s.', 'writgocms' ), $expires ) );
+			echo esc_html( sprintf( __( 'Je proefperiode loopt af op %s.', 'writgoai' ), $expires ) );
 			echo ' <a href="https://writgoai.com/pricing" target="_blank">';
-			echo esc_html__( 'Upgrade naar betaald plan', 'writgocms' );
+			echo esc_html__( 'Upgrade naar betaald plan', 'writgoai' );
 			echo '</a></p></div>';
 		}
 	}
@@ -524,7 +524,7 @@ class WritgoCMS_License_Manager {
 	 * AJAX handler for license activation
 	 */
 	public function ajax_activate_license() {
-		check_ajax_referer( 'writgocms_license_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_license_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -554,7 +554,7 @@ class WritgoCMS_License_Manager {
 	 * AJAX handler for license deactivation
 	 */
 	public function ajax_deactivate_license() {
-		check_ajax_referer( 'writgocms_license_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_license_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -573,7 +573,7 @@ class WritgoCMS_License_Manager {
 	 * AJAX handler for checking license
 	 */
 	public function ajax_check_license() {
-		check_ajax_referer( 'writgocms_license_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_license_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -588,7 +588,7 @@ class WritgoCMS_License_Manager {
 	 * AJAX handler for refreshing license
 	 */
 	public function ajax_refresh_license() {
-		check_ajax_referer( 'writgocms_license_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_license_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -617,9 +617,9 @@ class WritgoCMS_License_Manager {
 	 * @return string
 	 */
 	public function get_api_base_url() {
-		return apply_filters( 'writgocms_license_api_url', $this->api_base_url );
+		return apply_filters( 'writgoai_license_api_url', $this->api_base_url );
 	}
 }
 
 // Initialize.
-WritgoCMS_License_Manager::get_instance();
+WritgoAI_License_Manager::get_instance();

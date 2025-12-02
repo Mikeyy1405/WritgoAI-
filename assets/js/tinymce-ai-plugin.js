@@ -7,7 +7,7 @@
 (function() {
     'use strict';
 
-    var settings = window.writgocmsTinymceAiml || {
+    var settings = window.writgoaiTinymceAiml || {
         ajaxUrl: '',
         nonce: '',
         i18n: {}
@@ -15,10 +15,10 @@
 
     var i18n = settings.i18n;
 
-    tinymce.PluginManager.add('writgocms_aiml', function(editor) {
+    tinymce.PluginManager.add('writgoai_ai', function(editor) {
         
         // Add button
-        editor.addButton('writgocms_aiml', {
+        editor.addButton('writgoai_ai', {
             title: i18n.title || 'AI Content Generator',
             icon: 'dashicons dashicons-admin-customizer',
             image: '',
@@ -132,7 +132,7 @@
                     generatedContent = '';
                     generatedImage = '';
 
-                    var action = mode === 'text' ? 'writgocms_generate_text' : 'writgocms_generate_image';
+                    var action = mode === 'text' ? 'writgoai_generate_text' : 'writgoai_generate_image';
 
                     jQuery.ajax({
                         url: settings.ajaxUrl,

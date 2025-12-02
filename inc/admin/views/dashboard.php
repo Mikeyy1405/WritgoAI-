@@ -4,7 +4,7 @@
  *
  * Simplified dashboard with clear workflow and quick actions.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,16 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Get dashboard instance for stats.
-if ( ! class_exists( 'WritgoCMS_Dashboard' ) ) {
+if ( ! class_exists( 'WritgoAI_Dashboard' ) ) {
 	return;
 }
-$dashboard = WritgoCMS_Dashboard::get_instance();
+$dashboard = WritgoAI_Dashboard::get_instance();
 $stats = $dashboard->get_dashboard_stats();
 
-if ( ! class_exists( 'WritgoCMS_Admin_Controller' ) ) {
+if ( ! class_exists( 'WritgoAI_Admin_Controller' ) ) {
 	return;
 }
-$controller = WritgoCMS_Admin_Controller::get_instance();
+$controller = WritgoAI_Admin_Controller::get_instance();
 $wizard_completed = $controller->is_wizard_completed();
 ?>
 
@@ -30,19 +30,19 @@ $wizard_completed = $controller->is_wizard_completed();
 	<!-- Hero Section with CTA -->
 	<div class="writgo-card card-hero">
 		<div class="hero-content">
-			<h1><?php esc_html_e( 'Welkom bij WritgoAI', 'writgocms' ); ?></h1>
+			<h1><?php esc_html_e( 'Welkom bij WritgoAI', 'writgoai' ); ?></h1>
 			<p class="hero-subtitle">
 				<?php
 				if ( ! $wizard_completed ) {
-					esc_html_e( 'Laten we beginnen met het optimaliseren van je website met AI.', 'writgocms' );
+					esc_html_e( 'Laten we beginnen met het optimaliseren van je website met AI.', 'writgoai' );
 				} else {
-					esc_html_e( 'Je website wordt slimmer met elke stap. Ga door!', 'writgocms' );
+					esc_html_e( 'Je website wordt slimmer met elke stap. Ga door!', 'writgoai' );
 				}
 				?>
 			</p>
 			<?php if ( ! $wizard_completed ) : ?>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-setup-wizard' ) ); ?>" class="button button-primary button-hero">
-					<?php esc_html_e( 'Start Setup Wizard', 'writgocms' ); ?> →
+					<?php esc_html_e( 'Start Setup Wizard', 'writgoai' ); ?> →
 				</a>
 			<?php endif; ?>
 		</div>
@@ -51,18 +51,18 @@ $wizard_completed = $controller->is_wizard_completed();
 	<!-- Progress Indicator -->
 	<?php if ( $wizard_completed ) : ?>
 	<div class="writgo-card">
-		<h2><?php esc_html_e( 'Je Voortgang', 'writgocms' ); ?></h2>
+		<h2><?php esc_html_e( 'Je Voortgang', 'writgoai' ); ?></h2>
 		<div class="progress-overview">
 			<div class="progress-stat">
 				<div class="stat-circle <?php echo esc_attr( $dashboard->get_score_class( $stats['health_score'] ) ); ?>">
 					<span class="stat-value"><?php echo esc_html( $stats['health_score'] ); ?></span>
 					<span class="stat-max">/100</span>
 				</div>
-				<p class="stat-label"><?php esc_html_e( 'Website Health Score', 'writgocms' ); ?></p>
+				<p class="stat-label"><?php esc_html_e( 'Website Health Score', 'writgoai' ); ?></p>
 			</div>
 			<div class="progress-details">
 				<div class="progress-item">
-					<span class="progress-label"><?php esc_html_e( 'Content Dekking', 'writgocms' ); ?></span>
+					<span class="progress-label"><?php esc_html_e( 'Content Dekking', 'writgoai' ); ?></span>
 					<div class="progress-bar-wrapper">
 						<div class="progress-bar">
 							<div class="progress-fill" style="width: <?php echo esc_attr( $stats['content_coverage'] ); ?>%"></div>
@@ -71,7 +71,7 @@ $wizard_completed = $controller->is_wizard_completed();
 					</div>
 				</div>
 				<div class="progress-item">
-					<span class="progress-label"><?php esc_html_e( 'SEO Optimalisatie', 'writgocms' ); ?></span>
+					<span class="progress-label"><?php esc_html_e( 'SEO Optimalisatie', 'writgoai' ); ?></span>
 					<div class="progress-bar-wrapper">
 						<div class="progress-bar">
 							<div class="progress-fill" style="width: <?php echo esc_attr( $stats['topical_authority'] ); ?>%"></div>
@@ -80,7 +80,7 @@ $wizard_completed = $controller->is_wizard_completed();
 					</div>
 				</div>
 				<div class="progress-item">
-					<span class="progress-label"><?php esc_html_e( 'Interne Links', 'writgocms' ); ?></span>
+					<span class="progress-label"><?php esc_html_e( 'Interne Links', 'writgoai' ); ?></span>
 					<div class="progress-bar-wrapper">
 						<div class="progress-bar">
 							<div class="progress-fill" style="width: <?php echo esc_attr( $stats['internal_links_score'] ); ?>%"></div>
@@ -95,41 +95,41 @@ $wizard_completed = $controller->is_wizard_completed();
 
 	<!-- Quick Actions -->
 	<div class="writgo-card">
-		<h2><?php esc_html_e( 'Snelle Acties', 'writgocms' ); ?></h2>
+		<h2><?php esc_html_e( 'Snelle Acties', 'writgoai' ); ?></h2>
 		<div class="quick-actions-grid">
 			<div class="quick-action-card">
 				<span class="action-icon">🔍</span>
-				<h3><?php esc_html_e( 'Analyseer Website', 'writgocms' ); ?></h3>
-				<p><?php esc_html_e( 'Krijg inzicht in je huidige content en SEO-status', 'writgocms' ); ?></p>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button button-primary">
-					<?php esc_html_e( 'Start Analyse', 'writgocms' ); ?>
+				<h3><?php esc_html_e( 'Analyseer Website', 'writgoai' ); ?></h3>
+				<p><?php esc_html_e( 'Krijg inzicht in je huidige content en SEO-status', 'writgoai' ); ?></p>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-analyse' ) ); ?>" class="button button-primary">
+					<?php esc_html_e( 'Start Analyse', 'writgoai' ); ?>
 				</a>
 			</div>
 
 			<div class="quick-action-card">
 				<span class="action-icon">📝</span>
-				<h3><?php esc_html_e( 'Maak Contentplan', 'writgocms' ); ?></h3>
-				<p><?php esc_html_e( 'Laat AI een complete contentstrategie maken', 'writgocms' ); ?></p>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="button button-primary">
-					<?php esc_html_e( 'Plan Content', 'writgocms' ); ?>
+				<h3><?php esc_html_e( 'Maak Contentplan', 'writgoai' ); ?></h3>
+				<p><?php esc_html_e( 'Laat AI een complete contentstrategie maken', 'writgoai' ); ?></p>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan' ) ); ?>" class="button button-primary">
+					<?php esc_html_e( 'Plan Content', 'writgoai' ); ?>
 				</a>
 			</div>
 
 			<div class="quick-action-card">
 				<span class="action-icon">✍️</span>
-				<h3><?php esc_html_e( 'Schrijf Artikel', 'writgocms' ); ?></h3>
-				<p><?php esc_html_e( 'Begin met schrijven met AI-ondersteuning', 'writgocms' ); ?></p>
+				<h3><?php esc_html_e( 'Schrijf Artikel', 'writgoai' ); ?></h3>
+				<p><?php esc_html_e( 'Begin met schrijven met AI-ondersteuning', 'writgoai' ); ?></p>
 				<a href="<?php echo esc_url( admin_url( 'post-new.php' ) ); ?>" class="button button-primary">
-					<?php esc_html_e( 'Nieuw Artikel', 'writgocms' ); ?>
+					<?php esc_html_e( 'Nieuw Artikel', 'writgoai' ); ?>
 				</a>
 			</div>
 
 			<div class="quick-action-card">
 				<span class="action-icon">⚙️</span>
-				<h3><?php esc_html_e( 'Instellingen', 'writgocms' ); ?></h3>
-				<p><?php esc_html_e( 'Pas WritgoAI aan naar jouw wensen', 'writgocms' ); ?></p>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-settings' ) ); ?>" class="button">
-					<?php esc_html_e( 'Wijzig Instellingen', 'writgocms' ); ?>
+				<h3><?php esc_html_e( 'Instellingen', 'writgoai' ); ?></h3>
+				<p><?php esc_html_e( 'Pas WritgoAI aan naar jouw wensen', 'writgoai' ); ?></p>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-settings' ) ); ?>" class="button">
+					<?php esc_html_e( 'Wijzig Instellingen', 'writgoai' ); ?>
 				</a>
 			</div>
 		</div>
@@ -138,10 +138,10 @@ $wizard_completed = $controller->is_wizard_completed();
 	<!-- Stats Overview (Collapsible) -->
 	<div class="writgo-card">
 		<div class="card-header-with-toggle">
-			<h2><?php esc_html_e( 'Statistieken Overzicht', 'writgocms' ); ?></h2>
+			<h2><?php esc_html_e( 'Statistieken Overzicht', 'writgoai' ); ?></h2>
 			<button type="button" class="toggle-details" data-target="#stats-details">
 				<span class="dashicons dashicons-arrow-down-alt2"></span>
-				<?php esc_html_e( 'Meer Details', 'writgocms' ); ?>
+				<?php esc_html_e( 'Meer Details', 'writgoai' ); ?>
 			</button>
 		</div>
 		
@@ -150,50 +150,50 @@ $wizard_completed = $controller->is_wizard_completed();
 				<span class="stat-icon">📄</span>
 				<div class="stat-content">
 					<span class="stat-value"><?php echo esc_html( $stats['total_posts'] ); ?></span>
-					<span class="stat-label"><?php esc_html_e( 'Artikelen', 'writgocms' ); ?></span>
+					<span class="stat-label"><?php esc_html_e( 'Artikelen', 'writgoai' ); ?></span>
 				</div>
 			</div>
 			<div class="stat-item">
 				<span class="stat-icon">✅</span>
 				<div class="stat-content">
 					<span class="stat-value"><?php echo esc_html( $stats['optimized_posts'] ); ?></span>
-					<span class="stat-label"><?php esc_html_e( 'Geoptimaliseerd', 'writgocms' ); ?></span>
+					<span class="stat-label"><?php esc_html_e( 'Geoptimaliseerd', 'writgoai' ); ?></span>
 				</div>
 			</div>
 			<div class="stat-item">
 				<span class="stat-icon">📊</span>
 				<div class="stat-content">
 					<span class="stat-value"><?php echo esc_html( number_format( $stats['monthly_traffic'] ) ); ?></span>
-					<span class="stat-label"><?php esc_html_e( 'Maandelijks Verkeer', 'writgocms' ); ?></span>
+					<span class="stat-label"><?php esc_html_e( 'Maandelijks Verkeer', 'writgoai' ); ?></span>
 				</div>
 			</div>
 			<div class="stat-item">
 				<span class="stat-icon">🎯</span>
 				<div class="stat-content">
 					<span class="stat-value"><?php echo esc_html( $stats['avg_ranking'] ); ?></span>
-					<span class="stat-label"><?php esc_html_e( 'Gem. Positie', 'writgocms' ); ?></span>
+					<span class="stat-label"><?php esc_html_e( 'Gem. Positie', 'writgoai' ); ?></span>
 				</div>
 			</div>
 		</div>
 
 		<div id="stats-details" class="stats-details" style="display: none;">
 			<div class="detail-section">
-				<h4><?php esc_html_e( 'Content Analyse', 'writgocms' ); ?></h4>
+				<h4><?php esc_html_e( 'Content Analyse', 'writgoai' ); ?></h4>
 				<table class="stats-table">
 					<tr>
-						<td><?php esc_html_e( 'Content Dekking', 'writgocms' ); ?></td>
+						<td><?php esc_html_e( 'Content Dekking', 'writgoai' ); ?></td>
 						<td><strong><?php echo esc_html( $stats['content_coverage'] ); ?>%</strong></td>
 					</tr>
 					<tr>
-						<td><?php esc_html_e( 'Topical Authority', 'writgocms' ); ?></td>
+						<td><?php esc_html_e( 'Topical Authority', 'writgoai' ); ?></td>
 						<td><strong><?php echo esc_html( $stats['topical_authority'] ); ?>%</strong></td>
 					</tr>
 					<tr>
-						<td><?php esc_html_e( 'Interne Links Score', 'writgocms' ); ?></td>
+						<td><?php esc_html_e( 'Interne Links Score', 'writgoai' ); ?></td>
 						<td><strong><?php echo esc_html( $stats['internal_links_score'] ); ?>%</strong></td>
 					</tr>
 					<tr>
-						<td><?php esc_html_e( 'Technische SEO Score', 'writgocms' ); ?></td>
+						<td><?php esc_html_e( 'Technische SEO Score', 'writgoai' ); ?></td>
 						<td><strong><?php echo esc_html( $stats['technical_seo_score'] ); ?>%</strong></td>
 					</tr>
 				</table>
@@ -204,7 +204,7 @@ $wizard_completed = $controller->is_wizard_completed();
 	<!-- Recent Activity -->
 	<?php if ( ! empty( $stats['recent_activity'] ) ) : ?>
 	<div class="writgo-card">
-		<h2><?php esc_html_e( 'Recente Activiteit', 'writgocms' ); ?></h2>
+		<h2><?php esc_html_e( 'Recente Activiteit', 'writgoai' ); ?></h2>
 		<div class="activity-feed">
 			<?php foreach ( array_slice( $stats['recent_activity'], 0, 5 ) as $activity ) : ?>
 				<div class="activity-item">
@@ -221,7 +221,7 @@ $wizard_completed = $controller->is_wizard_completed();
 
 	<!-- Next Steps Recommendation -->
 	<div class="writgo-card card-recommendation">
-		<h2><?php esc_html_e( 'Wat Nu?', 'writgocms' ); ?></h2>
+		<h2><?php esc_html_e( 'Wat Nu?', 'writgoai' ); ?></h2>
 		<div class="recommendation-content">
 			<?php
 			// Determine next recommended action based on workflow status.
@@ -230,10 +230,10 @@ $wizard_completed = $controller->is_wizard_completed();
 				<div class="recommendation-item">
 					<span class="rec-icon">🔍</span>
 					<div class="rec-content">
-						<h4><?php esc_html_e( 'Start met een Website Analyse', 'writgocms' ); ?></h4>
-						<p><?php esc_html_e( 'Laat WritgoAI je website scannen om verbeterpunten te vinden.', 'writgocms' ); ?></p>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button button-primary">
-							<?php esc_html_e( 'Start Analyse', 'writgocms' ); ?> →
+						<h4><?php esc_html_e( 'Start met een Website Analyse', 'writgoai' ); ?></h4>
+						<p><?php esc_html_e( 'Laat WritgoAI je website scannen om verbeterpunten te vinden.', 'writgoai' ); ?></p>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-analyse' ) ); ?>" class="button button-primary">
+							<?php esc_html_e( 'Start Analyse', 'writgoai' ); ?> →
 						</a>
 					</div>
 				</div>
@@ -241,10 +241,10 @@ $wizard_completed = $controller->is_wizard_completed();
 				<div class="recommendation-item">
 					<span class="rec-icon">📝</span>
 					<div class="rec-content">
-						<h4><?php esc_html_e( 'Maak een Contentplan', 'writgocms' ); ?></h4>
-						<p><?php esc_html_e( 'Gebruik AI om een complete contentstrategie te ontwikkelen.', 'writgocms' ); ?></p>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="button button-primary">
-							<?php esc_html_e( 'Maak Plan', 'writgocms' ); ?> →
+						<h4><?php esc_html_e( 'Maak een Contentplan', 'writgoai' ); ?></h4>
+						<p><?php esc_html_e( 'Gebruik AI om een complete contentstrategie te ontwikkelen.', 'writgoai' ); ?></p>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan' ) ); ?>" class="button button-primary">
+							<?php esc_html_e( 'Maak Plan', 'writgoai' ); ?> →
 						</a>
 					</div>
 				</div>
@@ -252,10 +252,10 @@ $wizard_completed = $controller->is_wizard_completed();
 				<div class="recommendation-item">
 					<span class="rec-icon">✍️</span>
 					<div class="rec-content">
-						<h4><?php esc_html_e( 'Begin met Schrijven', 'writgocms' ); ?></h4>
-						<p><?php esc_html_e( 'Je hebt alles klaar staan. Tijd om content te maken!', 'writgocms' ); ?></p>
+						<h4><?php esc_html_e( 'Begin met Schrijven', 'writgoai' ); ?></h4>
+						<p><?php esc_html_e( 'Je hebt alles klaar staan. Tijd om content te maken!', 'writgoai' ); ?></p>
 						<a href="<?php echo esc_url( admin_url( 'post-new.php' ) ); ?>" class="button button-primary">
-							<?php esc_html_e( 'Nieuw Artikel', 'writgocms' ); ?> →
+							<?php esc_html_e( 'Nieuw Artikel', 'writgoai' ); ?> →
 						</a>
 					</div>
 				</div>

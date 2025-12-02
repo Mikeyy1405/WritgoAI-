@@ -4,7 +4,7 @@
  *
  * TinyMCE button registration for AI generation.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Classic_Editor_Button
+ * Class WritgoAI_Classic_Editor_Button
  */
-class WritgoCMS_Classic_Editor_Button {
+class WritgoAI_Classic_Editor_Button {
 
     /**
      * Instance
      *
-     * @var WritgoCMS_Classic_Editor_Button
+     * @var WritgoAI_Classic_Editor_Button
      */
     private static $instance = null;
 
     /**
      * Get instance
      *
-     * @return WritgoCMS_Classic_Editor_Button
+     * @return WritgoAI_Classic_Editor_Button
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -64,7 +64,7 @@ class WritgoCMS_Classic_Editor_Button {
      * @return array
      */
     public function add_tinymce_plugin( $plugins ) {
-        $plugins['writgocms_aiml'] = WRITGOCMS_URL . 'assets/js/tinymce-aiml-plugin.js';
+        $plugins['writgoai_ai'] = WRITGOAI_URL . 'assets/js/tinymce-ai-plugin.js';
         return $plugins;
     }
 
@@ -75,7 +75,7 @@ class WritgoCMS_Classic_Editor_Button {
      * @return array
      */
     public function register_tinymce_button( $buttons ) {
-        $buttons[] = 'writgocms_aiml';
+        $buttons[] = 'writgoai_ai';
         return $buttons;
     }
 
@@ -96,10 +96,10 @@ class WritgoCMS_Classic_Editor_Button {
         }
 
         wp_enqueue_style(
-            'writgocms-tinymce-aiml',
-            WRITGOCMS_URL . 'assets/css/tinymce-aiml.css',
+            'writgocms-tinymce-ai',
+            WRITGOAI_URL . 'assets/css/tinymce-ai.css',
             array(),
-            WRITGOCMS_VERSION
+            WRITGOAI_VERSION
         );
 
         wp_localize_script(
@@ -107,20 +107,20 @@ class WritgoCMS_Classic_Editor_Button {
             'writgocmsTinymceAiml',
             array(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-                'nonce'   => wp_create_nonce( 'writgocms_aiml_nonce' ),
+                'nonce'   => wp_create_nonce( 'writgoai_ai_nonce' ),
                 'isAdmin' => current_user_can( 'manage_options' ),
                 'i18n'    => array(
-                    'title'          => __( 'AI Content Generator', 'writgocms' ),
-                    'promptLabel'    => __( 'Enter your prompt:', 'writgocms' ),
-                    'textBtn'        => __( 'Generate Text', 'writgocms' ),
-                    'imageBtn'       => __( 'Generate Image', 'writgocms' ),
-                    'insertBtn'      => __( 'Insert', 'writgocms' ),
-                    'cancelBtn'      => __( 'Cancel', 'writgocms' ),
-                    'generating'     => __( 'Generating...', 'writgocms' ),
-                    'success'        => __( 'Generated successfully!', 'writgocms' ),
-                    'error'          => __( 'Error:', 'writgocms' ),
-                    'noPrompt'       => __( 'Please enter a prompt', 'writgocms' ),
-                    'previewTitle'   => __( 'Preview:', 'writgocms' ),
+                    'title'          => __( 'AI Content Generator', 'writgoai' ),
+                    'promptLabel'    => __( 'Enter your prompt:', 'writgoai' ),
+                    'textBtn'        => __( 'Generate Text', 'writgoai' ),
+                    'imageBtn'       => __( 'Generate Image', 'writgoai' ),
+                    'insertBtn'      => __( 'Insert', 'writgoai' ),
+                    'cancelBtn'      => __( 'Cancel', 'writgoai' ),
+                    'generating'     => __( 'Generating...', 'writgoai' ),
+                    'success'        => __( 'Generated successfully!', 'writgoai' ),
+                    'error'          => __( 'Error:', 'writgoai' ),
+                    'noPrompt'       => __( 'Please enter a prompt', 'writgoai' ),
+                    'previewTitle'   => __( 'Preview:', 'writgoai' ),
                 ),
             )
         );
@@ -128,4 +128,4 @@ class WritgoCMS_Classic_Editor_Button {
 }
 
 // Initialize
-WritgoCMS_Classic_Editor_Button::get_instance();
+WritgoAI_Classic_Editor_Button::get_instance();

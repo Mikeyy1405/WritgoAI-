@@ -5,7 +5,7 @@
  * Provides functions to communicate with the WritgoAI Licensing API.
  * Uses WordPress HTTP API for making requests.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,16 +13,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_License_Client
+ * Class WritgoAI_License_Client
  *
  * Client for interacting with the licensing API endpoints.
  */
-class WritgoCMS_License_Client {
+class WritgoAI_License_Client {
 
     /**
      * Instance
      *
-     * @var WritgoCMS_License_Client
+     * @var WritgoAI_License_Client
      */
     private static $instance = null;
 
@@ -43,7 +43,7 @@ class WritgoCMS_License_Client {
     /**
      * Get instance
      *
-     * @return WritgoCMS_License_Client
+     * @return WritgoAI_License_Client
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -58,7 +58,7 @@ class WritgoCMS_License_Client {
     private function __construct() {
         // Allow filtering the API base URL.
         $this->api_base_url = apply_filters( 
-            'writgocms_license_api_url', 
+            'writgoai_license_api_url', 
             'https://api.writgoai.com/v1' 
         );
     }
@@ -88,7 +88,7 @@ class WritgoCMS_License_Client {
      * @return string License key or empty string.
      */
     public function get_license_key() {
-        return get_option( 'writgocms_license_key', '' );
+        return get_option( 'writgoai_license_key', '' );
     }
 
     /**
@@ -108,7 +108,7 @@ class WritgoCMS_License_Client {
         if ( empty( $license_key ) ) {
             return new WP_Error( 
                 'no_license_key', 
-                __( 'No license key provided.', 'writgocms' ) 
+                __( 'No license key provided.', 'writgoai' ) 
             );
         }
 
@@ -141,7 +141,7 @@ class WritgoCMS_License_Client {
         if ( empty( $license_key ) ) {
             return new WP_Error( 
                 'no_license_key', 
-                __( 'No license key provided.', 'writgocms' ) 
+                __( 'No license key provided.', 'writgoai' ) 
             );
         }
 
@@ -241,7 +241,7 @@ class WritgoCMS_License_Client {
             'headers'     => array(
                 'Content-Type' => 'application/json',
                 'Accept'       => 'application/json',
-                'User-Agent'   => 'WritgoCMS/' . ( defined( 'WRITGOCMS_VERSION' ) ? WRITGOCMS_VERSION : '1.0.0' ),
+                'User-Agent'   => 'WritgoAI/' . ( defined( 'WRITGOAI_VERSION' ) ? WRITGOAI_VERSION : '1.0.0' ),
             ),
             'body'        => wp_json_encode( $body ),
         );
@@ -261,7 +261,7 @@ class WritgoCMS_License_Client {
         if ( null === $decoded ) {
             return new WP_Error( 
                 'json_decode_error', 
-                __( 'Failed to parse API response.', 'writgocms' ),
+                __( 'Failed to parse API response.', 'writgoai' ),
                 array(
                     'response_code' => $response_code,
                     'response_body' => $response_body,
@@ -273,7 +273,7 @@ class WritgoCMS_License_Client {
         if ( $response_code >= 400 ) {
             $error_message = isset( $decoded['error'] ) 
                 ? $decoded['error'] 
-                : __( 'API request failed.', 'writgocms' );
+                : __( 'API request failed.', 'writgoai' );
 
             return new WP_Error( 
                 'api_error', 
@@ -306,10 +306,10 @@ class WritgoCMS_License_Client {
  *
  * Helper function to get the license client singleton.
  *
- * @return WritgoCMS_License_Client
+ * @return WritgoAI_License_Client
  */
-function writgocms_license_client() {
-    return WritgoCMS_License_Client::get_instance();
+function writgoai_license_client() {
+    return WritgoAI_License_Client::get_instance();
 }
 
 /**
@@ -318,8 +318,8 @@ function writgocms_license_client() {
  * @param string|null $license_key Optional license key.
  * @return array|WP_Error
  */
-function writgocms_validate_license( $license_key = null ) {
-    return writgocms_license_client()->validate_license( $license_key );
+function writgoai_validate_license( $license_key = null ) {
+    return writgoai_license_client()->validate_license( $license_key );
 }
 
 /**
@@ -329,8 +329,8 @@ function writgocms_validate_license( $license_key = null ) {
  * @param string $action Action type for logging.
  * @return array|WP_Error
  */
-function writgocms_consume_credits( $amount = 1, $action = 'ai_generation' ) {
-    return writgocms_license_client()->consume_credits( $amount, $action );
+function writgoai_consume_credits( $amount = 1, $action = 'ai_generation' ) {
+    return writgoai_license_client()->consume_credits( $amount, $action );
 }
 
 /**
@@ -339,6 +339,6 @@ function writgocms_consume_credits( $amount = 1, $action = 'ai_generation' ) {
  * @param int $required_credits Number of credits required.
  * @return bool|WP_Error
  */
-function writgocms_has_credits( $required_credits = 1 ) {
-    return writgocms_license_client()->has_sufficient_credits( $required_credits );
+function writgoai_has_credits( $required_credits = 1 ) {
+    return writgoai_license_client()->has_sufficient_credits( $required_credits );
 }

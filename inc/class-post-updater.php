@@ -4,7 +4,7 @@
  *
  * AI-powered post improvement and SEO optimization with Yoast SEO and Rank Math integration.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ exit;
 }
 
 /**
- * Class WritgoCMS_Post_Updater
+ * Class WritgoAI_Post_Updater
  */
-class WritgoCMS_Post_Updater {
+class WritgoAI_Post_Updater {
 
 /**
  * Instance
  *
- * @var WritgoCMS_Post_Updater
+ * @var WritgoAI_Post_Updater
  */
 private static $instance = null;
 
 /**
  * Provider instance
  *
- * @var WritgoCMS_AIML_Provider
+ * @var WritgoAI_AI_Provider
  */
 private $provider;
 
@@ -40,7 +40,7 @@ private $active_seo_plugin = '';
 /**
  * Get instance
  *
- * @return WritgoCMS_Post_Updater
+ * @return WritgoAI_Post_Updater
  */
 public static function get_instance() {
 if ( null === self::$instance ) {
@@ -53,19 +53,19 @@ return self::$instance;
  * Constructor
  */
 private function __construct() {
-$this->provider = WritgoCMS_AIML_Provider::get_instance();
+$this->provider = WritgoAI_AI_Provider::get_instance();
 $this->detect_seo_plugin();
 
 // AJAX handlers.
-add_action( 'wp_ajax_writgocms_get_posts_for_update', array( $this, 'ajax_get_posts_for_update' ) );
-add_action( 'wp_ajax_writgocms_analyze_post', array( $this, 'ajax_analyze_post' ) );
-add_action( 'wp_ajax_writgocms_improve_post', array( $this, 'ajax_improve_post' ) );
-add_action( 'wp_ajax_writgocms_save_improved_post', array( $this, 'ajax_save_improved_post' ) );
-add_action( 'wp_ajax_writgocms_bulk_improve_posts', array( $this, 'ajax_bulk_improve_posts' ) );
-add_action( 'wp_ajax_writgocms_get_post_updater_stats', array( $this, 'ajax_get_stats' ) );
+add_action( 'wp_ajax_writgoai_get_posts_for_update', array( $this, 'ajax_get_posts_for_update' ) );
+add_action( 'wp_ajax_writgoai_analyze_post', array( $this, 'ajax_analyze_post' ) );
+add_action( 'wp_ajax_writgoai_improve_post', array( $this, 'ajax_improve_post' ) );
+add_action( 'wp_ajax_writgoai_save_improved_post', array( $this, 'ajax_save_improved_post' ) );
+add_action( 'wp_ajax_writgoai_bulk_improve_posts', array( $this, 'ajax_bulk_improve_posts' ) );
+add_action( 'wp_ajax_writgoai_get_post_updater_stats', array( $this, 'ajax_get_stats' ) );
 
 // Register activation hook for database tables.
-register_activation_hook( WRITGOCMS_DIR . 'writgo-cms.php', array( $this, 'create_tables' ) );
+register_activation_hook( WRITGOAI_DIR . 'writgo-cms.php', array( $this, 'create_tables' ) );
 }
 
 /**
@@ -304,7 +304,7 @@ $post   = get_post( $post_id );
 if ( empty( $seo_data['focus_keyword'] ) ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => __( 'Focus keyword ontbreekt', 'writgocms' ),
+'message' => __( 'Focus keyword ontbreekt', 'writgoai' ),
 );
 }
 
@@ -312,12 +312,12 @@ $issues[] = array(
 if ( empty( $seo_data['meta_description'] ) ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => __( 'Meta beschrijving ontbreekt', 'writgocms' ),
+'message' => __( 'Meta beschrijving ontbreekt', 'writgoai' ),
 );
 } elseif ( strlen( $seo_data['meta_description'] ) < 120 ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => __( 'Meta beschrijving te kort', 'writgocms' ),
+'message' => __( 'Meta beschrijving te kort', 'writgoai' ),
 );
 }
 
@@ -326,7 +326,7 @@ $word_count = str_word_count( wp_strip_all_tags( $post->post_content ) );
 if ( $word_count < 800 ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => sprintf( __( 'Artikel te kort (%d woorden, aanbevolen: 1500+)', 'writgocms' ), $word_count ),
+'message' => sprintf( __( 'Artikel te kort (%d woorden, aanbevolen: 1500+)', 'writgoai' ), $word_count ),
 );
 }
 
@@ -335,7 +335,7 @@ $has_external_links = preg_match( '/<a[^>]+href=["\']https?:\/\/(?!(' . preg_quo
 if ( ! $has_external_links ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => __( 'Geen outbound links', 'writgocms' ),
+'message' => __( 'Geen outbound links', 'writgoai' ),
 );
 }
 
@@ -343,7 +343,7 @@ $issues[] = array(
 if ( $seo_data['readability'] < 50 ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => __( 'Leesbaarheid: moeilijk', 'writgocms' ),
+'message' => __( 'Leesbaarheid: moeilijk', 'writgoai' ),
 );
 }
 
@@ -409,19 +409,19 @@ $post   = get_post( $post_id );
 if ( empty( $seo_data['focus_keyword'] ) ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => __( 'Focus keyword ontbreekt', 'writgocms' ),
+'message' => __( 'Focus keyword ontbreekt', 'writgoai' ),
 );
 }
 
 if ( empty( $seo_data['meta_description'] ) ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => __( 'Meta beschrijving ontbreekt', 'writgocms' ),
+'message' => __( 'Meta beschrijving ontbreekt', 'writgoai' ),
 );
 } elseif ( strlen( $seo_data['meta_description'] ) < 120 ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => __( 'Meta beschrijving te kort', 'writgocms' ),
+'message' => __( 'Meta beschrijving te kort', 'writgoai' ),
 );
 }
 
@@ -429,7 +429,7 @@ $word_count = str_word_count( wp_strip_all_tags( $post->post_content ) );
 if ( $word_count < 800 ) {
 $issues[] = array(
 'type'    => 'warning',
-'message' => sprintf( __( 'Artikel te kort (%d woorden, aanbevolen: 1500+)', 'writgocms' ), $word_count ),
+'message' => sprintf( __( 'Artikel te kort (%d woorden, aanbevolen: 1500+)', 'writgoai' ), $word_count ),
 );
 }
 
@@ -445,7 +445,7 @@ return $issues;
 public function analyze_post( $post_id ) {
 $post = get_post( $post_id );
 if ( ! $post ) {
-return new WP_Error( 'invalid_post', __( 'Ongeldige post.', 'writgocms' ) );
+return new WP_Error( 'invalid_post', __( 'Ongeldige post.', 'writgoai' ) );
 }
 
 $seo_data   = $this->get_seo_data( $post_id );
@@ -515,7 +515,7 @@ return array(
 public function improve_post( $post_id, $options = array() ) {
 $post = get_post( $post_id );
 if ( ! $post ) {
-return new WP_Error( 'invalid_post', __( 'Ongeldige post.', 'writgocms' ) );
+return new WP_Error( 'invalid_post', __( 'Ongeldige post.', 'writgoai' ) );
 }
 
 $defaults = array(
@@ -630,7 +630,7 @@ $content = preg_replace( '/\s*```$/', '', $content );
 
 $improved = json_decode( $content, true );
 if ( json_last_error() !== JSON_ERROR_NONE ) {
-return new WP_Error( 'parse_error', __( 'Kon AI response niet verwerken. Probeer het opnieuw.', 'writgocms' ) );
+return new WP_Error( 'parse_error', __( 'Kon AI response niet verwerken. Probeer het opnieuw.', 'writgoai' ) );
 }
 
 // Calculate word counts.
@@ -670,7 +670,7 @@ return array(
 public function save_improved_post( $post_id, $improved, $status = 'draft' ) {
 $post = get_post( $post_id );
 if ( ! $post ) {
-return new WP_Error( 'invalid_post', __( 'Ongeldige post.', 'writgocms' ) );
+return new WP_Error( 'invalid_post', __( 'Ongeldige post.', 'writgoai' ) );
 }
 
 global $wpdb;
@@ -797,10 +797,10 @@ return array(
  * AJAX: Get posts for update
  */
 public function ajax_get_posts_for_update() {
-check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 if ( ! current_user_can( 'edit_posts' ) ) {
-wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 }
 
 $args = array(
@@ -821,15 +821,15 @@ wp_send_json_success( $result );
  * AJAX: Analyze post
  */
 public function ajax_analyze_post() {
-check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 if ( ! current_user_can( 'edit_posts' ) ) {
-wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 }
 
 $post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 if ( ! $post_id ) {
-wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgoai' ) ) );
 }
 
 $result = $this->analyze_post( $post_id );
@@ -845,15 +845,15 @@ wp_send_json_success( $result );
  * AJAX: Improve post
  */
 public function ajax_improve_post() {
-check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 if ( ! current_user_can( 'edit_posts' ) ) {
-wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 }
 
 $post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 if ( ! $post_id ) {
-wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgoai' ) ) );
 }
 
 $options = array(
@@ -883,25 +883,25 @@ wp_send_json_success( $result );
  * AJAX: Save improved post
  */
 public function ajax_save_improved_post() {
-check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 if ( ! current_user_can( 'edit_posts' ) ) {
-wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 }
 
 $post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 if ( ! $post_id ) {
-wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Post ID is vereist.', 'writgoai' ) ) );
 }
 
 $improved_data = isset( $_POST['improved_data'] ) ? wp_unslash( $_POST['improved_data'] ) : '';
 if ( empty( $improved_data ) ) {
-wp_send_json_error( array( 'message' => __( 'Geen verbeterde data ontvangen.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Geen verbeterde data ontvangen.', 'writgoai' ) ) );
 }
 
 $improved = json_decode( $improved_data, true );
 if ( json_last_error() !== JSON_ERROR_NONE ) {
-wp_send_json_error( array( 'message' => __( 'Ongeldige data format.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Ongeldige data format.', 'writgoai' ) ) );
 }
 
 $status = isset( $_POST['status'] ) ? sanitize_text_field( wp_unslash( $_POST['status'] ) ) : 'draft';
@@ -912,22 +912,22 @@ if ( is_wp_error( $result ) ) {
 wp_send_json_error( array( 'message' => $result->get_error_message() ) );
 }
 
-wp_send_json_success( array( 'message' => __( 'Post succesvol opgeslagen!', 'writgocms' ) ) );
+wp_send_json_success( array( 'message' => __( 'Post succesvol opgeslagen!', 'writgoai' ) ) );
 }
 
 /**
  * AJAX: Bulk improve posts
  */
 public function ajax_bulk_improve_posts() {
-check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 if ( ! current_user_can( 'edit_posts' ) ) {
-wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 }
 
 $post_ids = isset( $_POST['post_ids'] ) ? array_map( 'intval', (array) $_POST['post_ids'] ) : array();
 if ( empty( $post_ids ) ) {
-wp_send_json_error( array( 'message' => __( 'Geen posts geselecteerd.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Geen posts geselecteerd.', 'writgoai' ) ) );
 }
 
 $options = array(
@@ -982,10 +982,10 @@ wp_send_json_success( $results );
  * AJAX: Get statistics
  */
 public function ajax_get_stats() {
-check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 if ( ! current_user_can( 'edit_posts' ) ) {
-wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgocms' ) ) );
+wp_send_json_error( array( 'message' => __( 'Geen toegang.', 'writgoai' ) ) );
 }
 
 $stats = $this->get_stats();
@@ -994,4 +994,4 @@ wp_send_json_success( $stats );
 }
 
 // Initialize.
-WritgoCMS_Post_Updater::get_instance();
+WritgoAI_Post_Updater::get_instance();

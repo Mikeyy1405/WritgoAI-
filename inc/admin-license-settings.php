@@ -9,7 +9,7 @@
  * - Subscription management
  * - Update checking
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,28 +17,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_License_Admin
+ * Class WritgoAI_License_Admin
  */
-class WritgoCMS_License_Admin {
+class WritgoAI_License_Admin {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_License_Admin
+	 * @var WritgoAI_License_Admin
 	 */
 	private static $instance = null;
 
 	/**
 	 * License manager instance
 	 *
-	 * @var WritgoCMS_License_Manager
+	 * @var WritgoAI_License_Manager
 	 */
 	private $license_manager;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_License_Admin
+	 * @return WritgoAI_License_Admin
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -51,7 +51,7 @@ class WritgoCMS_License_Admin {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->license_manager = WritgoCMS_License_Manager::get_instance();
+		$this->license_manager = WritgoAI_License_Manager::get_instance();
 
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 5 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -80,16 +80,16 @@ class WritgoCMS_License_Admin {
 
 		wp_enqueue_style(
 			'writgocms-license-admin',
-			WRITGOCMS_URL . 'assets/css/admin-aiml.css',
+			WRITGOAI_URL . 'assets/css/admin-ai.css',
 			array(),
-			WRITGOCMS_VERSION
+			WRITGOAI_VERSION
 		);
 
 		wp_enqueue_script(
 			'writgocms-license-admin',
-			WRITGOCMS_URL . 'assets/js/admin-aiml.js',
+			WRITGOAI_URL . 'assets/js/admin-ai.js',
 			array( 'jquery' ),
-			WRITGOCMS_VERSION,
+			WRITGOAI_VERSION,
 			true
 		);
 
@@ -98,7 +98,7 @@ class WritgoCMS_License_Admin {
 			'writgocmsLicense',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'writgocms_auth_nonce' ), // Changed to auth_nonce for auth actions.
+				'nonce'   => wp_create_nonce( 'writgoai_auth_nonce' ), // Changed to auth_nonce for auth actions.
 				'i18n'    => array(
 					'activating'    => 'Activeren...',
 					'deactivating'  => 'Deactiveren...',
@@ -118,7 +118,7 @@ class WritgoCMS_License_Admin {
 	 */
 	public function render_license_page() {
 		// Get WordPress user (always authenticated for admin users with manage_options).
-		$auth_manager = WritgoCMS_Auth_Manager::get_instance();
+		$auth_manager = WritgoAI_Auth_Manager::get_instance();
 		$current_user = $auth_manager->get_current_user();
 
 		// Legacy license support.
@@ -128,7 +128,7 @@ class WritgoCMS_License_Admin {
 		$is_valid      = $this->license_manager->is_license_valid();
 		$days_remaining = $this->license_manager->get_days_remaining();
 		?>
-		<div class="wrap writgocms-aiml-settings writgocms-license-page">
+		<div class="wrap writgoai-settings writgocms-license-page">
 			<h1 class="aiml-header">
 				<span class="aiml-logo">🔑</span>
 				WritgoAI Licentie
@@ -148,7 +148,7 @@ class WritgoCMS_License_Admin {
 								<h3 class="user-name"><?php echo esc_html( $current_user['name'] ); ?></h3>
 								<p class="user-email"><?php echo esc_html( $current_user['email'] ); ?></p>
 								<p class="description">
-									<?php esc_html_e( 'Je bent ingelogd met je WordPress account. De plugin gebruikt automatisch je WordPress inloggegevens voor authenticatie met de WritgoAI API.', 'writgocms' ); ?>
+									<?php esc_html_e( 'Je bent ingelogd met je WordPress account. De plugin gebruikt automatisch je WordPress inloggegevens voor authenticatie met de WritgoAI API.', 'writgoai' ); ?>
 								</p>
 							</div>
 						</div>
@@ -201,9 +201,9 @@ class WritgoCMS_License_Admin {
 											<?php
 											if ( $days_remaining > 0 ) {
 												/* translators: %d: number of days */
-												echo esc_html( sprintf( __( 'Nog %d dagen', 'writgocms' ), $days_remaining ) );
+												echo esc_html( sprintf( __( 'Nog %d dagen', 'writgoai' ), $days_remaining ) );
 											} else {
-												echo esc_html__( 'Verlopen', 'writgocms' );
+												echo esc_html__( 'Verlopen', 'writgoai' );
 											}
 											?>
 										</span>
@@ -245,14 +245,14 @@ class WritgoCMS_License_Admin {
 							<?php
 							// Get credit info from Credit Manager.
 							$credit_info = null;
-							if ( class_exists( 'WritgoCMS_Credit_Manager' ) ) {
-								$credit_manager = WritgoCMS_Credit_Manager::get_instance();
+							if ( class_exists( 'WritgoAI_Credit_Manager' ) ) {
+								$credit_manager = WritgoAI_Credit_Manager::get_instance();
 								$credit_info = $credit_manager->get_credit_info();
 							}
 							?>
 							<?php if ( $credit_info && $credit_info['credits_total'] > 0 ) : ?>
 							<div class="license-credits-section">
-								<h3>🪙 <?php esc_html_e( 'Credit Balance', 'writgocms' ); ?></h3>
+								<h3>🪙 <?php esc_html_e( 'Credit Balance', 'writgoai' ); ?></h3>
 								<?php
 								$remaining = $credit_info['credits_remaining'];
 								$total = $credit_info['credits_total'];
@@ -262,38 +262,38 @@ class WritgoCMS_License_Admin {
 								?>
 								<div class="credits-display-large">
 									<div class="credits-number"><?php echo number_format( $remaining ); ?></div>
-									<div class="credits-label"><?php esc_html_e( 'credits remaining', 'writgocms' ); ?></div>
+									<div class="credits-label"><?php esc_html_e( 'credits remaining', 'writgoai' ); ?></div>
 								</div>
 								<div class="credits-bar-large">
 									<div class="credits-bar-fill" style="width: <?php echo esc_attr( $percentage ); ?>%; background: <?php echo esc_attr( $bar_color ); ?>;"></div>
 								</div>
 								<div class="credits-details">
 									<div class="credits-detail-item">
-										<span class="credits-detail-label"><?php esc_html_e( 'Used', 'writgocms' ); ?></span>
+										<span class="credits-detail-label"><?php esc_html_e( 'Used', 'writgoai' ); ?></span>
 										<span class="credits-detail-value"><?php echo number_format( $used ); ?></span>
 									</div>
 									<div class="credits-detail-item">
-										<span class="credits-detail-label"><?php esc_html_e( 'Total', 'writgocms' ); ?></span>
+										<span class="credits-detail-label"><?php esc_html_e( 'Total', 'writgoai' ); ?></span>
 										<span class="credits-detail-value"><?php echo number_format( $total ); ?></span>
 									</div>
 									<?php if ( ! empty( $credit_info['period_end'] ) ) : ?>
 									<div class="credits-detail-item">
-										<span class="credits-detail-label"><?php esc_html_e( 'Resets On', 'writgocms' ); ?></span>
+										<span class="credits-detail-label"><?php esc_html_e( 'Resets On', 'writgoai' ); ?></span>
 										<span class="credits-detail-value"><?php echo esc_html( $credit_info['period_end'] ); ?></span>
 									</div>
 									<?php endif; ?>
 								</div>
 								<div class="credits-cost-table">
-									<h4><?php esc_html_e( 'Credit Costs per Action', 'writgocms' ); ?></h4>
+									<h4><?php esc_html_e( 'Credit Costs per Action', 'writgoai' ); ?></h4>
 									<table class="widefat">
 										<tbody>
-											<tr><td><?php esc_html_e( 'AI Rewrite (small)', 'writgocms' ); ?></td><td><strong>10</strong></td></tr>
-											<tr><td><?php esc_html_e( 'AI Rewrite (paragraph)', 'writgocms' ); ?></td><td><strong>25</strong></td></tr>
-											<tr><td><?php esc_html_e( 'AI Rewrite (full)', 'writgocms' ); ?></td><td><strong>50</strong></td></tr>
-											<tr><td><?php esc_html_e( 'AI Image', 'writgocms' ); ?></td><td><strong>100</strong></td></tr>
-											<tr><td><?php esc_html_e( 'SEO Analysis', 'writgocms' ); ?></td><td><strong>20</strong></td></tr>
-											<tr><td><?php esc_html_e( 'Internal Links', 'writgocms' ); ?></td><td><strong>5</strong></td></tr>
-											<tr><td><?php esc_html_e( 'Keyword Research', 'writgocms' ); ?></td><td><strong>15</strong></td></tr>
+											<tr><td><?php esc_html_e( 'AI Rewrite (small)', 'writgoai' ); ?></td><td><strong>10</strong></td></tr>
+											<tr><td><?php esc_html_e( 'AI Rewrite (paragraph)', 'writgoai' ); ?></td><td><strong>25</strong></td></tr>
+											<tr><td><?php esc_html_e( 'AI Rewrite (full)', 'writgoai' ); ?></td><td><strong>50</strong></td></tr>
+											<tr><td><?php esc_html_e( 'AI Image', 'writgoai' ); ?></td><td><strong>100</strong></td></tr>
+											<tr><td><?php esc_html_e( 'SEO Analysis', 'writgoai' ); ?></td><td><strong>20</strong></td></tr>
+											<tr><td><?php esc_html_e( 'Internal Links', 'writgoai' ); ?></td><td><strong>5</strong></td></tr>
+											<tr><td><?php esc_html_e( 'Keyword Research', 'writgoai' ); ?></td><td><strong>15</strong></td></tr>
 										</tbody>
 									</table>
 								</div>
@@ -378,7 +378,7 @@ class WritgoCMS_License_Admin {
 							<h2>⬆️ Plugin Updates</h2>
 							<div class="update-info">
 								<p>
-									<strong>Huidige versie:</strong> <?php echo esc_html( WRITGOCMS_VERSION ); ?>
+									<strong>Huidige versie:</strong> <?php echo esc_html( WRITGOAI_VERSION ); ?>
 								</p>
 								<p class="description">
 									Met een actieve licentie ontvang je automatisch updates via het WordPress update systeem.
@@ -953,7 +953,7 @@ class WritgoCMS_License_Admin {
 					url: writgocmsLicense.ajaxUrl,
 					type: 'POST',
 					data: {
-						action: 'writgocms_activate_license',
+						action: 'writgoai_activate_license',
 						nonce: writgocmsLicense.nonce,
 						email: email,
 						license_key: licenseKey
@@ -992,7 +992,7 @@ class WritgoCMS_License_Admin {
 					url: writgocmsLicense.ajaxUrl,
 					type: 'POST',
 					data: {
-						action: 'writgocms_deactivate_license',
+						action: 'writgoai_deactivate_license',
 						nonce: writgocmsLicense.nonce
 					},
 					success: function(response) {
@@ -1025,7 +1025,7 @@ class WritgoCMS_License_Admin {
 					url: writgocmsLicense.ajaxUrl,
 					type: 'POST',
 					data: {
-						action: 'writgocms_refresh_license',
+						action: 'writgoai_refresh_license',
 						nonce: writgocmsLicense.nonce
 					},
 					success: function(response) {
@@ -1058,7 +1058,7 @@ class WritgoCMS_License_Admin {
 					url: writgocmsLicense.ajaxUrl,
 					type: 'POST',
 					data: {
-						action: 'writgocms_check_updates',
+						action: 'writgoai_check_updates',
 						nonce: writgocmsLicense.nonce
 					},
 					success: function(response) {
@@ -1108,7 +1108,7 @@ class WritgoCMS_License_Admin {
 				url: writgocmsLicense.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'writgocms_login',
+					action: 'writgoai_login',
 					nonce: writgocmsLicense.nonce,
 					email: email,
 					password: password
@@ -1147,7 +1147,7 @@ class WritgoCMS_License_Admin {
 				url: writgocmsLicense.ajaxUrl,
 				type: 'POST',
 				data: {
-					action: 'writgocms_logout',
+					action: 'writgoai_logout',
 					nonce: writgocmsLicense.nonce
 				},
 				success: function(response) {
@@ -1174,5 +1174,5 @@ class WritgoCMS_License_Admin {
 
 // Initialize.
 add_action( 'plugins_loaded', function() {
-	WritgoCMS_License_Admin::get_instance();
+	WritgoAI_License_Admin::get_instance();
 }, 15 );

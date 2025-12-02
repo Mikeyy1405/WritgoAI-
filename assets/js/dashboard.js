@@ -22,11 +22,11 @@
 
 			loadStats: function() {
 				$.ajax({
-					url: writgocmsDashboard.ajaxUrl,
+					url: writgoaiDashboard.ajaxUrl,
 					method: 'POST',
 					data: {
-						action: 'writgocms_get_dashboard_stats',
-						nonce: writgocmsDashboard.nonce
+						action: 'writgoai_get_dashboard_stats',
+						nonce: writgoaiDashboard.nonce
 					},
 					success: function(response) {
 						if (response.success) {

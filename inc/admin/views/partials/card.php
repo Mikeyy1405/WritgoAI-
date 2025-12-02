@@ -2,7 +2,7 @@
 /**
  * Card Component Partial
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

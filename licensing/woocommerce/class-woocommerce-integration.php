@@ -391,7 +391,7 @@ class WritgoAI_WooCommerce_Integration {
 
         $subject = sprintf(
             /* translators: %s: Plan name */
-            __( 'Your WritgoAI %s License Key', 'writgocms' ),
+            __( 'Your WritgoAI %s License Key', 'writgoai' ),
             $license_data['plan_name']
         );
 
@@ -499,9 +499,9 @@ class WritgoAI_WooCommerce_Integration {
      */
     public function add_admin_menu() {
         add_submenu_page(
-            'writgocms-aiml',
-            __( 'Subscription Products', 'writgocms' ),
-            __( '📦 Products', 'writgocms' ),
+            'writgoai',
+            __( 'Subscription Products', 'writgoai' ),
+            __( '📦 Products', 'writgoai' ),
             'manage_options',
             'writgocms-products',
             array( $this, 'render_products_page' )
@@ -652,10 +652,10 @@ class WritgoAI_WooCommerce_Integration {
         }
 
         ?>
-        <div class="wrap writgocms-aiml-settings">
+        <div class="wrap writgoai-settings">
             <h1 class="aiml-header">
                 <span class="aiml-logo">📦</span>
-                <?php esc_html_e( 'WritgoAI Subscription Products', 'writgocms' ); ?>
+                <?php esc_html_e( 'WritgoAI Subscription Products', 'writgoai' ); ?>
             </h1>
 
             <?php
@@ -663,32 +663,32 @@ class WritgoAI_WooCommerce_Integration {
             if ( '1' === $created_param ) :
             ?>
             <div class="notice notice-success is-dismissible">
-                <p><?php esc_html_e( 'Subscription products have been created successfully!', 'writgocms' ); ?></p>
+                <p><?php esc_html_e( 'Subscription products have been created successfully!', 'writgoai' ); ?></p>
             </div>
             <?php endif; ?>
 
             <div class="aiml-tab-content">
                 <!-- Status Cards -->
                 <div class="planner-card">
-                    <h2><?php esc_html_e( 'System Status', 'writgocms' ); ?></h2>
+                    <h2><?php esc_html_e( 'System Status', 'writgoai' ); ?></h2>
                     <table class="widefat" style="max-width: 500px;">
                         <tr>
-                            <td><?php esc_html_e( 'WooCommerce', 'writgocms' ); ?></td>
+                            <td><?php esc_html_e( 'WooCommerce', 'writgoai' ); ?></td>
                             <td>
                                 <?php if ( $woocommerce_active ) : ?>
-                                    <span style="color: green;">✅ <?php esc_html_e( 'Active', 'writgocms' ); ?></span>
+                                    <span style="color: green;">✅ <?php esc_html_e( 'Active', 'writgoai' ); ?></span>
                                 <?php else : ?>
-                                    <span style="color: red;">❌ <?php esc_html_e( 'Not Installed', 'writgocms' ); ?></span>
+                                    <span style="color: red;">❌ <?php esc_html_e( 'Not Installed', 'writgoai' ); ?></span>
                                 <?php endif; ?>
                             </td>
                         </tr>
                         <tr>
-                            <td><?php esc_html_e( 'WooCommerce Subscriptions', 'writgocms' ); ?></td>
+                            <td><?php esc_html_e( 'WooCommerce Subscriptions', 'writgoai' ); ?></td>
                             <td>
                                 <?php if ( $subscriptions_active ) : ?>
-                                    <span style="color: green;">✅ <?php esc_html_e( 'Active', 'writgocms' ); ?></span>
+                                    <span style="color: green;">✅ <?php esc_html_e( 'Active', 'writgoai' ); ?></span>
                                 <?php else : ?>
-                                    <span style="color: orange;">⚠️ <?php esc_html_e( 'Not Installed (Simple products will be created)', 'writgocms' ); ?></span>
+                                    <span style="color: orange;">⚠️ <?php esc_html_e( 'Not Installed (Simple products will be created)', 'writgoai' ); ?></span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -697,8 +697,8 @@ class WritgoAI_WooCommerce_Integration {
 
                 <!-- Plans Overview -->
                 <div class="planner-card">
-                    <h2><?php esc_html_e( 'Subscription Plans', 'writgocms' ); ?></h2>
-                    <p class="description"><?php esc_html_e( 'All plans include 100% access to all features. The only difference is the monthly credit allowance.', 'writgocms' ); ?></p>
+                    <h2><?php esc_html_e( 'Subscription Plans', 'writgoai' ); ?></h2>
+                    <p class="description"><?php esc_html_e( 'All plans include 100% access to all features. The only difference is the monthly credit allowance.', 'writgoai' ); ?></p>
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
                         <?php foreach ( $this->plans as $plan_type => $plan_config ) : ?>
@@ -706,14 +706,14 @@ class WritgoAI_WooCommerce_Integration {
                             <h3 style="margin-top: 0; <?php echo 'enterprise' === $plan_type ? 'color: white;' : ''; ?>">
                                 <?php echo esc_html( $plan_config['name'] ); ?>
                                 <?php if ( 'pro' === $plan_type ) : ?>
-                                    <span style="background: #ffc107; color: #333; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px;"><?php esc_html_e( 'Popular', 'writgocms' ); ?></span>
+                                    <span style="background: #ffc107; color: #333; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px;"><?php esc_html_e( 'Popular', 'writgoai' ); ?></span>
                                 <?php endif; ?>
                             </h3>
                             <p style="font-size: 32px; margin: 10px 0; font-weight: bold;">
-                                €<?php echo esc_html( $plan_config['price'] ); ?><span style="font-size: 14px; font-weight: normal;">/<?php esc_html_e( 'month', 'writgocms' ); ?></span>
+                                €<?php echo esc_html( $plan_config['price'] ); ?><span style="font-size: 14px; font-weight: normal;">/<?php esc_html_e( 'month', 'writgoai' ); ?></span>
                             </p>
                             <p style="font-size: 18px;">
-                                <strong><?php echo number_format( $plan_config['credits'] ); ?></strong> <?php esc_html_e( 'credits/month', 'writgocms' ); ?>
+                                <strong><?php echo number_format( $plan_config['credits'] ); ?></strong> <?php esc_html_e( 'credits/month', 'writgoai' ); ?>
                             </p>
                             <hr style="opacity: 0.3; margin: 15px 0;">
                             <ul style="list-style: none; padding: 0; margin: 0;">
@@ -724,7 +724,7 @@ class WritgoAI_WooCommerce_Integration {
                             <?php if ( isset( $existing_products[ $plan_type ] ) ) : ?>
                             <p style="margin-top: 15px;">
                                 <a href="<?php echo esc_url( get_edit_post_link( $existing_products[ $plan_type ]->ID ) ); ?>" class="button">
-                                    <?php esc_html_e( 'Edit Product', 'writgocms' ); ?>
+                                    <?php esc_html_e( 'Edit Product', 'writgoai' ); ?>
                                 </a>
                             </p>
                             <?php endif; ?>
@@ -735,34 +735,34 @@ class WritgoAI_WooCommerce_Integration {
                     <?php if ( $woocommerce_active && empty( $existing_products ) ) : ?>
                     <p style="margin-top: 20px;">
                         <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=writgocms-products&action=create_products' ), 'writgoai_create_products' ) ); ?>" class="button button-primary button-hero">
-                            <?php esc_html_e( 'Create Subscription Products', 'writgocms' ); ?>
+                            <?php esc_html_e( 'Create Subscription Products', 'writgoai' ); ?>
                         </a>
                     </p>
                     <?php elseif ( ! $woocommerce_active ) : ?>
                     <div class="notice notice-warning" style="margin-top: 20px;">
-                        <p><?php esc_html_e( 'WooCommerce is required to create subscription products. Please install and activate WooCommerce first.', 'writgocms' ); ?></p>
+                        <p><?php esc_html_e( 'WooCommerce is required to create subscription products. Please install and activate WooCommerce first.', 'writgoai' ); ?></p>
                     </div>
                     <?php endif; ?>
                 </div>
 
                 <!-- Credit Costs -->
                 <div class="planner-card">
-                    <h2><?php esc_html_e( 'Credit Costs per Action', 'writgocms' ); ?></h2>
+                    <h2><?php esc_html_e( 'Credit Costs per Action', 'writgoai' ); ?></h2>
                     <table class="widefat striped" style="max-width: 500px;">
                         <thead>
                             <tr>
-                                <th><?php esc_html_e( 'Action', 'writgocms' ); ?></th>
-                                <th style="text-align: right;"><?php esc_html_e( 'Credits', 'writgocms' ); ?></th>
+                                <th><?php esc_html_e( 'Action', 'writgoai' ); ?></th>
+                                <th style="text-align: right;"><?php esc_html_e( 'Credits', 'writgoai' ); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td><?php esc_html_e( 'AI Rewrite (small)', 'writgocms' ); ?></td><td style="text-align: right;">10</td></tr>
-                            <tr><td><?php esc_html_e( 'AI Rewrite (paragraph)', 'writgocms' ); ?></td><td style="text-align: right;">25</td></tr>
-                            <tr><td><?php esc_html_e( 'AI Rewrite (full)', 'writgocms' ); ?></td><td style="text-align: right;">50</td></tr>
-                            <tr><td><?php esc_html_e( 'AI Image', 'writgocms' ); ?></td><td style="text-align: right;">100</td></tr>
-                            <tr><td><?php esc_html_e( 'SEO Analysis', 'writgocms' ); ?></td><td style="text-align: right;">20</td></tr>
-                            <tr><td><?php esc_html_e( 'Internal Links', 'writgocms' ); ?></td><td style="text-align: right;">5</td></tr>
-                            <tr><td><?php esc_html_e( 'Keyword Research', 'writgocms' ); ?></td><td style="text-align: right;">15</td></tr>
+                            <tr><td><?php esc_html_e( 'AI Rewrite (small)', 'writgoai' ); ?></td><td style="text-align: right;">10</td></tr>
+                            <tr><td><?php esc_html_e( 'AI Rewrite (paragraph)', 'writgoai' ); ?></td><td style="text-align: right;">25</td></tr>
+                            <tr><td><?php esc_html_e( 'AI Rewrite (full)', 'writgoai' ); ?></td><td style="text-align: right;">50</td></tr>
+                            <tr><td><?php esc_html_e( 'AI Image', 'writgoai' ); ?></td><td style="text-align: right;">100</td></tr>
+                            <tr><td><?php esc_html_e( 'SEO Analysis', 'writgoai' ); ?></td><td style="text-align: right;">20</td></tr>
+                            <tr><td><?php esc_html_e( 'Internal Links', 'writgoai' ); ?></td><td style="text-align: right;">5</td></tr>
+                            <tr><td><?php esc_html_e( 'Keyword Research', 'writgoai' ); ?></td><td style="text-align: right;">15</td></tr>
                         </tbody>
                     </table>
                 </div>

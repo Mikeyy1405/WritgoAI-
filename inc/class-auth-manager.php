@@ -5,7 +5,7 @@
  * Handles user authentication using WordPress logged-in user.
  * Automatically authenticates with API server using WordPress credentials.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,14 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Auth_Manager
+ * Class WritgoAI_Auth_Manager
  */
-class WritgoCMS_Auth_Manager {
+class WritgoAI_Auth_Manager {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Auth_Manager
+	 * @var WritgoAI_Auth_Manager
 	 */
 	private static $instance = null;
 
@@ -36,19 +36,19 @@ class WritgoCMS_Auth_Manager {
 	 *
 	 * @var string
 	 */
-	private $token_option = 'writgocms_api_token';
+	private $token_option = 'writgoai_api_token';
 
 	/**
 	 * License data option key
 	 *
 	 * @var string
 	 */
-	private $license_option = 'writgocms_license_data';
+	private $license_option = 'writgoai_license_data';
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Auth_Manager
+	 * @return WritgoAI_Auth_Manager
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -62,10 +62,10 @@ class WritgoCMS_Auth_Manager {
 	 */
 	private function __construct() {
 		// Get API URL from options or use default.
-		$this->api_base_url = get_option( 'writgocms_api_url', 'https://api.writgoai.com' );
+		$this->api_base_url = get_option( 'writgoai_api_url', 'https://api.writgoai.com' );
 
 		// AJAX handlers for backward compatibility.
-		add_action( 'wp_ajax_writgocms_check_auth', array( $this, 'ajax_check_auth' ) );
+		add_action( 'wp_ajax_writgoai_check_auth', array( $this, 'ajax_check_auth' ) );
 	}
 
 	/**
@@ -256,7 +256,7 @@ class WritgoCMS_Auth_Manager {
 		$token = $this->get_token();
 
 		if ( empty( $token ) ) {
-			return new WP_Error( 'not_authenticated', __( 'Niet ingelogd. Log in om door te gaan.', 'writgocms' ) );
+			return new WP_Error( 'not_authenticated', __( 'Niet ingelogd. Log in om door te gaan.', 'writgoai' ) );
 		}
 
 		return array(
@@ -268,10 +268,10 @@ class WritgoCMS_Auth_Manager {
 	 * AJAX handler for checking authentication status
 	 */
 	public function ajax_check_auth() {
-		check_ajax_referer( 'writgocms_auth_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_auth_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen toestemming.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen toestemming.', 'writgoai' ) ) );
 		}
 
 		$is_authenticated = $this->is_authenticated();
@@ -287,4 +287,4 @@ class WritgoCMS_Auth_Manager {
 }
 
 // Initialize.
-WritgoCMS_Auth_Manager::get_instance();
+WritgoAI_Auth_Manager::get_instance();

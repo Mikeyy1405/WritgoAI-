@@ -10,7 +10,7 @@
    Toolbar Button Styles
    =================================== */
 
-.writgocms-toolbar-button {
+.writgoai-toolbar-button {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -22,15 +22,15 @@
     transition: all 0.2s ease;
 }
 
-.writgocms-toolbar-button:hover {
+.writgoai-toolbar-button:hover {
     background-color: rgba(24, 119, 242, 0.1);
 }
 
-.writgocms-toolbar-button .button-icon {
+.writgoai-toolbar-button .button-icon {
     font-size: 16px;
 }
 
-.writgocms-toolbar-button.is-pressed {
+.writgoai-toolbar-button.is-pressed {
     background: linear-gradient(135deg, #1877F2 0%, #f97316 100%);
     color: #fff;
 }
@@ -39,7 +39,7 @@
    Modal Overlay
    =================================== */
 
-.writgocms-modal-overlay {
+.writgoai-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -62,7 +62,7 @@
    Modal Container
    =================================== */
 
-.writgocms-modal {
+.writgoai-modal {
     background: #fff;
     border-radius: 12px;
     width: 90%;
@@ -85,7 +85,7 @@
 }
 
 /* Modal Header */
-.writgocms-modal-header {
+.writgoai-modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -94,7 +94,7 @@
     color: #fff;
 }
 
-.writgocms-modal-header h2 {
+.writgoai-modal-header h2 {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
@@ -103,11 +103,11 @@
     gap: 8px;
 }
 
-.writgocms-modal-header h2 .header-icon {
+.writgoai-modal-header h2 .header-icon {
     font-size: 22px;
 }
 
-.writgocms-modal-close {
+.writgoai-modal-close {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     color: #fff;
@@ -122,19 +122,19 @@
     transition: background 0.2s ease;
 }
 
-.writgocms-modal-close:hover {
+.writgoai-modal-close:hover {
     background: rgba(255, 255, 255, 0.3);
 }
 
 /* Modal Body */
-.writgocms-modal-body {
+.writgoai-modal-body {
     padding: 20px;
     overflow-y: auto;
     max-height: calc(80vh - 130px);
 }
 
 /* Modal Footer */
-.writgocms-modal-footer {
+.writgoai-modal-footer {
     display: flex;
     gap: 12px;
     justify-content: flex-end;
@@ -147,7 +147,7 @@
    Loading State
    =================================== */
 
-.writgocms-loading {
+.writgoai-loading {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -156,7 +156,7 @@
     gap: 16px;
 }
 
-.writgocms-spinner {
+.writgoai-spinner {
     width: 48px;
     height: 48px;
     border: 4px solid #e2e8f0;
@@ -169,7 +169,7 @@
     to { transform: rotate(360deg); }
 }
 
-.writgocms-loading-text {
+.writgoai-loading-text {
     font-size: 14px;
     color: #64748b;
     text-align: center;
@@ -179,20 +179,20 @@
    Text Preview Section
    =================================== */
 
-.writgocms-text-preview {
+.writgoai-text-preview {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.writgocms-text-section {
+.writgoai-text-section {
     padding: 16px;
     border-radius: 8px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
 }
 
-.writgocms-text-section h4 {
+.writgoai-text-section h4 {
     margin: 0 0 12px 0;
     font-size: 12px;
     font-weight: 600;
@@ -201,7 +201,7 @@
     color: #64748b;
 }
 
-.writgocms-text-section p {
+.writgoai-text-section p {
     margin: 0;
     font-size: 14px;
     line-height: 1.6;
@@ -209,12 +209,12 @@
     white-space: pre-wrap;
 }
 
-.writgocms-text-section.rewritten {
+.writgoai-text-section.rewritten {
     background: linear-gradient(135deg, rgba(24, 119, 242, 0.05) 0%, rgba(249, 115, 22, 0.05) 100%);
     border-color: rgba(24, 119, 242, 0.3);
 }
 
-.writgocms-text-section.rewritten h4 {
+.writgoai-text-section.rewritten h4 {
     color: #1877F2;
 }
 
@@ -222,11 +222,11 @@
    Tone Selector
    =================================== */
 
-.writgocms-tone-selector {
+.writgoai-tone-selector {
     margin-bottom: 20px;
 }
 
-.writgocms-tone-selector label {
+.writgoai-tone-selector label {
     display: block;
     font-size: 12px;
     font-weight: 600;
@@ -236,7 +236,7 @@
     margin-bottom: 8px;
 }
 
-.writgocms-tone-selector select {
+.writgoai-tone-selector select {
     width: 100%;
     padding: 10px 12px;
     border: 2px solid #e2e8f0;
@@ -248,7 +248,7 @@
     transition: border-color 0.2s ease;
 }
 
-.writgocms-tone-selector select:focus {
+.writgoai-tone-selector select:focus {
     outline: none;
     border-color: #1877F2;
 }
@@ -257,13 +257,13 @@
    Image Generation
    =================================== */
 
-.writgocms-image-form {
+.writgoai-image-form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.writgocms-image-form label {
+.writgoai-image-form label {
     display: block;
     font-size: 12px;
     font-weight: 600;
@@ -273,7 +273,7 @@
     margin-bottom: 8px;
 }
 
-.writgocms-image-form textarea {
+.writgoai-image-form textarea {
     width: 100%;
     padding: 12px;
     border: 2px solid #e2e8f0;
@@ -284,23 +284,23 @@
     transition: border-color 0.2s ease;
 }
 
-.writgocms-image-form textarea:focus {
+.writgoai-image-form textarea:focus {
     outline: none;
     border-color: #1877F2;
 }
 
-.writgocms-image-hint {
+.writgoai-image-hint {
     font-size: 13px;
     color: #64748b;
     font-style: italic;
 }
 
-.writgocms-image-preview {
+.writgoai-image-preview {
     text-align: center;
     padding: 20px;
 }
 
-.writgocms-image-preview img {
+.writgoai-image-preview img {
     max-width: 100%;
     max-height: 300px;
     border-radius: 8px;
@@ -311,13 +311,13 @@
    Internal Links
    =================================== */
 
-.writgocms-links-list {
+.writgoai-links-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.writgocms-link-item {
+.writgoai-link-item {
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -328,44 +328,44 @@
     transition: all 0.2s ease;
 }
 
-.writgocms-link-item:hover {
+.writgoai-link-item:hover {
     border-color: #1877F2;
     background: rgba(24, 119, 242, 0.02);
 }
 
-.writgocms-link-item.selected {
+.writgoai-link-item.selected {
     border-color: #1877F2;
     background: linear-gradient(135deg, rgba(24, 119, 242, 0.08) 0%, rgba(249, 115, 22, 0.05) 100%);
 }
 
-.writgocms-link-checkbox {
+.writgoai-link-checkbox {
     margin-top: 2px;
 }
 
-.writgocms-link-checkbox input[type="checkbox"] {
+.writgoai-link-checkbox input[type="checkbox"] {
     width: 18px;
     height: 18px;
     cursor: pointer;
 }
 
-.writgocms-link-content {
+.writgoai-link-content {
     flex: 1;
 }
 
-.writgocms-link-title {
+.writgoai-link-title {
     font-size: 14px;
     font-weight: 600;
     color: #1e293b;
     margin-bottom: 4px;
 }
 
-.writgocms-link-excerpt {
+.writgoai-link-excerpt {
     font-size: 13px;
     color: #64748b;
     line-height: 1.5;
 }
 
-.writgocms-link-type {
+.writgoai-link-type {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -376,14 +376,14 @@
     font-weight: 600;
 }
 
-.writgocms-no-links {
+.writgoai-no-links {
     text-align: center;
     padding: 40px 20px;
     color: #64748b;
     font-size: 14px;
 }
 
-.writgocms-no-links .no-links-icon {
+.writgoai-no-links .no-links-icon {
     font-size: 48px;
     margin-bottom: 12px;
     display: block;
@@ -393,7 +393,7 @@
    Buttons
    =================================== */
 
-.writgocms-btn {
+.writgoai-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -406,39 +406,39 @@
     border: none;
 }
 
-.writgocms-btn:disabled {
+.writgoai-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
-.writgocms-btn-primary {
+.writgoai-btn-primary {
     background: linear-gradient(135deg, #1877F2 0%, #f97316 100%);
     color: #fff;
     box-shadow: 0 2px 8px rgba(24, 119, 242, 0.3);
 }
 
-.writgocms-btn-primary:hover:not(:disabled) {
+.writgoai-btn-primary:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
 }
 
-.writgocms-btn-secondary {
+.writgoai-btn-secondary {
     background: #f1f5f9;
     color: #475569;
     border: 1px solid #e2e8f0;
 }
 
-.writgocms-btn-secondary:hover:not(:disabled) {
+.writgoai-btn-secondary:hover:not(:disabled) {
     background: #e2e8f0;
     border-color: #cbd5e1;
 }
 
-.writgocms-btn-success {
+.writgoai-btn-success {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: #fff;
 }
 
-.writgocms-btn-success:hover:not(:disabled) {
+.writgoai-btn-success:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
@@ -447,7 +447,7 @@
    Toast Notifications
    =================================== */
 
-.writgocms-toast {
+.writgoai-toast {
     position: fixed;
     bottom: 24px;
     right: 24px;
@@ -474,26 +474,26 @@
     }
 }
 
-.writgocms-toast.success {
+.writgoai-toast.success {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: #fff;
 }
 
-.writgocms-toast.error {
+.writgoai-toast.error {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: #fff;
 }
 
-.writgocms-toast.info {
+.writgoai-toast.info {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: #fff;
 }
 
-.writgocms-toast .toast-icon {
+.writgoai-toast .toast-icon {
     font-size: 18px;
 }
 
-.writgocms-toast.hiding {
+.writgoai-toast.hiding {
     animation: slideOutRight 0.3s ease forwards;
 }
 
@@ -512,7 +512,7 @@
    Rich Text Format Button
    =================================== */
 
-.writgocms-format-button {
+.writgoai-format-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -526,16 +526,16 @@
     transition: background 0.15s ease;
 }
 
-.writgocms-format-button:hover {
+.writgoai-format-button:hover {
     background: rgba(0, 0, 0, 0.08);
 }
 
-.writgocms-format-button.is-active {
+.writgoai-format-button.is-active {
     background: rgba(24, 119, 242, 0.1);
     color: #1877F2;
 }
 
-.writgocms-format-button svg {
+.writgoai-format-button svg {
     width: 20px;
     height: 20px;
     fill: currentColor;
@@ -545,11 +545,11 @@
    Dropdown Menu
    =================================== */
 
-.writgocms-dropdown {
+.writgoai-dropdown {
     position: relative;
 }
 
-.writgocms-dropdown-menu {
+.writgoai-dropdown-menu {
     position: absolute;
     top: 100%;
     left: 0;
@@ -574,7 +574,7 @@
     }
 }
 
-.writgocms-dropdown-item {
+.writgoai-dropdown-item {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -589,19 +589,19 @@
     text-align: left;
 }
 
-.writgocms-dropdown-item:first-child {
+.writgoai-dropdown-item:first-child {
     border-radius: 8px 8px 0 0;
 }
 
-.writgocms-dropdown-item:last-child {
+.writgoai-dropdown-item:last-child {
     border-radius: 0 0 8px 8px;
 }
 
-.writgocms-dropdown-item:hover {
+.writgoai-dropdown-item:hover {
     background: #f1f5f9;
 }
 
-.writgocms-dropdown-item .item-icon {
+.writgoai-dropdown-item .item-icon {
     font-size: 16px;
 }
 
@@ -610,34 +610,34 @@
    =================================== */
 
 @media screen and (max-width: 600px) {
-    .writgocms-modal {
+    .writgoai-modal {
         width: 95%;
         max-height: 90vh;
     }
 
-    .writgocms-modal-header {
+    .writgoai-modal-header {
         padding: 12px 16px;
     }
 
-    .writgocms-modal-header h2 {
+    .writgoai-modal-header h2 {
         font-size: 16px;
     }
 
-    .writgocms-modal-body {
+    .writgoai-modal-body {
         padding: 16px;
     }
 
-    .writgocms-modal-footer {
+    .writgoai-modal-footer {
         padding: 12px 16px;
         flex-direction: column;
     }
 
-    .writgocms-modal-footer .writgocms-btn {
+    .writgoai-modal-footer .writgoai-btn {
         width: 100%;
         justify-content: center;
     }
 
-    .writgocms-toast {
+    .writgoai-toast {
         left: 16px;
         right: 16px;
         bottom: 16px;
@@ -649,86 +649,86 @@
    =================================== */
 
 @media (prefers-color-scheme: dark) {
-    .writgocms-modal {
+    .writgoai-modal {
         background: #1e293b;
         color: #f1f5f9;
     }
 
-    .writgocms-modal-footer {
+    .writgoai-modal-footer {
         background: #0f172a;
         border-color: #334155;
     }
 
-    .writgocms-text-section {
+    .writgoai-text-section {
         background: #0f172a;
         border-color: #334155;
     }
 
-    .writgocms-text-section h4 {
+    .writgoai-text-section h4 {
         color: #94a3b8;
     }
 
-    .writgocms-text-section p {
+    .writgoai-text-section p {
         color: #e2e8f0;
     }
 
-    .writgocms-text-section.rewritten {
+    .writgoai-text-section.rewritten {
         background: rgba(24, 119, 242, 0.1);
         border-color: rgba(24, 119, 242, 0.3);
     }
 
-    .writgocms-tone-selector select,
-    .writgocms-image-form textarea {
+    .writgoai-tone-selector select,
+    .writgoai-image-form textarea {
         background: #0f172a;
         border-color: #334155;
         color: #f1f5f9;
     }
 
-    .writgocms-link-item {
+    .writgoai-link-item {
         border-color: #334155;
     }
 
-    .writgocms-link-item:hover {
+    .writgoai-link-item:hover {
         background: rgba(24, 119, 242, 0.08);
     }
 
-    .writgocms-link-item.selected {
+    .writgoai-link-item.selected {
         background: rgba(24, 119, 242, 0.15);
     }
 
-    .writgocms-link-title {
+    .writgoai-link-title {
         color: #f1f5f9;
     }
 
-    .writgocms-link-excerpt {
+    .writgoai-link-excerpt {
         color: #94a3b8;
     }
 
-    .writgocms-link-type {
+    .writgoai-link-type {
         background: #334155;
         color: #94a3b8;
     }
 
-    .writgocms-btn-secondary {
+    .writgoai-btn-secondary {
         background: #334155;
         color: #f1f5f9;
         border-color: #475569;
     }
 
-    .writgocms-btn-secondary:hover:not(:disabled) {
+    .writgoai-btn-secondary:hover:not(:disabled) {
         background: #475569;
     }
 
-    .writgocms-dropdown-menu {
+    .writgoai-dropdown-menu {
         background: #1e293b;
         border-color: #334155;
     }
 
-    .writgocms-dropdown-item {
+    .writgoai-dropdown-item {
         color: #f1f5f9;
     }
 
-    .writgocms-dropdown-item:hover {
+    .writgoai-dropdown-item:hover {
         background: #334155;
     }
 }
@@ -737,7 +737,7 @@
    Toolbar Group Separator
    =================================== */
 
-.components-toolbar-group .writgocms-toolbar-separator {
+.components-toolbar-group .writgoai-toolbar-separator {
     width: 1px;
     height: 24px;
     background: #ddd;

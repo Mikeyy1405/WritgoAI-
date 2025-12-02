@@ -5,7 +5,7 @@
  * Central controller for admin interface management.
  * Handles routing, enqueuing assets, and coordinating admin components.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,21 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Admin_Controller
+ * Class WritgoAI_Admin_Controller
  */
-class WritgoCMS_Admin_Controller {
+class WritgoAI_Admin_Controller {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Admin_Controller
+	 * @var WritgoAI_Admin_Controller
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Admin_Controller
+	 * @return WritgoAI_Admin_Controller
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -43,9 +43,9 @@ class WritgoCMS_Admin_Controller {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_beginner_assets' ) );
 		
 		// AJAX handlers for advanced settings.
-		add_action( 'wp_ajax_writgocms_test_api_connection', array( $this, 'ajax_test_api_connection' ) );
-		add_action( 'wp_ajax_writgocms_clear_cache', array( $this, 'ajax_clear_cache' ) );
-		add_action( 'wp_ajax_writgocms_reset_wizard', array( $this, 'ajax_reset_wizard' ) );
+		add_action( 'wp_ajax_writgoai_test_api_connection', array( $this, 'ajax_test_api_connection' ) );
+		add_action( 'wp_ajax_writgoai_clear_cache', array( $this, 'ajax_clear_cache' ) );
+		add_action( 'wp_ajax_writgoai_reset_wizard', array( $this, 'ajax_reset_wizard' ) );
 	}
 
 	/**
@@ -55,24 +55,24 @@ class WritgoCMS_Admin_Controller {
 	 */
 	public function enqueue_beginner_assets( $hook ) {
 		// Only load on WritgoAI admin pages.
-		if ( strpos( $hook, 'writgocms' ) === false ) {
+		if ( strpos( $hook, 'writgoai' ) === false ) {
 			return;
 		}
 
 		// Enqueue beginner CSS.
 		wp_enqueue_style(
 			'writgocms-admin-beginner',
-			WRITGOCMS_URL . 'assets/css/admin-beginner.css',
+			WRITGOAI_URL . 'assets/css/admin-beginner.css',
 			array(),
-			WRITGOCMS_VERSION
+			WRITGOAI_VERSION
 		);
 
 		// Enqueue beginner JS.
 		wp_enqueue_script(
 			'writgocms-admin-beginner',
-			WRITGOCMS_URL . 'assets/js/admin-beginner.js',
+			WRITGOAI_URL . 'assets/js/admin-beginner.js',
 			array( 'jquery' ),
-			WRITGOCMS_VERSION,
+			WRITGOAI_VERSION,
 			true
 		);
 
@@ -81,19 +81,19 @@ class WritgoCMS_Admin_Controller {
 			'writgocmsAdmin',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'writgocms_admin_nonce' ),
+				'nonce'   => wp_create_nonce( 'writgoai_admin_nonce' ),
 				'i18n'    => array(
-					'saving'       => __( 'Opslaan...', 'writgocms' ),
-					'saved'        => __( 'Opgeslagen!', 'writgocms' ),
-					'error'        => __( 'Er is een fout opgetreden', 'writgocms' ),
-					'loading'      => __( 'Laden...', 'writgocms' ),
-					'validating'   => __( 'Valideren...', 'writgocms' ),
-					'success'      => __( 'Gelukt!', 'writgocms' ),
-					'nextStep'     => __( 'Volgende Stap', 'writgocms' ),
-					'previousStep' => __( 'Vorige Stap', 'writgocms' ),
-					'skip'         => __( 'Overslaan', 'writgocms' ),
-					'finish'       => __( 'Voltooien', 'writgocms' ),
-					'skipConfirm'  => __( 'Weet je zeker dat je de setup wilt overslaan?', 'writgocms' ),
+					'saving'       => __( 'Opslaan...', 'writgoai' ),
+					'saved'        => __( 'Opgeslagen!', 'writgoai' ),
+					'error'        => __( 'Er is een fout opgetreden', 'writgoai' ),
+					'loading'      => __( 'Laden...', 'writgoai' ),
+					'validating'   => __( 'Valideren...', 'writgoai' ),
+					'success'      => __( 'Gelukt!', 'writgoai' ),
+					'nextStep'     => __( 'Volgende Stap', 'writgoai' ),
+					'previousStep' => __( 'Vorige Stap', 'writgoai' ),
+					'skip'         => __( 'Overslaan', 'writgoai' ),
+					'finish'       => __( 'Voltooien', 'writgoai' ),
+					'skipConfirm'  => __( 'Weet je zeker dat je de setup wilt overslaan?', 'writgoai' ),
 				),
 			)
 		);
@@ -103,7 +103,7 @@ class WritgoCMS_Admin_Controller {
 			'writgocms-admin-beginner',
 			'writgocmsAuth',
 			array(
-				'nonce' => wp_create_nonce( 'writgocms_auth_nonce' ),
+				'nonce' => wp_create_nonce( 'writgoai_auth_nonce' ),
 			)
 		);
 	}
@@ -115,7 +115,7 @@ class WritgoCMS_Admin_Controller {
 	 * @param array  $data Data to pass to the partial.
 	 */
 	public function render_partial( $partial_name, $data = array() ) {
-		$partial_path = WRITGOCMS_DIR . 'inc/admin/views/partials/' . $partial_name . '.php';
+		$partial_path = WRITGOAI_DIR . 'inc/admin/views/partials/' . $partial_name . '.php';
 		
 		if ( file_exists( $partial_path ) ) {
 			// Extract data to make variables available in the partial.
@@ -131,31 +131,31 @@ class WritgoCMS_Admin_Controller {
 	 * @return bool
 	 */
 	public function is_wizard_completed() {
-		return (bool) get_option( 'writgocms_wizard_completed', false );
+		return (bool) get_option( 'writgoai_wizard_completed', false );
 	}
 
 	/**
 	 * Mark wizard as completed
 	 */
 	public function mark_wizard_completed() {
-		update_option( 'writgocms_wizard_completed', true );
-		update_option( 'writgocms_wizard_completed_at', current_time( 'mysql' ) );
+		update_option( 'writgoai_wizard_completed', true );
+		update_option( 'writgoai_wizard_completed_at', current_time( 'mysql' ) );
 	}
 
 	/**
 	 * AJAX handler to test API connection
 	 */
 	public function ajax_test_api_connection() {
-		check_ajax_referer( 'writgocms_admin_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgoai' ) ) );
 		}
 
 		$api_url = isset( $_POST['api_url'] ) ? esc_url_raw( wp_unslash( $_POST['api_url'] ) ) : '';
 
 		if ( empty( $api_url ) ) {
-			wp_send_json_error( array( 'message' => __( 'Geen API URL opgegeven', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Geen API URL opgegeven', 'writgoai' ) ) );
 		}
 
 		// Test connection by making a simple request.
@@ -165,7 +165,7 @@ class WritgoCMS_Admin_Controller {
 			wp_send_json_error( array(
 				'message' => sprintf(
 					/* translators: %s: error message */
-					__( 'Verbinding mislukt: %s', 'writgocms' ),
+					__( 'Verbinding mislukt: %s', 'writgoai' ),
 					$response->get_error_message()
 				),
 			) );
@@ -174,12 +174,12 @@ class WritgoCMS_Admin_Controller {
 		$status_code = wp_remote_retrieve_response_code( $response );
 
 		if ( $status_code === 200 ) {
-			wp_send_json_success( array( 'message' => __( 'Verbinding succesvol!', 'writgocms' ) ) );
+			wp_send_json_success( array( 'message' => __( 'Verbinding succesvol!', 'writgoai' ) ) );
 		} else {
 			wp_send_json_error( array(
 				'message' => sprintf(
 					/* translators: %d: HTTP status code */
-					__( 'Server antwoordde met status: %d', 'writgocms' ),
+					__( 'Server antwoordde met status: %d', 'writgoai' ),
 					$status_code
 				),
 			) );
@@ -190,23 +190,23 @@ class WritgoCMS_Admin_Controller {
 	 * AJAX handler to clear cache
 	 */
 	public function ajax_clear_cache() {
-		check_ajax_referer( 'writgocms_admin_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgoai' ) ) );
 		}
 
 		// Clear WordPress transients using safe method.
 		global $wpdb;
-		// Get all WritgoCMS transient names.
+		// Get all WritgoAI transient names.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$transients = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT option_name FROM {$wpdb->options} 
 				WHERE option_name LIKE %s 
 				OR option_name LIKE %s",
-				$wpdb->esc_like( '_transient_writgocms_' ) . '%',
-				$wpdb->esc_like( '_transient_timeout_writgocms_' ) . '%'
+				$wpdb->esc_like( '_transient_writgoai_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_writgoai_' ) . '%'
 			)
 		);
 
@@ -220,28 +220,28 @@ class WritgoCMS_Admin_Controller {
 			delete_transient( $transient_name );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Cache geleegd', 'writgocms' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Cache geleegd', 'writgoai' ) ) );
 	}
 
 	/**
 	 * AJAX handler to reset wizard
 	 */
 	public function ajax_reset_wizard() {
-		check_ajax_referer( 'writgocms_admin_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgoai' ) ) );
 		}
 
 		// Reset wizard completion status.
-		delete_option( 'writgocms_wizard_completed' );
-		delete_option( 'writgocms_wizard_completed_at' );
+		delete_option( 'writgoai_wizard_completed' );
+		delete_option( 'writgoai_wizard_completed_at' );
 
 		// Clear wizard step data.
 		for ( $i = 1; $i <= 5; $i++ ) {
-			delete_option( 'writgocms_wizard_step_' . $i );
+			delete_option( 'writgoai_wizard_step_' . $i );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Wizard gereset', 'writgocms' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Wizard gereset', 'writgoai' ) ) );
 	}
 }

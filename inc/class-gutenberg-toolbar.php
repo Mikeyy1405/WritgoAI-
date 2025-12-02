@@ -5,7 +5,7 @@
  * Adds an AI-powered toolbar to the Gutenberg editor for text rewriting,
  * internal link suggestions, and AI image generation.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,21 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Gutenberg_Toolbar
+ * Class WritgoAI_Gutenberg_Toolbar
  */
-class WritgoCMS_Gutenberg_Toolbar {
+class WritgoAI_Gutenberg_Toolbar {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Gutenberg_Toolbar
+	 * @var WritgoAI_Gutenberg_Toolbar
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Gutenberg_Toolbar
+	 * @return WritgoAI_Gutenberg_Toolbar
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -41,9 +41,9 @@ class WritgoCMS_Gutenberg_Toolbar {
 	 */
 	private function __construct() {
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_toolbar_assets' ) );
-		add_action( 'wp_ajax_writgocms_toolbar_rewrite', array( $this, 'ajax_rewrite_text' ) );
-		add_action( 'wp_ajax_writgocms_toolbar_generate_image', array( $this, 'ajax_generate_image' ) );
-		add_action( 'wp_ajax_writgocms_toolbar_get_internal_links', array( $this, 'ajax_get_internal_links' ) );
+		add_action( 'wp_ajax_writgoai_toolbar_rewrite', array( $this, 'ajax_rewrite_text' ) );
+		add_action( 'wp_ajax_writgoai_toolbar_generate_image', array( $this, 'ajax_generate_image' ) );
+		add_action( 'wp_ajax_writgoai_toolbar_get_internal_links', array( $this, 'ajax_get_internal_links' ) );
 	}
 
 	/**
@@ -51,13 +51,13 @@ class WritgoCMS_Gutenberg_Toolbar {
 	 */
 	public function enqueue_toolbar_assets() {
 		// Check if toolbar is enabled in settings.
-		$toolbar_enabled = get_option( 'writgocms_toolbar_enabled', true );
+		$toolbar_enabled = get_option( 'writgoai_toolbar_enabled', true );
 		if ( ! $toolbar_enabled ) {
 			return;
 		}
 
 		// Get toolbar button settings.
-		$toolbar_buttons = get_option( 'writgocms_toolbar_buttons', array(
+		$toolbar_buttons = get_option( 'writgoai_toolbar_buttons', array(
 			'rewrite'     => true,
 			'links'       => true,
 			'image'       => true,
@@ -65,24 +65,24 @@ class WritgoCMS_Gutenberg_Toolbar {
 		) );
 
 		// Get default rewrite tone.
-		$default_tone = get_option( 'writgocms_toolbar_rewrite_tone', 'professional' );
+		$default_tone = get_option( 'writgoai_toolbar_rewrite_tone', 'professional' );
 
 		// Get internal links limit.
-		$links_limit = get_option( 'writgocms_toolbar_links_limit', 5 );
+		$links_limit = get_option( 'writgoai_toolbar_links_limit', 5 );
 
 		wp_enqueue_script(
 			'writgocms-gutenberg-toolbar',
-			WRITGOCMS_URL . 'assets/js/gutenberg-toolbar.js',
+			WRITGOAI_URL . 'assets/js/gutenberg-toolbar.js',
 			array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n', 'wp-compose', 'wp-data', 'wp-rich-text', 'wp-plugins', 'wp-edit-post' ),
-			WRITGOCMS_VERSION,
+			WRITGOAI_VERSION,
 			true
 		);
 
 		wp_enqueue_style(
 			'writgocms-gutenberg-toolbar-style',
-			WRITGOCMS_URL . 'assets/css/gutenberg-toolbar.css',
+			WRITGOAI_URL . 'assets/css/gutenberg-toolbar.css',
 			array(),
-			WRITGOCMS_VERSION
+			WRITGOAI_VERSION
 		);
 
 		wp_localize_script(
@@ -90,51 +90,51 @@ class WritgoCMS_Gutenberg_Toolbar {
 			'writgocmsToolbar',
 			array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'writgocms_toolbar_nonce' ),
+				'nonce'        => wp_create_nonce( 'writgoai_toolbar_nonce' ),
 				'isAdmin'      => current_user_can( 'manage_options' ),
 				'buttons'      => $toolbar_buttons,
 				'defaultTone'  => $default_tone,
 				'linksLimit'   => (int) $links_limit,
 				'i18n'         => array(
 					// Toolbar buttons.
-					'rewrite'          => __( 'AI Rewrite', 'writgocms' ),
-					'addLinks'         => __( 'Add Links', 'writgocms' ),
-					'generateImage'    => __( 'Generate Image', 'writgocms' ),
-					'rewriteAll'       => __( 'Rewrite All', 'writgocms' ),
+					'rewrite'          => __( 'AI Rewrite', 'writgoai' ),
+					'addLinks'         => __( 'Add Links', 'writgoai' ),
+					'generateImage'    => __( 'Generate Image', 'writgoai' ),
+					'rewriteAll'       => __( 'Rewrite All', 'writgoai' ),
 					// Modal titles.
-					'rewriteTitle'     => __( 'AI Rewrite Text', 'writgocms' ),
-					'imageTitle'       => __( 'Generate AI Image', 'writgocms' ),
-					'linksTitle'       => __( 'Suggested Internal Links', 'writgocms' ),
+					'rewriteTitle'     => __( 'AI Rewrite Text', 'writgoai' ),
+					'imageTitle'       => __( 'Generate AI Image', 'writgoai' ),
+					'linksTitle'       => __( 'Suggested Internal Links', 'writgoai' ),
 					// Modal content.
-					'loading'          => __( 'Generating...', 'writgocms' ),
-					'preview'          => __( 'Preview', 'writgocms' ),
-					'originalText'     => __( 'Original Text', 'writgocms' ),
-					'rewrittenText'    => __( 'Rewritten Text', 'writgocms' ),
-					'imagePrompt'      => __( 'Describe the image you want to generate...', 'writgocms' ),
-					'useSelectedText'  => __( 'Or use selected text as prompt', 'writgocms' ),
-					'noLinksFound'     => __( 'No relevant internal links found.', 'writgocms' ),
+					'loading'          => __( 'Generating...', 'writgoai' ),
+					'preview'          => __( 'Preview', 'writgoai' ),
+					'originalText'     => __( 'Original Text', 'writgoai' ),
+					'rewrittenText'    => __( 'Rewritten Text', 'writgoai' ),
+					'imagePrompt'      => __( 'Describe the image you want to generate...', 'writgoai' ),
+					'useSelectedText'  => __( 'Or use selected text as prompt', 'writgoai' ),
+					'noLinksFound'     => __( 'No relevant internal links found.', 'writgoai' ),
 					// Buttons.
-					'accept'           => __( 'Accept', 'writgocms' ),
-					'cancel'           => __( 'Cancel', 'writgocms' ),
-					'regenerate'       => __( 'Regenerate', 'writgocms' ),
-					'generate'         => __( 'Generate', 'writgocms' ),
-					'insertImage'      => __( 'Insert Image', 'writgocms' ),
-					'insertLinks'      => __( 'Insert Selected', 'writgocms' ),
+					'accept'           => __( 'Accept', 'writgoai' ),
+					'cancel'           => __( 'Cancel', 'writgoai' ),
+					'regenerate'       => __( 'Regenerate', 'writgoai' ),
+					'generate'         => __( 'Generate', 'writgoai' ),
+					'insertImage'      => __( 'Insert Image', 'writgoai' ),
+					'insertLinks'      => __( 'Insert Selected', 'writgoai' ),
 					// Tones.
-					'toneLabel'        => __( 'Rewrite Tone', 'writgocms' ),
-					'toneProfessional' => __( 'Professional', 'writgocms' ),
-					'toneCasual'       => __( 'Casual', 'writgocms' ),
-					'toneFriendly'     => __( 'Friendly', 'writgocms' ),
-					'toneFormal'       => __( 'Formal', 'writgocms' ),
-					'toneCreative'     => __( 'Creative', 'writgocms' ),
+					'toneLabel'        => __( 'Rewrite Tone', 'writgoai' ),
+					'toneProfessional' => __( 'Professional', 'writgoai' ),
+					'toneCasual'       => __( 'Casual', 'writgoai' ),
+					'toneFriendly'     => __( 'Friendly', 'writgoai' ),
+					'toneFormal'       => __( 'Formal', 'writgoai' ),
+					'toneCreative'     => __( 'Creative', 'writgoai' ),
 					// Success/Error messages.
-					'successRewrite'   => __( 'Text rewritten successfully!', 'writgocms' ),
-					'successImage'     => __( 'Image generated and inserted!', 'writgocms' ),
-					'successLinks'     => __( 'Links inserted successfully!', 'writgocms' ),
-					'errorGeneral'     => __( 'An error occurred. Please try again.', 'writgocms' ),
-					'errorNoSelection' => __( 'Please select some text first.', 'writgocms' ),
-					'errorNoLicense'   => __( 'Please activate your license to use this feature.', 'writgocms' ),
-					'errorRateLimit'   => __( 'Rate limit exceeded. Please try again later.', 'writgocms' ),
+					'successRewrite'   => __( 'Text rewritten successfully!', 'writgoai' ),
+					'successImage'     => __( 'Image generated and inserted!', 'writgoai' ),
+					'successLinks'     => __( 'Links inserted successfully!', 'writgoai' ),
+					'errorGeneral'     => __( 'An error occurred. Please try again.', 'writgoai' ),
+					'errorNoSelection' => __( 'Please select some text first.', 'writgoai' ),
+					'errorNoLicense'   => __( 'Please activate your license to use this feature.', 'writgoai' ),
+					'errorRateLimit'   => __( 'Rate limit exceeded. Please try again later.', 'writgoai' ),
 				),
 			)
 		);
@@ -144,17 +144,17 @@ class WritgoCMS_Gutenberg_Toolbar {
 	 * AJAX handler for text rewriting
 	 */
 	public function ajax_rewrite_text() {
-		check_ajax_referer( 'writgocms_toolbar_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_toolbar_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
 		}
 
 		$text = isset( $_POST['text'] ) ? sanitize_textarea_field( wp_unslash( $_POST['text'] ) ) : '';
 		$tone = isset( $_POST['tone'] ) ? sanitize_text_field( wp_unslash( $_POST['tone'] ) ) : 'professional';
 
 		if ( empty( $text ) ) {
-			wp_send_json_error( array( 'message' => __( 'No text provided.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No text provided.', 'writgoai' ) ) );
 		}
 
 		// Build the prompt based on the selected tone.
@@ -166,11 +166,11 @@ class WritgoCMS_Gutenberg_Toolbar {
 		);
 
 		// Use the AIML provider for text generation.
-		if ( ! class_exists( 'WritgoCMS_AIML_Provider' ) ) {
-			wp_send_json_error( array( 'message' => __( 'AI provider not available.', 'writgocms' ) ) );
+		if ( ! class_exists( 'WritgoAI_AI_Provider' ) ) {
+			wp_send_json_error( array( 'message' => __( 'AI provider not available.', 'writgoai' ) ) );
 		}
 
-		$provider = WritgoCMS_AIML_Provider::get_instance();
+		$provider = WritgoAI_AI_Provider::get_instance();
 		$result   = $provider->generate_text( $prompt );
 
 		if ( is_wp_error( $result ) ) {
@@ -205,24 +205,24 @@ class WritgoCMS_Gutenberg_Toolbar {
 	 * AJAX handler for AI image generation
 	 */
 	public function ajax_generate_image() {
-		check_ajax_referer( 'writgocms_toolbar_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_toolbar_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
 		}
 
 		$prompt = isset( $_POST['prompt'] ) ? sanitize_textarea_field( wp_unslash( $_POST['prompt'] ) ) : '';
 
 		if ( empty( $prompt ) ) {
-			wp_send_json_error( array( 'message' => __( 'No prompt provided.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No prompt provided.', 'writgoai' ) ) );
 		}
 
 		// Use the AIML provider for image generation.
-		if ( ! class_exists( 'WritgoCMS_AIML_Provider' ) ) {
-			wp_send_json_error( array( 'message' => __( 'AI provider not available.', 'writgocms' ) ) );
+		if ( ! class_exists( 'WritgoAI_AI_Provider' ) ) {
+			wp_send_json_error( array( 'message' => __( 'AI provider not available.', 'writgoai' ) ) );
 		}
 
-		$provider = WritgoCMS_AIML_Provider::get_instance();
+		$provider = WritgoAI_AI_Provider::get_instance();
 		$result   = $provider->generate_image( $prompt );
 
 		if ( is_wp_error( $result ) ) {
@@ -239,17 +239,17 @@ class WritgoCMS_Gutenberg_Toolbar {
 	 * AJAX handler for getting internal link suggestions
 	 */
 	public function ajax_get_internal_links() {
-		check_ajax_referer( 'writgocms_toolbar_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_toolbar_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
 		}
 
 		$text  = isset( $_POST['text'] ) ? sanitize_textarea_field( wp_unslash( $_POST['text'] ) ) : '';
 		$limit = isset( $_POST['limit'] ) ? absint( $_POST['limit'] ) : 5;
 
 		if ( empty( $text ) ) {
-			wp_send_json_error( array( 'message' => __( 'No text provided.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No text provided.', 'writgoai' ) ) );
 		}
 
 		// Extract keywords from the text.
@@ -276,7 +276,7 @@ class WritgoCMS_Gutenberg_Toolbar {
 		 * @param array $stop_words Default stop words for English and Dutch.
 		 */
 		$stop_words = apply_filters(
-			'writgocms_toolbar_stop_words',
+			'writgoai_toolbar_stop_words',
 			array(
 				// English stop words.
 				'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
@@ -302,7 +302,7 @@ class WritgoCMS_Gutenberg_Toolbar {
 		 *
 		 * @param int $min_length Minimum word length (default: 4).
 		 */
-		$min_word_length = apply_filters( 'writgocms_toolbar_min_word_length', 4 );
+		$min_word_length = apply_filters( 'writgoai_toolbar_min_word_length', 4 );
 
 		// Filter out stop words and short words.
 		$keywords = array();
@@ -370,4 +370,4 @@ class WritgoCMS_Gutenberg_Toolbar {
 }
 
 // Initialize the toolbar.
-WritgoCMS_Gutenberg_Toolbar::get_instance();
+WritgoAI_Gutenberg_Toolbar::get_instance();

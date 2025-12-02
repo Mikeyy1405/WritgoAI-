@@ -4,7 +4,7 @@
  *
  * Guides new users through initial plugin setup with a step-by-step wizard.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Setup_Wizard
+ * Class WritgoAI_Setup_Wizard
  */
-class WritgoCMS_Setup_Wizard {
+class WritgoAI_Setup_Wizard {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Setup_Wizard
+	 * @var WritgoAI_Setup_Wizard
 	 */
 	private static $instance = null;
 
@@ -53,7 +53,7 @@ class WritgoCMS_Setup_Wizard {
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Setup_Wizard
+	 * @return WritgoAI_Setup_Wizard
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -67,8 +67,8 @@ class WritgoCMS_Setup_Wizard {
 	 */
 	private function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_wizard_page' ) );
-		add_action( 'wp_ajax_writgocms_save_wizard_step', array( $this, 'ajax_save_wizard_step' ) );
-		add_action( 'wp_ajax_writgocms_skip_wizard', array( $this, 'ajax_skip_wizard' ) );
+		add_action( 'wp_ajax_writgoai_save_wizard_step', array( $this, 'ajax_save_wizard_step' ) );
+		add_action( 'wp_ajax_writgoai_skip_wizard', array( $this, 'ajax_skip_wizard' ) );
 		
 		// Redirect to wizard on first activation.
 		add_action( 'admin_init', array( $this, 'maybe_redirect_to_wizard' ) );
@@ -80,8 +80,8 @@ class WritgoCMS_Setup_Wizard {
 	public function add_wizard_page() {
 		add_submenu_page(
 			null, // No parent menu - hidden from sidebar.
-			__( 'WritgoAI Setup Wizard', 'writgocms' ),
-			__( 'Setup Wizard', 'writgocms' ),
+			__( 'WritgoAI Setup Wizard', 'writgoai' ),
+			__( 'Setup Wizard', 'writgoai' ),
 			'manage_options',
 			'writgocms-setup-wizard',
 			array( $this, 'render_wizard' )
@@ -93,11 +93,11 @@ class WritgoCMS_Setup_Wizard {
 	 */
 	public function maybe_redirect_to_wizard() {
 		// Check if we should redirect to wizard.
-		if ( get_transient( 'writgocms_activation_redirect' ) ) {
-			delete_transient( 'writgocms_activation_redirect' );
+		if ( get_transient( 'writgoai_activation_redirect' ) ) {
+			delete_transient( 'writgoai_activation_redirect' );
 			
 			// Don't redirect if wizard already completed.
-			if ( ! get_option( 'writgocms_wizard_completed', false ) ) {
+			if ( ! get_option( 'writgoai_wizard_completed', false ) ) {
 				wp_safe_redirect( admin_url( 'admin.php?page=writgocms-setup-wizard' ) );
 				exit;
 			}
@@ -122,11 +122,11 @@ class WritgoCMS_Setup_Wizard {
 	 */
 	private function render_step_indicator() {
 		$steps = array(
-			1 => __( 'Welkom', 'writgocms' ),
-			2 => __( 'Website Thema', 'writgocms' ),
-			3 => __( 'Doelgroep', 'writgocms' ),
-			4 => __( 'Eerste Analyse', 'writgocms' ),
-			5 => __( 'Klaar!', 'writgocms' ),
+			1 => __( 'Welkom', 'writgoai' ),
+			2 => __( 'Website Thema', 'writgoai' ),
+			3 => __( 'Doelgroep', 'writgoai' ),
+			4 => __( 'Eerste Analyse', 'writgoai' ),
+			5 => __( 'Klaar!', 'writgoai' ),
 		);
 		?>
 		<div class="writgo-steps">
@@ -158,7 +158,7 @@ class WritgoCMS_Setup_Wizard {
 		if ( isset( $this->step_files[ $this->current_step ] ) ) {
 			// Sanitize filename for defense in depth, even though it's from a controlled array.
 			$filename  = sanitize_file_name( $this->step_files[ $this->current_step ] );
-			$step_file = WRITGOCMS_DIR . 'inc/admin/views/wizard/' . $filename;
+			$step_file = WRITGOAI_DIR . 'inc/admin/views/wizard/' . $filename;
 			
 			if ( file_exists( $step_file ) ) {
 				include $step_file;
@@ -173,7 +173,7 @@ class WritgoCMS_Setup_Wizard {
 	 * @return array
 	 */
 	public function get_step_data( $step ) {
-		return get_option( 'writgocms_wizard_step_' . $step, array() );
+		return get_option( 'writgoai_wizard_step_' . $step, array() );
 	}
 
 	/**
@@ -183,17 +183,17 @@ class WritgoCMS_Setup_Wizard {
 	 * @param array $data Step data.
 	 */
 	public function save_step_data( $step, $data ) {
-		update_option( 'writgocms_wizard_step_' . $step, $data );
+		update_option( 'writgoai_wizard_step_' . $step, $data );
 	}
 
 	/**
 	 * AJAX handler to save wizard step
 	 */
 	public function ajax_save_wizard_step() {
-		check_ajax_referer( 'writgocms_admin_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgoai' ) ) );
 		}
 
 		$step = isset( $_POST['step'] ) ? absint( $_POST['step'] ) : 0;
@@ -204,35 +204,35 @@ class WritgoCMS_Setup_Wizard {
 			
 			// Mark wizard as completed if this is the last step.
 			if ( $step === $this->total_steps ) {
-				$controller = WritgoCMS_Admin_Controller::get_instance();
+				$controller = WritgoAI_Admin_Controller::get_instance();
 				$controller->mark_wizard_completed();
 			}
 			
 			wp_send_json_success( array(
-				'message'   => __( 'Stap opgeslagen', 'writgocms' ),
+				'message'   => __( 'Stap opgeslagen', 'writgoai' ),
 				'next_step' => $step < $this->total_steps ? $step + 1 : null,
 			) );
 		}
 
-		wp_send_json_error( array( 'message' => __( 'Ongeldige stap', 'writgocms' ) ) );
+		wp_send_json_error( array( 'message' => __( 'Ongeldige stap', 'writgoai' ) ) );
 	}
 
 	/**
 	 * AJAX handler to skip wizard
 	 */
 	public function ajax_skip_wizard() {
-		check_ajax_referer( 'writgocms_admin_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_admin_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Onvoldoende rechten', 'writgoai' ) ) );
 		}
 
-		$controller = WritgoCMS_Admin_Controller::get_instance();
+		$controller = WritgoAI_Admin_Controller::get_instance();
 		$controller->mark_wizard_completed();
 
 		wp_send_json_success( array(
-			'message'      => __( 'Wizard overgeslagen', 'writgocms' ),
-			'redirect_url' => admin_url( 'admin.php?page=writgocms-aiml' ),
+			'message'      => __( 'Wizard overgeslagen', 'writgoai' ),
+			'redirect_url' => admin_url( 'admin.php?page=writgoai' ),
 		) );
 	}
 }

@@ -6,7 +6,7 @@
  * Includes sitemap analysis and content gap detection.
  * Nederlandse versie - Dutch interface for WritgoAI.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,21 +14,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Content_Planner
+ * Class WritgoAI_Content_Planner
  */
-class WritgoCMS_Content_Planner {
+class WritgoAI_Content_Planner {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Content_Planner
+	 * @var WritgoAI_Content_Planner
 	 */
 	private static $instance = null;
 
 	/**
 	 * Provider instance
 	 *
-	 * @var WritgoCMS_AIML_Provider
+	 * @var WritgoAI_AI_Provider
 	 */
 	private $provider;
 
@@ -67,7 +67,7 @@ class WritgoCMS_Content_Planner {
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Content_Planner
+	 * @return WritgoAI_Content_Planner
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -80,17 +80,17 @@ class WritgoCMS_Content_Planner {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->provider = WritgoCMS_AIML_Provider::get_instance();
-		add_action( 'wp_ajax_writgocms_generate_topical_map', array( $this, 'ajax_generate_topical_map' ) );
-		add_action( 'wp_ajax_writgocms_generate_content_plan', array( $this, 'ajax_generate_content_plan' ) );
-		add_action( 'wp_ajax_writgocms_save_content_plan', array( $this, 'ajax_save_content_plan' ) );
-		add_action( 'wp_ajax_writgocms_get_saved_plans', array( $this, 'ajax_get_saved_plans' ) );
-		add_action( 'wp_ajax_writgocms_delete_content_plan', array( $this, 'ajax_delete_content_plan' ) );
+		$this->provider = WritgoAI_AI_Provider::get_instance();
+		add_action( 'wp_ajax_writgoai_generate_topical_map', array( $this, 'ajax_generate_topical_map' ) );
+		add_action( 'wp_ajax_writgoai_generate_content_plan', array( $this, 'ajax_generate_content_plan' ) );
+		add_action( 'wp_ajax_writgoai_save_content_plan', array( $this, 'ajax_save_content_plan' ) );
+		add_action( 'wp_ajax_writgoai_get_saved_plans', array( $this, 'ajax_get_saved_plans' ) );
+		add_action( 'wp_ajax_writgoai_delete_content_plan', array( $this, 'ajax_delete_content_plan' ) );
 		// New AJAX handlers for sitemap analysis
-		add_action( 'wp_ajax_writgocms_analyze_sitemap', array( $this, 'ajax_analyze_sitemap' ) );
-		add_action( 'wp_ajax_writgocms_generate_categorized_plan', array( $this, 'ajax_generate_categorized_plan' ) );
-		add_action( 'wp_ajax_writgocms_generate_article_content', array( $this, 'ajax_generate_article_content' ) );
-		add_action( 'wp_ajax_writgocms_publish_content', array( $this, 'ajax_publish_content' ) );
+		add_action( 'wp_ajax_writgoai_analyze_sitemap', array( $this, 'ajax_analyze_sitemap' ) );
+		add_action( 'wp_ajax_writgoai_generate_categorized_plan', array( $this, 'ajax_generate_categorized_plan' ) );
+		add_action( 'wp_ajax_writgoai_generate_article_content', array( $this, 'ajax_generate_article_content' ) );
+		add_action( 'wp_ajax_writgoai_publish_content', array( $this, 'ajax_publish_content' ) );
 	}
 
 	/**
@@ -193,7 +193,7 @@ class WritgoCMS_Content_Planner {
 		}
 
 		// Save analysis to options
-		update_option( 'writgocms_site_analysis', $analysis );
+		update_option( 'writgoai_site_analysis', $analysis );
 
 		return $analysis;
 	}
@@ -208,8 +208,8 @@ class WritgoCMS_Content_Planner {
 		$theme            = isset( $analysis['theme'] ) ? $analysis['theme'] : 'Algemeen';
 		$existing_topics  = isset( $analysis['existing_topics'] ) ? $analysis['existing_topics'] : array();
 		$top_categories   = isset( $analysis['top_categories'] ) ? $analysis['top_categories'] : array();
-		$target_audience  = get_option( 'writgocms_target_audience', '' );
-		$items_per_analysis = get_option( 'writgocms_items_per_analysis', 20 );
+		$target_audience  = get_option( 'writgoai_target_audience', '' );
+		$items_per_analysis = get_option( 'writgoai_items_per_analysis', 20 );
 
 		// Escape existing topics to prevent prompt injection
 		$escaped_topics = array_map( 'esc_html', array_slice( $existing_topics, 0, 10 ) );
@@ -289,7 +289,7 @@ Geef alleen geldige JSON terug, geen extra tekst.',
 		}
 
 		// Save content plan
-		update_option( 'writgocms_content_plan', $parsed );
+		update_option( 'writgoai_content_plan', $parsed );
 
 		return array(
 			'success'      => true,
@@ -308,7 +308,7 @@ Geef alleen geldige JSON terug, geen extra tekst.',
 		$description = isset( $item['description'] ) ? $item['description'] : '';
 		$keywords    = isset( $item['keywords'] ) ? $item['keywords'] : array();
 		$category    = isset( $item['category'] ) ? $item['category'] : 'informatief';
-		$tone        = get_option( 'writgocms_content_tone', 'professioneel' );
+		$tone        = get_option( 'writgoai_content_tone', 'professioneel' );
 
 		if ( empty( $title ) ) {
 			return new WP_Error( 'missing_title', 'Titel is verplicht.' );
@@ -389,9 +389,9 @@ Onderwerp: %s',
 		);
 
 		// Save to generated content list
-		$all_generated = get_option( 'writgocms_generated_content', array() );
+		$all_generated = get_option( 'writgoai_generated_content', array() );
 		$all_generated[] = $generated_content;
-		update_option( 'writgocms_generated_content', $all_generated );
+		update_option( 'writgoai_generated_content', $all_generated );
 
 		return array(
 			'success' => true,
@@ -428,7 +428,7 @@ Onderwerp: %s',
 		// Add meta description if available
 		if ( ! empty( $content['meta_description'] ) ) {
 			update_post_meta( $post_id, '_yoast_wpseo_metadesc', $content['meta_description'] );
-			update_post_meta( $post_id, 'writgocms_meta_description', $content['meta_description'] );
+			update_post_meta( $post_id, 'writgoai_meta_description', $content['meta_description'] );
 		}
 
 		// Add keywords as tags
@@ -549,7 +549,7 @@ Return ONLY valid JSON, no additional text or explanation.',
 		// If JSON parsing fails, return structured error.
 		return array(
 			'error'       => true,
-			'message'     => __( 'Failed to parse AI response. Please try again.', 'writgocms' ),
+			'message'     => __( 'Failed to parse AI response. Please try again.', 'writgoai' ),
 			'raw_content' => $content,
 		);
 	}
@@ -629,10 +629,10 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for generating topical map
 	 */
 	public function ajax_generate_topical_map() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
 		}
 
 		$niche           = isset( $_POST['niche'] ) ? sanitize_text_field( wp_unslash( $_POST['niche'] ) ) : '';
@@ -640,7 +640,7 @@ Return ONLY valid JSON, no additional text.',
 		$target_audience = isset( $_POST['target_audience'] ) ? sanitize_textarea_field( wp_unslash( $_POST['target_audience'] ) ) : '';
 
 		if ( empty( $niche ) ) {
-			wp_send_json_error( array( 'message' => __( 'Please enter a niche/topic.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter a niche/topic.', 'writgoai' ) ) );
 		}
 
 		$result = $this->generate_topical_map( $niche, $website_type, $target_audience );
@@ -656,10 +656,10 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for generating content plan
 	 */
 	public function ajax_generate_content_plan() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
 		}
 
 		$topic        = isset( $_POST['topic'] ) ? sanitize_text_field( wp_unslash( $_POST['topic'] ) ) : '';
@@ -667,7 +667,7 @@ Return ONLY valid JSON, no additional text.',
 		$keywords     = isset( $_POST['keywords'] ) ? array_map( 'sanitize_text_field', wp_unslash( (array) $_POST['keywords'] ) ) : array();
 
 		if ( empty( $topic ) ) {
-			wp_send_json_error( array( 'message' => __( 'Please enter a topic.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter a topic.', 'writgoai' ) ) );
 		}
 
 		$result = $this->generate_content_plan( $topic, $content_type, $keywords );
@@ -683,26 +683,26 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for saving content plan
 	 */
 	public function ajax_save_content_plan() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
 		}
 
 		$plan_name = isset( $_POST['plan_name'] ) ? sanitize_text_field( wp_unslash( $_POST['plan_name'] ) ) : '';
 		$plan_data = isset( $_POST['plan_data'] ) ? wp_unslash( $_POST['plan_data'] ) : '';
 
 		if ( empty( $plan_name ) || empty( $plan_data ) ) {
-			wp_send_json_error( array( 'message' => __( 'Plan name and data are required.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Plan name and data are required.', 'writgoai' ) ) );
 		}
 
 		// Validate and decode JSON.
 		$decoded = json_decode( $plan_data, true );
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid plan data format.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid plan data format.', 'writgoai' ) ) );
 		}
 
-		$saved_plans = get_option( 'writgocms_saved_content_plans', array() );
+		$saved_plans = get_option( 'writgoai_saved_content_plans', array() );
 
 		$plan_id                  = wp_generate_uuid4();
 		$saved_plans[ $plan_id ] = array(
@@ -712,11 +712,11 @@ Return ONLY valid JSON, no additional text.',
 			'user_id'    => get_current_user_id(),
 		);
 
-		update_option( 'writgocms_saved_content_plans', $saved_plans );
+		update_option( 'writgoai_saved_content_plans', $saved_plans );
 
 		wp_send_json_success(
 			array(
-				'message' => __( 'Content plan saved successfully!', 'writgocms' ),
+				'message' => __( 'Content plan saved successfully!', 'writgoai' ),
 				'plan_id' => $plan_id,
 			)
 		);
@@ -726,13 +726,13 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for getting saved plans
 	 */
 	public function ajax_get_saved_plans() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
 		}
 
-		$saved_plans = get_option( 'writgocms_saved_content_plans', array() );
+		$saved_plans = get_option( 'writgoai_saved_content_plans', array() );
 
 		wp_send_json_success( array( 'plans' => $saved_plans ) );
 	}
@@ -741,26 +741,26 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for deleting content plan
 	 */
 	public function ajax_delete_content_plan() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
 		}
 
 		$plan_id = isset( $_POST['plan_id'] ) ? sanitize_text_field( wp_unslash( $_POST['plan_id'] ) ) : '';
 
 		if ( empty( $plan_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Plan ID is required.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Plan ID is required.', 'writgoai' ) ) );
 		}
 
-		$saved_plans = get_option( 'writgocms_saved_content_plans', array() );
+		$saved_plans = get_option( 'writgoai_saved_content_plans', array() );
 
 		if ( ! isset( $saved_plans[ $plan_id ] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Plan not found.', 'writgocms' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Plan not found.', 'writgoai' ) ) );
 		}
 
 		unset( $saved_plans[ $plan_id ] );
-		update_option( 'writgocms_saved_content_plans', $saved_plans );
+		update_option( 'writgoai_saved_content_plans', $saved_plans );
 
 		wp_send_json_success( array( 'message' => 'Contentplan succesvol verwijderd!' ) );
 	}
@@ -769,7 +769,7 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for sitemap analysis
 	 */
 	public function ajax_analyze_sitemap() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -791,13 +791,13 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for generating categorized content plan
 	 */
 	public function ajax_generate_categorized_plan() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
 		}
 
-		$analysis = get_option( 'writgocms_site_analysis', array() );
+		$analysis = get_option( 'writgoai_site_analysis', array() );
 
 		if ( empty( $analysis ) ) {
 			wp_send_json_error( array( 'message' => 'Voer eerst een website analyse uit.' ) );
@@ -816,7 +816,7 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for generating article content
 	 */
 	public function ajax_generate_article_content() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -846,7 +846,7 @@ Return ONLY valid JSON, no additional text.',
 	 * AJAX handler for publishing content
 	 */
 	public function ajax_publish_content() {
-		check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Geen toestemming.' ) );
@@ -883,4 +883,4 @@ Return ONLY valid JSON, no additional text.',
 }
 
 // Initialize.
-WritgoCMS_Content_Planner::get_instance();
+WritgoAI_Content_Planner::get_instance();

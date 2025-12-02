@@ -1,10 +1,10 @@
 <?php
 /**
- * Gutenberg AIML Block Registration
+ * Gutenberg AI Block Registration
  *
  * Register Gutenberg block for AI generation.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Gutenberg_AIML_Block
+ * Class WritgoAI_Gutenberg_AI_Block
  */
-class WritgoCMS_Gutenberg_AIML_Block {
+class WritgoAI_Gutenberg_AI_Block {
 
     /**
      * Instance
      *
-     * @var WritgoCMS_Gutenberg_AIML_Block
+     * @var WritgoAI_Gutenberg_AI_Block
      */
     private static $instance = null;
 
     /**
      * Get instance
      *
-     * @return WritgoCMS_Gutenberg_AIML_Block
+     * @return WritgoAI_Gutenberg_AI_Block
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -55,8 +55,8 @@ class WritgoCMS_Gutenberg_AIML_Block {
         return array_merge(
             array(
                 array(
-                    'slug'  => 'writgocms-ai',
-                    'title' => __( 'WritgoCMS AI', 'writgocms' ),
+                    'slug'  => 'writgoai',
+                    'title' => __( 'WritgoAI AI', 'writgoai' ),
                     'icon'  => 'admin-customizer',
                 ),
             ),
@@ -75,8 +75,8 @@ class WritgoCMS_Gutenberg_AIML_Block {
         register_block_type(
             'writgocms/ai-generator',
             array(
-                'editor_script'   => 'writgocms-aiml-block',
-                'editor_style'    => 'writgocms-aiml-block-style',
+                'editor_script'   => 'writgoai-block',
+                'editor_style'    => 'writgoai-block-style',
                 'render_callback' => array( $this, 'render_block' ),
                 'attributes'      => array(
                     'content'   => array(
@@ -104,47 +104,47 @@ class WritgoCMS_Gutenberg_AIML_Block {
      * Enqueue editor assets
      */
     public function enqueue_editor_assets() {
-        $provider = WritgoCMS_AIML_Provider::get_instance();
+        $provider = WritgoAI_AI_Provider::get_instance();
 
         wp_enqueue_script(
-            'writgocms-aiml-block',
-            WRITGOCMS_URL . 'assets/js/gutenberg-aiml-block.js',
+            'writgoai-block',
+            WRITGOAI_URL . 'assets/js/gutenberg-ai-block.js',
             array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n', 'wp-compose', 'wp-data' ),
-            WRITGOCMS_VERSION,
+            WRITGOAI_VERSION,
             true
         );
 
         wp_enqueue_style(
-            'writgocms-aiml-block-style',
-            WRITGOCMS_URL . 'assets/css/gutenberg-aiml-block.css',
+            'writgoai-block-style',
+            WRITGOAI_URL . 'assets/css/gutenberg-ai-block.css',
             array(),
-            WRITGOCMS_VERSION
+            WRITGOAI_VERSION
         );
 
         wp_localize_script(
-            'writgocms-aiml-block',
+            'writgoai-block',
             'writgocmsAimlBlock',
             array(
                 'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-                'nonce'        => wp_create_nonce( 'writgocms_aiml_nonce' ),
+                'nonce'        => wp_create_nonce( 'writgoai_ai_nonce' ),
                 'isAdmin'      => current_user_can( 'manage_options' ),
                 'defaultModel' => $provider->get_default_text_model(),
                 'defaultImageModel' => $provider->get_default_image_model(),
                 'textModels'   => $provider->get_text_models(),
                 'imageModels'  => $provider->get_image_models(),
                 'i18n'         => array(
-                    'blockTitle'       => __( 'AI Content Generator', 'writgocms' ),
-                    'blockDescription' => __( 'Generate text or images using AIMLAPI', 'writgocms' ),
-                    'textMode'         => __( 'Text', 'writgocms' ),
-                    'imageMode'        => __( 'Image', 'writgocms' ),
-                    'promptLabel'      => __( 'Enter your prompt', 'writgocms' ),
-                    'generateBtn'      => __( 'Generate', 'writgocms' ),
-                    'generating'       => __( 'Generating...', 'writgocms' ),
-                    'insertBtn'        => __( 'Insert as Block', 'writgocms' ),
-                    'clearBtn'         => __( 'Clear', 'writgocms' ),
-                    'previewTitle'     => __( 'Preview', 'writgocms' ),
-                    'errorTitle'       => __( 'Error', 'writgocms' ),
-                    'noPrompt'         => __( 'Please enter a prompt', 'writgocms' ),
+                    'blockTitle'       => __( 'AI Content Generator', 'writgoai' ),
+                    'blockDescription' => __( 'Generate text or images using WritgoAI', 'writgoai' ),
+                    'textMode'         => __( 'Text', 'writgoai' ),
+                    'imageMode'        => __( 'Image', 'writgoai' ),
+                    'promptLabel'      => __( 'Enter your prompt', 'writgoai' ),
+                    'generateBtn'      => __( 'Generate', 'writgoai' ),
+                    'generating'       => __( 'Generating...', 'writgoai' ),
+                    'insertBtn'        => __( 'Insert as Block', 'writgoai' ),
+                    'clearBtn'         => __( 'Clear', 'writgoai' ),
+                    'previewTitle'     => __( 'Preview', 'writgoai' ),
+                    'errorTitle'       => __( 'Error', 'writgoai' ),
+                    'noPrompt'         => __( 'Please enter a prompt', 'writgoai' ),
                 ),
             )
         );
@@ -165,12 +165,12 @@ class WritgoCMS_Gutenberg_AIML_Block {
             return sprintf(
                 '<figure class="wp-block-image"><img src="%s" alt="%s" /></figure>',
                 esc_url( $image_url ),
-                esc_attr__( 'AI Generated Image', 'writgocms' )
+                esc_attr__( 'AI Generated Image', 'writgoai' )
             );
         }
 
         if ( ! empty( $content ) ) {
-            return sprintf( '<div class="writgocms-ai-content">%s</div>', wp_kses_post( $content ) );
+            return sprintf( '<div class="writgoai-ai-content">%s</div>', wp_kses_post( $content ) );
         }
 
         return '';
@@ -178,4 +178,4 @@ class WritgoCMS_Gutenberg_AIML_Block {
 }
 
 // Initialize
-WritgoCMS_Gutenberg_AIML_Block::get_instance();
+WritgoAI_Gutenberg_AI_Block::get_instance();

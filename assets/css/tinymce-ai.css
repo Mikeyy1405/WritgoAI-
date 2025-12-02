@@ -126,7 +126,7 @@
 }
 
 /* Ensure TinyMCE button styling */
-.mce-btn button[data-mce-btn="writgocms_aiml"] {
+.mce-btn button[data-mce-btn="writgoai_ai"] {
     background: linear-gradient(135deg, #1877F2 0%, #f97316 100%) !important;
     color: #fff !important;
     border-radius: 4px !important;

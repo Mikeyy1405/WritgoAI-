@@ -4,14 +4,14 @@
  * 
  * Handles automatic plugin updates from GitHub releases.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class WritgoCMS_Plugin_Updater {
+class WritgoAI_Plugin_Updater {
     
     /**
      * GitHub repository
@@ -41,7 +41,7 @@ class WritgoCMS_Plugin_Updater {
     /**
      * Cache key for update check
      */
-    private $cache_key = 'writgocms_update_check';
+    private $cache_key = 'writgoai_update_check';
     
     /**
      * Cache expiration (12 hours)
@@ -72,7 +72,7 @@ class WritgoCMS_Plugin_Updater {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
         
         // AJAX handler for manual update check
-        add_action('wp_ajax_writgocms_check_updates', [$this, 'ajax_check_updates']);
+        add_action('wp_ajax_writgoai_check_updates', [$this, 'ajax_check_updates']);
     }
     
     /**
@@ -96,7 +96,7 @@ class WritgoCMS_Plugin_Updater {
             'writgocms-plugin-updater',
             'writgocmsUpdater',
             [
-                'nonce' => wp_create_nonce('writgocms_update_nonce'),
+                'nonce' => wp_create_nonce('writgoai_update_nonce'),
                 'ajaxurl' => admin_url('admin-ajax.php'),
             ]
         );
@@ -151,7 +151,7 @@ class WritgoCMS_Plugin_Updater {
         }
         
         return (object) [
-            'name'              => 'WritgoCMS AI',
+            'name'              => 'WritgoAI AI',
             'slug'              => dirname($this->plugin_slug),
             'version'           => $remote_data['version'],
             'author'            => '<a href="https://writgo.nl">Writgo</a>',
@@ -222,7 +222,7 @@ class WritgoCMS_Plugin_Updater {
             'timeout' => 10,
             'headers' => [
                 'Accept' => 'application/vnd.github.v3+json',
-                'User-Agent' => 'WritgoCMS-Plugin-Updater',
+                'User-Agent' => 'WritgoAI-Plugin-Updater',
             ],
         ]);
         
@@ -271,7 +271,7 @@ class WritgoCMS_Plugin_Updater {
      * Add action links to plugin row
      */
     public function add_action_links($links) {
-        $check_link = '<a href="#" class="writgocms-check-update">' . __('Check for Updates', 'writgocms') . '</a>';
+        $check_link = '<a href="#" class="writgoai-check-update">' . __('Check for Updates', 'writgoai') . '</a>';
         array_unshift($links, $check_link);
         return $links;
     }
@@ -280,7 +280,7 @@ class WritgoCMS_Plugin_Updater {
      * AJAX handler for manual update check
      */
     public function ajax_check_updates() {
-        check_ajax_referer('writgocms_update_nonce', 'nonce');
+        check_ajax_referer('writgoai_update_nonce', 'nonce');
         
         if (!current_user_can('update_plugins')) {
             wp_send_json_error(['message' => 'Geen toestemming.']);

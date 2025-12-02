@@ -4,7 +4,7 @@
  *
  * Handles keyword research operations using DataForSEO API.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,35 +12,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Keyword_Research
+ * Class WritgoAI_Keyword_Research
  */
-class WritgoCMS_Keyword_Research {
+class WritgoAI_Keyword_Research {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Keyword_Research
+	 * @var WritgoAI_Keyword_Research
 	 */
 	private static $instance = null;
 
 	/**
 	 * DataForSEO API instance
 	 *
-	 * @var WritgoCMS_DataForSEO_API
+	 * @var WritgoAI_DataForSEO_API
 	 */
 	private $api;
 
 	/**
 	 * Credit manager instance
 	 *
-	 * @var WritgoCMS_Credit_Manager
+	 * @var WritgoAI_Credit_Manager
 	 */
 	private $credit_manager;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Keyword_Research
+	 * @return WritgoAI_Keyword_Research
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -53,13 +53,13 @@ class WritgoCMS_Keyword_Research {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->api            = WritgoCMS_DataForSEO_API::get_instance();
-		$this->credit_manager = WritgoCMS_Credit_Manager::get_instance();
+		$this->api            = WritgoAI_DataForSEO_API::get_instance();
+		$this->credit_manager = WritgoAI_Credit_Manager::get_instance();
 
-		add_action( 'wp_ajax_writgocms_search_keyword', array( $this, 'ajax_search_keyword' ) );
-		add_action( 'wp_ajax_writgocms_get_related_keywords', array( $this, 'ajax_get_related_keywords' ) );
-		add_action( 'wp_ajax_writgocms_save_keyword', array( $this, 'ajax_save_keyword' ) );
-		add_action( 'wp_ajax_writgocms_get_serp_data', array( $this, 'ajax_get_serp_data' ) );
+		add_action( 'wp_ajax_writgoai_search_keyword', array( $this, 'ajax_search_keyword' ) );
+		add_action( 'wp_ajax_writgoai_get_related_keywords', array( $this, 'ajax_get_related_keywords' ) );
+		add_action( 'wp_ajax_writgoai_save_keyword', array( $this, 'ajax_save_keyword' ) );
+		add_action( 'wp_ajax_writgoai_get_serp_data', array( $this, 'ajax_get_serp_data' ) );
 	}
 
 	/**
@@ -205,7 +205,7 @@ class WritgoCMS_Keyword_Research {
 	 * AJAX handler for keyword search
 	 */
 	public function ajax_search_keyword() {
-		check_ajax_referer( 'writgocms_keyword_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_keyword_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -238,7 +238,7 @@ class WritgoCMS_Keyword_Research {
 	 * AJAX handler for related keywords
 	 */
 	public function ajax_get_related_keywords() {
-		check_ajax_referer( 'writgocms_keyword_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_keyword_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -271,7 +271,7 @@ class WritgoCMS_Keyword_Research {
 	 * AJAX handler for saving keyword
 	 */
 	public function ajax_save_keyword() {
-		check_ajax_referer( 'writgocms_keyword_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_keyword_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -303,7 +303,7 @@ class WritgoCMS_Keyword_Research {
 	 * AJAX handler for SERP data
 	 */
 	public function ajax_get_serp_data() {
-		check_ajax_referer( 'writgocms_keyword_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_keyword_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -334,4 +334,4 @@ class WritgoCMS_Keyword_Research {
 }
 
 // Initialize.
-WritgoCMS_Keyword_Research::get_instance();
+WritgoAI_Keyword_Research::get_instance();

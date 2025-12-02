@@ -4,7 +4,7 @@
  *
  * Shows progress through a multi-step process.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

@@ -1,11 +1,11 @@
 <?php
 /**
- * AIML Provider Class
+ * AI Provider Class
  *
- * AIMLAPI integration for text and image generation.
- * Uses https://api.aimlapi.com/v1 as the unified API endpoint.
+ * AI integration for text and image generation via WritgoAI API server.
+ * The WritgoAI API server handles communication with various AI providers.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,26 +13,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_AIML_Provider
+ * Class WritgoAI_AI_Provider
  */
-class WritgoCMS_AIML_Provider {
+class WritgoAI_AI_Provider {
 
     /**
      * Instance
      *
-     * @var WritgoCMS_AIML_Provider
+     * @var WritgoAI_AI_Provider
      */
     private static $instance = null;
 
     /**
-     * AIMLAPI Base URL
+     * AI API Base URL
      *
      * @var string
      */
     private $api_base_url = 'https://api.aimlapi.com/v1';
 
     /**
-     * Available text models via AIMLAPI
+     * Available text models via AI API
      *
      * @var array
      */
@@ -70,7 +70,7 @@ class WritgoCMS_AIML_Provider {
     );
 
     /**
-     * Available image models via AIMLAPI
+     * Available image models via AI API
      *
      * @var array
      */
@@ -98,19 +98,19 @@ class WritgoCMS_AIML_Provider {
      *
      * @var string
      */
-    private $cache_group = 'writgocms_aiml';
+    private $cache_group = 'writgoai_ai';
 
     /**
      * Rate limit option name
      *
      * @var string
      */
-    private $rate_limit_option = 'writgocms_aiml_rate_limits';
+    private $rate_limit_option = 'writgoai_ai_rate_limits';
 
     /**
      * Get instance
      *
-     * @return WritgoCMS_AIML_Provider
+     * @return WritgoAI_AI_Provider
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -123,10 +123,10 @@ class WritgoCMS_AIML_Provider {
      * Constructor
      */
     private function __construct() {
-        add_action( 'wp_ajax_writgocms_generate_text', array( $this, 'ajax_generate_text' ) );
-        add_action( 'wp_ajax_writgocms_generate_image', array( $this, 'ajax_generate_image' ) );
-        add_action( 'wp_ajax_writgocms_validate_api_key', array( $this, 'ajax_validate_api_key' ) );
-        add_action( 'wp_ajax_writgocms_test_generation', array( $this, 'ajax_test_generation' ) );
+        add_action( 'wp_ajax_writgoai_generate_text', array( $this, 'ajax_generate_text' ) );
+        add_action( 'wp_ajax_writgoai_generate_image', array( $this, 'ajax_generate_image' ) );
+        add_action( 'wp_ajax_writgoai_validate_api_key', array( $this, 'ajax_validate_api_key' ) );
+        add_action( 'wp_ajax_writgoai_test_generation', array( $this, 'ajax_test_generation' ) );
     }
 
     /**
@@ -148,17 +148,17 @@ class WritgoCMS_AIML_Provider {
     }
 
     /**
-     * Get AIMLAPI key
+     * Get AI API key
      *
-     * This method first tries to get the API key from the license manager
-     * (injected from the licensing server), then falls back to the stored option.
+     * This method gets the API key from the license manager which is injected
+     * from the WritgoAI API server based on the user's license.
      *
      * @return string
      */
     private function get_api_key() {
         // First, try to get API key from license manager.
-        if ( class_exists( 'WritgoCMS_License_Manager' ) ) {
-            $license_manager = WritgoCMS_License_Manager::get_instance();
+        if ( class_exists( 'WritgoAI_License_Manager' ) ) {
+            $license_manager = WritgoAI_License_Manager::get_instance();
             $injected_key = $license_manager->get_injected_api_key();
 
             if ( ! is_wp_error( $injected_key ) && ! empty( $injected_key ) ) {
@@ -167,7 +167,7 @@ class WritgoCMS_AIML_Provider {
         }
 
         // Fall back to stored API key.
-        return get_option( 'writgocms_aimlapi_key', '' );
+        return get_option( 'writgoai_aiapi_key', '' );
     }
 
     /**
@@ -176,16 +176,16 @@ class WritgoCMS_AIML_Provider {
      * @return bool|WP_Error True if valid, WP_Error if not.
      */
     private function check_license_valid() {
-        if ( ! class_exists( 'WritgoCMS_License_Manager' ) ) {
+        if ( ! class_exists( 'WritgoAI_License_Manager' ) ) {
             return true; // License manager not loaded, allow operation.
         }
 
-        $license_manager = WritgoCMS_License_Manager::get_instance();
+        $license_manager = WritgoAI_License_Manager::get_instance();
 
         if ( ! $license_manager->is_license_valid() ) {
             return new WP_Error(
                 'license_invalid',
-                __( 'Je licentie is niet actief. Activeer je licentie om WritgoAI te gebruiken.', 'writgocms' )
+                __( 'Je licentie is niet actief. Activeer je licentie om WritgoAI te gebruiken.', 'writgoai' )
             );
         }
 
@@ -198,7 +198,7 @@ class WritgoCMS_AIML_Provider {
      * @return string
      */
     public function get_default_text_model() {
-        return get_option( 'writgocms_default_model', 'gpt-4o' );
+        return get_option( 'writgoai_default_model', 'gpt-4o' );
     }
 
     /**
@@ -207,7 +207,7 @@ class WritgoCMS_AIML_Provider {
      * @return string
      */
     public function get_default_image_model() {
-        return get_option( 'writgocms_default_image_model', 'dall-e-3' );
+        return get_option( 'writgoai_default_image_model', 'dall-e-3' );
     }
 
     /**
@@ -276,7 +276,7 @@ class WritgoCMS_AIML_Provider {
     }
 
     /**
-     * Generate text using AIMLAPI chat/completions endpoint
+     * Generate text using AI API chat/completions endpoint
      *
      * @param string $prompt   The prompt.
      * @param string $model    The model to use.
@@ -298,11 +298,11 @@ class WritgoCMS_AIML_Provider {
 
         $api_key = $this->get_api_key();
         if ( empty( $api_key ) ) {
-            return new WP_Error( 'missing_api_key', __( 'AIMLAPI key is not configured. Please go to Settings > WritgoCMS AIML to configure your API key.', 'writgocms' ) );
+            return new WP_Error( 'missing_api_key', __( 'AI service is niet beschikbaar. Neem contact op met de beheerder.', 'writgoai' ) );
         }
 
         if ( ! $this->check_rate_limit() ) {
-            return new WP_Error( 'rate_limited', __( 'Rate limit exceeded. Please try again later.', 'writgocms' ) );
+            return new WP_Error( 'rate_limited', __( 'Rate limit exceeded. Please try again later.', 'writgoai' ) );
         }
 
         if ( null === $model ) {
@@ -354,7 +354,7 @@ class WritgoCMS_AIML_Provider {
 
         $body = json_decode( wp_remote_retrieve_body( $response ), true );
         if ( isset( $body['error'] ) ) {
-            $error_message = isset( $body['error']['message'] ) ? $body['error']['message'] : __( 'Unknown API error.', 'writgocms' );
+            $error_message = isset( $body['error']['message'] ) ? $body['error']['message'] : __( 'Unknown API error.', 'writgoai' );
             return new WP_Error( 'api_error', $error_message );
         }
 
@@ -375,11 +375,11 @@ class WritgoCMS_AIML_Provider {
             return $result;
         }
 
-        return new WP_Error( 'invalid_response', __( 'Invalid response from AIMLAPI.', 'writgocms' ) );
+        return new WP_Error( 'invalid_response', __( 'Invalid response from AI API.', 'writgoai' ) );
     }
 
     /**
-     * Generate image using AIMLAPI images/generations endpoint
+     * Generate image using AI API images/generations endpoint
      *
      * @param string $prompt   The prompt.
      * @param string $model    The model to use.
@@ -401,11 +401,11 @@ class WritgoCMS_AIML_Provider {
 
         $api_key = $this->get_api_key();
         if ( empty( $api_key ) ) {
-            return new WP_Error( 'missing_api_key', __( 'AIMLAPI key is not configured. Please go to Settings > WritgoCMS AIML to configure your API key.', 'writgocms' ) );
+            return new WP_Error( 'missing_api_key', __( 'AI service is niet beschikbaar. Neem contact op met de beheerder.', 'writgoai' ) );
         }
 
         if ( ! $this->check_rate_limit() ) {
-            return new WP_Error( 'rate_limited', __( 'Rate limit exceeded. Please try again later.', 'writgocms' ) );
+            return new WP_Error( 'rate_limited', __( 'Rate limit exceeded. Please try again later.', 'writgoai' ) );
         }
 
         if ( null === $model ) {
@@ -450,7 +450,7 @@ class WritgoCMS_AIML_Provider {
 
         $body = json_decode( wp_remote_retrieve_body( $response ), true );
         if ( isset( $body['error'] ) ) {
-            $error_message = isset( $body['error']['message'] ) ? $body['error']['message'] : __( 'Unknown API error.', 'writgocms' );
+            $error_message = isset( $body['error']['message'] ) ? $body['error']['message'] : __( 'Unknown API error.', 'writgoai' );
             return new WP_Error( 'api_error', $error_message );
         }
 
@@ -482,7 +482,7 @@ class WritgoCMS_AIML_Provider {
             );
         }
 
-        return new WP_Error( 'invalid_response', __( 'Invalid response from AIMLAPI.', 'writgocms' ) );
+        return new WP_Error( 'invalid_response', __( 'Invalid response from AI API.', 'writgoai' ) );
     }
 
     /**
@@ -527,7 +527,7 @@ class WritgoCMS_AIML_Provider {
      * @param string $model Model used.
      */
     private function track_usage( $type, $model ) {
-        $stats = get_option( 'writgocms_aiml_usage_stats', array() );
+        $stats = get_option( 'writgoai_ai_usage_stats', array() );
         $date  = gmdate( 'Y-m-d' );
 
         if ( ! isset( $stats[ $date ] ) ) {
@@ -552,24 +552,24 @@ class WritgoCMS_AIML_Provider {
             }
         }
 
-        update_option( 'writgocms_aiml_usage_stats', $stats );
+        update_option( 'writgoai_ai_usage_stats', $stats );
     }
 
     /**
      * AJAX handler for text generation
      */
     public function ajax_generate_text() {
-        check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
         if ( ! current_user_can( 'edit_posts' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $prompt = isset( $_POST['prompt'] ) ? sanitize_textarea_field( wp_unslash( $_POST['prompt'] ) ) : '';
         $model  = isset( $_POST['model'] ) ? sanitize_text_field( wp_unslash( $_POST['model'] ) ) : null;
 
         if ( empty( $prompt ) ) {
-            wp_send_json_error( array( 'message' => __( 'Prompt is required.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Prompt is required.', 'writgoai' ) ) );
         }
 
         $result = $this->generate_text( $prompt, $model );
@@ -585,17 +585,17 @@ class WritgoCMS_AIML_Provider {
      * AJAX handler for image generation
      */
     public function ajax_generate_image() {
-        check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
         if ( ! current_user_can( 'edit_posts' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $prompt = isset( $_POST['prompt'] ) ? sanitize_textarea_field( wp_unslash( $_POST['prompt'] ) ) : '';
         $model  = isset( $_POST['model'] ) ? sanitize_text_field( wp_unslash( $_POST['model'] ) ) : null;
 
         if ( empty( $prompt ) ) {
-            wp_send_json_error( array( 'message' => __( 'Prompt is required.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Prompt is required.', 'writgoai' ) ) );
         }
 
         $result = $this->generate_image( $prompt, $model );
@@ -611,16 +611,16 @@ class WritgoCMS_AIML_Provider {
      * AJAX handler for API key validation
      */
     public function ajax_validate_api_key() {
-        check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
 
         if ( empty( $api_key ) ) {
-            wp_send_json_error( array( 'message' => __( 'API key is required.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'API key is required.', 'writgoai' ) ) );
         }
 
         $valid = $this->validate_api_key( $api_key );
@@ -629,11 +629,11 @@ class WritgoCMS_AIML_Provider {
             wp_send_json_error( array( 'message' => $valid->get_error_message() ) );
         }
 
-        wp_send_json_success( array( 'message' => __( 'AIMLAPI key is valid!', 'writgocms' ) ) );
+        wp_send_json_success( array( 'message' => __( 'AI API key is valid!', 'writgoai' ) ) );
     }
 
     /**
-     * Validate AIMLAPI key
+     * Validate AI API key
      *
      * @param string $api_key API key.
      * @return bool|WP_Error
@@ -655,7 +655,7 @@ class WritgoCMS_AIML_Provider {
 
         $code = wp_remote_retrieve_response_code( $response );
         if ( $code >= 400 ) {
-            return new WP_Error( 'invalid_key', __( 'Invalid AIMLAPI key.', 'writgocms' ) );
+            return new WP_Error( 'invalid_key', __( 'Invalid AI API key.', 'writgoai' ) );
         }
 
         return true;
@@ -665,10 +665,10 @@ class WritgoCMS_AIML_Provider {
      * AJAX handler for test generation
      */
     public function ajax_test_generation() {
-        check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Permission denied.', 'writgoai' ) ) );
         }
 
         $type   = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : 'text';
@@ -676,7 +676,7 @@ class WritgoCMS_AIML_Provider {
         $model  = isset( $_POST['model'] ) ? sanitize_text_field( wp_unslash( $_POST['model'] ) ) : null;
 
         if ( empty( $prompt ) ) {
-            wp_send_json_error( array( 'message' => __( 'Prompt is required.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Prompt is required.', 'writgoai' ) ) );
         }
 
         if ( 'text' === $type ) {
@@ -700,11 +700,11 @@ class WritgoCMS_AIML_Provider {
      */
     private function check_credits_for_action( $action_type ) {
         // Skip if API client is not available.
-        if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
+        if ( ! class_exists( 'WritgoAI_API_Client' ) ) {
             return true;
         }
 
-        $api_client = WritgoCMS_API_Client::get_instance();
+        $api_client = WritgoAI_API_Client::get_instance();
         $balance = $api_client->get_credit_balance();
 
         // If API is unavailable, allow operation (fallback).
@@ -721,8 +721,8 @@ class WritgoCMS_AIML_Provider {
         
         // Get credit cost from credit manager if available.
         $credit_cost = 10; // Default cost.
-        if ( class_exists( 'WritgoCMS_Credit_Manager' ) ) {
-            $credit_manager = WritgoCMS_Credit_Manager::get_instance();
+        if ( class_exists( 'WritgoAI_Credit_Manager' ) ) {
+            $credit_manager = WritgoAI_Credit_Manager::get_instance();
             $credit_cost = $credit_manager->get_credit_cost( $action_type );
         }
 
@@ -731,7 +731,7 @@ class WritgoCMS_AIML_Provider {
                 'INSUFFICIENT_CREDITS',
                 sprintf(
                     /* translators: 1: required credits, 2: remaining credits */
-                    __( 'Onvoldoende credits. Nodig: %1$d, Beschikbaar: %2$d. Upgrade je abonnement om door te gaan.', 'writgocms' ),
+                    __( 'Onvoldoende credits. Nodig: %1$d, Beschikbaar: %2$d. Upgrade je abonnement om door te gaan.', 'writgoai' ),
                     $credit_cost,
                     $credits_remaining
                 )
@@ -749,11 +749,11 @@ class WritgoCMS_AIML_Provider {
      */
     private function deduct_credits_for_action( $action_type ) {
         // Skip if API client is not available.
-        if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
+        if ( ! class_exists( 'WritgoAI_API_Client' ) ) {
             return;
         }
 
-        $api_client = WritgoCMS_API_Client::get_instance();
+        $api_client = WritgoAI_API_Client::get_instance();
         $result = $api_client->deduct_credits( $action_type );
 
         // Log any errors but don't block the operation.
@@ -764,4 +764,4 @@ class WritgoCMS_AIML_Provider {
 }
 
 // Initialize the provider
-WritgoCMS_AIML_Provider::get_instance();
+WritgoAI_AI_Provider::get_instance();

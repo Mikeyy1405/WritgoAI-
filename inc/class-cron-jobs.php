@@ -4,7 +4,7 @@
  *
  * Handles automated tasks for WritgoAI plugin.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Cron_Jobs
+ * Class WritgoAI_Cron_Jobs
  */
-class WritgoCMS_Cron_Jobs {
+class WritgoAI_Cron_Jobs {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Cron_Jobs
+	 * @var WritgoAI_Cron_Jobs
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Cron_Jobs
+	 * @return WritgoAI_Cron_Jobs
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -40,8 +40,8 @@ class WritgoCMS_Cron_Jobs {
 	 */
 	private function __construct() {
 		// Register cron hooks.
-		add_action( 'writgocms_daily_sync', array( $this, 'daily_sync' ) );
-		add_action( 'writgocms_weekly_analysis', array( $this, 'weekly_analysis' ) );
+		add_action( 'writgoai_daily_sync', array( $this, 'daily_sync' ) );
+		add_action( 'writgoai_weekly_analysis', array( $this, 'weekly_analysis' ) );
 
 		// Schedule events on init if not already scheduled.
 		add_action( 'init', array( $this, 'maybe_schedule_events' ) );
@@ -51,12 +51,12 @@ class WritgoCMS_Cron_Jobs {
 	 * Maybe schedule cron events
 	 */
 	public function maybe_schedule_events() {
-		if ( ! wp_next_scheduled( 'writgocms_daily_sync' ) ) {
-			wp_schedule_event( strtotime( '03:00:00' ), 'daily', 'writgocms_daily_sync' );
+		if ( ! wp_next_scheduled( 'writgoai_daily_sync' ) ) {
+			wp_schedule_event( strtotime( '03:00:00' ), 'daily', 'writgoai_daily_sync' );
 		}
 
-		if ( ! wp_next_scheduled( 'writgocms_weekly_analysis' ) ) {
-			wp_schedule_event( strtotime( 'next Sunday 03:00:00' ), 'weekly', 'writgocms_weekly_analysis' );
+		if ( ! wp_next_scheduled( 'writgoai_weekly_analysis' ) ) {
+			wp_schedule_event( strtotime( 'next Sunday 03:00:00' ), 'weekly', 'writgoai_weekly_analysis' );
 		}
 	}
 
@@ -64,14 +64,14 @@ class WritgoCMS_Cron_Jobs {
 	 * Unschedule all events
 	 */
 	public function unschedule_events() {
-		$timestamp = wp_next_scheduled( 'writgocms_daily_sync' );
+		$timestamp = wp_next_scheduled( 'writgoai_daily_sync' );
 		if ( $timestamp ) {
-			wp_unschedule_event( $timestamp, 'writgocms_daily_sync' );
+			wp_unschedule_event( $timestamp, 'writgoai_daily_sync' );
 		}
 
-		$timestamp = wp_next_scheduled( 'writgocms_weekly_analysis' );
+		$timestamp = wp_next_scheduled( 'writgoai_weekly_analysis' );
 		if ( $timestamp ) {
-			wp_unschedule_event( $timestamp, 'writgocms_weekly_analysis' );
+			wp_unschedule_event( $timestamp, 'writgoai_weekly_analysis' );
 		}
 	}
 
@@ -84,8 +84,8 @@ class WritgoCMS_Cron_Jobs {
 	 */
 	public function daily_sync() {
 		// Sync GSC data.
-		if ( class_exists( 'WritgoCMS_GSC_Data_Handler' ) ) {
-			$gsc_handler = WritgoCMS_GSC_Data_Handler::get_instance();
+		if ( class_exists( 'WritgoAI_GSC_Data_Handler' ) ) {
+			$gsc_handler = WritgoAI_GSC_Data_Handler::get_instance();
 			$gsc_handler->sync_data();
 		}
 
@@ -99,7 +99,7 @@ class WritgoCMS_Cron_Jobs {
 		$this->calculate_health_scores();
 
 		// Log completion.
-		update_option( 'writgocms_last_daily_sync', current_time( 'mysql' ) );
+		update_option( 'writgoai_last_daily_sync', current_time( 'mysql' ) );
 	}
 
 	/**
@@ -109,8 +109,8 @@ class WritgoCMS_Cron_Jobs {
 	 */
 	public function weekly_analysis() {
 		// Run full site analysis.
-		if ( class_exists( 'WritgoCMS_Site_Analyzer' ) ) {
-			$analyzer = WritgoCMS_Site_Analyzer::get_instance();
+		if ( class_exists( 'WritgoAI_Site_Analyzer' ) ) {
+			$analyzer = WritgoAI_Site_Analyzer::get_instance();
 			$analyzer->analyze_site();
 		}
 
@@ -118,7 +118,7 @@ class WritgoCMS_Cron_Jobs {
 		$this->send_performance_email();
 
 		// Log completion.
-		update_option( 'writgocms_last_weekly_analysis', current_time( 'mysql' ) );
+		update_option( 'writgoai_last_weekly_analysis', current_time( 'mysql' ) );
 	}
 
 	/**
@@ -140,7 +140,7 @@ class WritgoCMS_Cron_Jobs {
 		);
 
 		foreach ( $pages as $page ) {
-			update_post_meta( $page['post_id'], '_writgocms_avg_ranking', round( $page['avg_position'], 1 ) );
+			update_post_meta( $page['post_id'], '_writgoai_avg_ranking', round( $page['avg_position'], 1 ) );
 		}
 	}
 
@@ -167,18 +167,18 @@ class WritgoCMS_Cron_Jobs {
 		);
 
 		// Store declining posts.
-		update_option( 'writgocms_declining_posts', wp_list_pluck( $declining, 'post_id' ) );
+		update_option( 'writgoai_declining_posts', wp_list_pluck( $declining, 'post_id' ) );
 	}
 
 	/**
 	 * Calculate health scores for all posts
 	 */
 	private function calculate_health_scores() {
-		if ( ! class_exists( 'WritgoCMS_Site_Analyzer' ) ) {
+		if ( ! class_exists( 'WritgoAI_Site_Analyzer' ) ) {
 			return;
 		}
 
-		$analyzer = WritgoCMS_Site_Analyzer::get_instance();
+		$analyzer = WritgoAI_Site_Analyzer::get_instance();
 
 		$posts = get_posts(
 			array(
@@ -240,7 +240,7 @@ class WritgoCMS_Cron_Jobs {
 			$gsc_stats['impressions'],
 			$gsc_stats['ctr'],
 			$gsc_stats['position'],
-			admin_url( 'admin.php?page=writgocms-aiml' )
+			admin_url( 'admin.php?page=writgoai' )
 		);
 
 		wp_mail( $admin_email, $subject, $message );
@@ -277,4 +277,4 @@ class WritgoCMS_Cron_Jobs {
 }
 
 // Initialize.
-WritgoCMS_Cron_Jobs::get_instance();
+WritgoAI_Cron_Jobs::get_instance();

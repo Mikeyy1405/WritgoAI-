@@ -1,11 +1,11 @@
 <?php
 /**
- * AIML Admin Settings Panel
+ * AI Admin Settings Panel
  *
- * Admin interface for AIMLAPI configuration.
+ * Admin interface for WritgoAI configuration.
  * Nederlandse versie - Dutch interface for WritgoAI.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,28 +13,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_AIML_Admin_Settings
+ * Class WritgoAI_AI_Admin_Settings
  */
-class WritgoCMS_AIML_Admin_Settings {
+class WritgoAI_AI_Admin_Settings {
 
     /**
      * Instance
      *
-     * @var WritgoCMS_AIML_Admin_Settings
+     * @var WritgoAI_AI_Admin_Settings
      */
     private static $instance = null;
 
     /**
      * Provider instance
      *
-     * @var WritgoCMS_AIML_Provider
+     * @var WritgoAI_AI_Provider
      */
     private $provider;
 
     /**
      * Get instance
      *
-     * @return WritgoCMS_AIML_Admin_Settings
+     * @return WritgoAI_AI_Admin_Settings
      */
     public static function get_instance() {
         if ( null === self::$instance ) {
@@ -47,7 +47,7 @@ class WritgoCMS_AIML_Admin_Settings {
      * Constructor
      */
     private function __construct() {
-        $this->provider = WritgoCMS_AIML_Provider::get_instance();
+        $this->provider = WritgoAI_AI_Provider::get_instance();
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
@@ -62,7 +62,7 @@ class WritgoCMS_AIML_Admin_Settings {
             'WritgoAI Dashboard',
             'WritgoAI',
             'manage_options',
-            'writgocms-aiml',
+            'writgoai',
             array( $this, 'render_dashboard_page' ),
             'dashicons-welcome-widgets-menus',
             26 // Position after Pages.
@@ -72,11 +72,11 @@ class WritgoCMS_AIML_Admin_Settings {
         
         // Add Dashboard submenu (Dutch: Dashboard).
         add_submenu_page(
-            'writgocms-aiml',
+            'writgoai',
             'Dashboard',
             '📊 Dashboard',
             'manage_options',
-            'writgocms-aiml',
+            'writgoai',
             array( $this, 'render_dashboard_page' )
         );
 
@@ -84,31 +84,31 @@ class WritgoCMS_AIML_Admin_Settings {
 
         // Add Website Analysis submenu (Dutch: Website Analyse).
         add_submenu_page(
-            'writgocms-aiml',
+            'writgoai',
             'Website Analyse',
             '🔍 Website Analyse',
             'manage_options',
-            'writgocms-aiml-analyse',
+            'writgoai-analyse',
             array( $this, 'render_analyse_page' )
         );
 
         // Add Content Plan submenu (Dutch: Contentplan).
         add_submenu_page(
-            'writgocms-aiml',
+            'writgoai',
             'Contentplan',
             '📋 Contentplan',
             'manage_options',
-            'writgocms-aiml-contentplan',
+            'writgoai-contentplan',
             array( $this, 'render_contentplan_page' )
         );
 
         // Add Generated Content submenu (Dutch: Gegenereerde Content).
         add_submenu_page(
-            'writgocms-aiml',
+            'writgoai',
             'Gegenereerde Content',
             '✍️ Gegenereerde Content',
             'manage_options',
-            'writgocms-aiml-generated',
+            'writgoai-generated',
             array( $this, 'render_generated_content_page' )
         );
 
@@ -116,21 +116,21 @@ class WritgoCMS_AIML_Admin_Settings {
 
         // Add Usage Statistics submenu (Dutch: Statistieken).
         add_submenu_page(
-            'writgocms-aiml',
+            'writgoai',
             'Statistieken',
             '📈 Statistieken',
             'manage_options',
-            'writgocms-aiml-stats',
+            'writgoai-stats',
             array( $this, 'render_stats_page' )
         );
 
         // Add Settings submenu (Dutch: Instellingen).
         add_submenu_page(
-            'writgocms-aiml',
+            'writgoai',
             'Instellingen',
             '⚙️ Instellingen',
             'manage_options',
-            'writgocms-aiml-settings',
+            'writgoai-settings',
             array( $this, 'render_settings_page' )
         );
     }
@@ -139,37 +139,35 @@ class WritgoCMS_AIML_Admin_Settings {
      * Register settings
      */
     public function register_settings() {
-        // AIMLAPI Settings - API key is now handled server-side.
-        // Note: The 'writgocms_aimlapi_key' option is kept in the database for backward
-        // compatibility with existing installations. It's used as a fallback by the
-        // AIML provider if no server-side key is configured. The UI for entering the key
-        // has been removed as we now prefer server-side configuration via WRITGO_AIML_API_KEY
-        // constant or environment variable.
+        // AI API Settings - API key is now handled server-side via WritgoAI API server.
+        // The API key is injected by the license manager based on the user's license.
+        // The UI for entering the key has been removed as all AI requests go through
+        // the WritgoAI API server which handles authentication via license verification.
         
         // WritgoAI API Settings.
-        register_setting( 'writgocms_aiml_settings', 'writgocms_license_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_api_url', array( 'sanitize_callback' => 'esc_url_raw' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_license_key', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_api_url', array( 'sanitize_callback' => 'esc_url_raw' ) );
         
-        register_setting( 'writgocms_aiml_settings', 'writgocms_default_model', array( 'sanitize_callback' => 'sanitize_text_field' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_default_image_model', array( 'sanitize_callback' => 'sanitize_text_field' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_text_temperature', array( 'sanitize_callback' => 'floatval' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_text_max_tokens', array( 'sanitize_callback' => 'absint' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_image_size', array( 'sanitize_callback' => 'sanitize_text_field' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_image_quality', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_default_model', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_default_image_model', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_text_temperature', array( 'sanitize_callback' => 'floatval' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_text_max_tokens', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_image_size', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_image_quality', array( 'sanitize_callback' => 'sanitize_text_field' ) );
         // New Dutch settings
-        register_setting( 'writgocms_aiml_settings', 'writgocms_website_theme', array( 'sanitize_callback' => 'sanitize_text_field' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_target_audience', array( 'sanitize_callback' => 'sanitize_textarea_field' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_content_tone', array( 'sanitize_callback' => 'sanitize_text_field' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_content_categories', array( 'sanitize_callback' => array( $this, 'sanitize_categories' ) ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_items_per_analysis', array( 'sanitize_callback' => 'absint' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_weekly_updates', array( 'sanitize_callback' => 'absint' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_notifications', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_website_theme', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_target_audience', array( 'sanitize_callback' => 'sanitize_textarea_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_content_tone', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_content_categories', array( 'sanitize_callback' => array( $this, 'sanitize_categories' ) ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_items_per_analysis', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_weekly_updates', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_notifications', array( 'sanitize_callback' => 'absint' ) );
 
         // Gutenberg Toolbar Settings.
-        register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_enabled', array( 'sanitize_callback' => 'absint' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_buttons', array( 'sanitize_callback' => array( $this, 'sanitize_toolbar_buttons' ) ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_rewrite_tone', array( 'sanitize_callback' => 'sanitize_text_field' ) );
-        register_setting( 'writgocms_aiml_settings', 'writgocms_toolbar_links_limit', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_toolbar_enabled', array( 'sanitize_callback' => 'absint' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_toolbar_buttons', array( 'sanitize_callback' => array( $this, 'sanitize_toolbar_buttons' ) ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_toolbar_rewrite_tone', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+        register_setting( 'writgoai_ai_settings', 'writgoai_toolbar_links_limit', array( 'sanitize_callback' => 'absint' ) );
         
         // Add AJAX handlers for credit operations.
         add_action( 'wp_ajax_writgoai_get_credits', array( $this, 'ajax_get_credits' ) );
@@ -220,41 +218,41 @@ class WritgoCMS_AIML_Admin_Settings {
     public function enqueue_admin_scripts( $hook ) {
         // Check if we're on any WritgoAI admin page.
         $allowed_hooks = array(
-            'toplevel_page_writgocms-aiml',
-            'writgoai_page_writgocms-aiml-analyse',
-            'writgoai_page_writgocms-aiml-contentplan',
-            'writgoai_page_writgocms-aiml-generated',
-            'writgoai_page_writgocms-aiml-stats',
-            'writgoai_page_writgocms-aiml-settings',
+            'toplevel_page_writgoai',
+            'writgoai_page_writgoai-analyse',
+            'writgoai_page_writgoai-contentplan',
+            'writgoai_page_writgoai-generated',
+            'writgoai_page_writgoai-stats',
+            'writgoai_page_writgoai-settings',
         );
 
         // Also check for alternative hook formats
-        if ( strpos( $hook, 'writgocms-aiml' ) === false ) {
+        if ( strpos( $hook, 'writgoai' ) === false ) {
             return;
         }
 
         wp_enqueue_style(
-            'writgocms-admin-aiml',
-            WRITGOCMS_URL . 'assets/css/admin-aiml.css',
+            'writgoai-admin-ai',
+            WRITGOAI_URL . 'assets/css/admin-ai.css',
             array(),
-            WRITGOCMS_VERSION
+            WRITGOAI_VERSION
         );
 
         wp_enqueue_script(
-            'writgocms-admin-aiml',
-            WRITGOCMS_URL . 'assets/js/admin-aiml.js',
+            'writgoai-admin-ai',
+            WRITGOAI_URL . 'assets/js/admin-ai.js',
             array( 'jquery' ),
-            WRITGOCMS_VERSION,
+            WRITGOAI_VERSION,
             true
         );
 
         wp_localize_script(
-            'writgocms-admin-aiml',
-            'writgocmsAiml',
+            'writgoai-admin-ai',
+            'writgoaiAi',
             array(
                 'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
                 'restUrl'      => esc_url_raw( rest_url( 'writgo/v1/' ) ),
-                'nonce'        => wp_create_nonce( 'writgocms_aiml_nonce' ),
+                'nonce'        => wp_create_nonce( 'writgoai_ai_nonce' ),
                 'restNonce'    => wp_create_nonce( 'wp_rest' ),
                 'i18n'         => array(
                     // Dutch translations
@@ -321,21 +319,21 @@ class WritgoCMS_AIML_Admin_Settings {
      */
     public function render_dashboard_page() {
         // Use new beginner-friendly dashboard template.
-        $dashboard_template = WRITGOCMS_DIR . 'inc/admin/views/dashboard.php';
+        $dashboard_template = WRITGOAI_DIR . 'inc/admin/views/dashboard.php';
         if ( file_exists( $dashboard_template ) ) {
             include $dashboard_template;
             return;
         }
 
         // Use new Dashboard class for rendering.
-        if ( class_exists( 'WritgoCMS_Dashboard' ) ) {
-            $dashboard = WritgoCMS_Dashboard::get_instance();
+        if ( class_exists( 'WritgoAI_Dashboard' ) ) {
+            $dashboard = WritgoAI_Dashboard::get_instance();
             $dashboard->render();
             return;
         }
 
         // Fallback to old dashboard if class not loaded.
-        $stats = get_option( 'writgocms_aiml_usage_stats', array() );
+        $stats = get_option( 'writgoai_ai_usage_stats', array() );
         $totals = array(
             'text'  => 0,
             'image' => 0,
@@ -354,14 +352,14 @@ class WritgoCMS_AIML_Admin_Settings {
             }
         }
 
-        $saved_plans = get_option( 'writgocms_saved_content_plans', array() );
+        $saved_plans = get_option( 'writgoai_saved_content_plans', array() );
         $plans_count = count( $saved_plans );
         $service_active = $this->is_ai_service_active();
-        $site_analysis = get_option( 'writgocms_site_analysis', array() );
+        $site_analysis = get_option( 'writgoai_site_analysis', array() );
         $has_analysis = ! empty( $site_analysis );
-        $content_plan = get_option( 'writgocms_content_plan', array() );
+        $content_plan = get_option( 'writgoai_content_plan', array() );
         ?>
-        <div class="wrap writgocms-aiml-settings writgocms-dashboard">
+        <div class="wrap writgoai-settings writgoai-dashboard">
             <h1 class="aiml-header">
                 <span class="aiml-logo">🤖</span>
                 Welkom bij WritgoAI
@@ -386,7 +384,7 @@ class WritgoCMS_AIML_Admin_Settings {
                     <p>Jouw AI-gestuurde Content Marketing Assistent</p>
                     <p class="welcome-subtitle">Laat WritgoAI je website analyseren en een gepersonaliseerd contentplan genereren op basis van je bestaande content.</p>
                     <div class="welcome-action">
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button button-primary button-hero">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-analyse' ) ); ?>" class="button button-primary button-hero">
                             🔍 Start Website Analyse
                         </a>
                     </div>
@@ -411,8 +409,8 @@ class WritgoCMS_AIML_Admin_Settings {
                             </div>
                         </div>
                         <div class="analysis-actions">
-                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button">🔄 Ververs Analyse</a>
-                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-settings' ) ); ?>" class="button">⚙️ Instellingen</a>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-analyse' ) ); ?>" class="button">🔄 Ververs Analyse</a>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-settings' ) ); ?>" class="button">⚙️ Instellingen</a>
                         </div>
                     </div>
 
@@ -439,7 +437,7 @@ class WritgoCMS_AIML_Admin_Settings {
                                     <?php endforeach; ?>
                                 </ul>
                                 <?php if ( count( $content_plan['categories']['informatief'] ) > 3 ) : ?>
-                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=informatief' ) ); ?>" class="see-more">Bekijk alle →</a>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan&category=informatief' ) ); ?>" class="see-more">Bekijk alle →</a>
                                 <?php endif; ?>
                             </div>
                             <?php endif; ?>
@@ -461,7 +459,7 @@ class WritgoCMS_AIML_Admin_Settings {
                                     <?php endforeach; ?>
                                 </ul>
                                 <?php if ( count( $content_plan['categories']['reviews'] ) > 3 ) : ?>
-                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=reviews' ) ); ?>" class="see-more">Bekijk alle →</a>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan&category=reviews' ) ); ?>" class="see-more">Bekijk alle →</a>
                                 <?php endif; ?>
                             </div>
                             <?php endif; ?>
@@ -483,7 +481,7 @@ class WritgoCMS_AIML_Admin_Settings {
                                     <?php endforeach; ?>
                                 </ul>
                                 <?php if ( count( $content_plan['categories']['top_lijstjes'] ) > 3 ) : ?>
-                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=top_lijstjes' ) ); ?>" class="see-more">Bekijk alle →</a>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan&category=top_lijstjes' ) ); ?>" class="see-more">Bekijk alle →</a>
                                 <?php endif; ?>
                             </div>
                             <?php endif; ?>
@@ -505,7 +503,7 @@ class WritgoCMS_AIML_Admin_Settings {
                                     <?php endforeach; ?>
                                 </ul>
                                 <?php if ( count( $content_plan['categories']['vergelijkingen'] ) > 3 ) : ?>
-                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=vergelijkingen' ) ); ?>" class="see-more">Bekijk alle →</a>
+                                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan&category=vergelijkingen' ) ); ?>" class="see-more">Bekijk alle →</a>
                                 <?php endif; ?>
                             </div>
                             <?php endif; ?>
@@ -561,7 +559,7 @@ class WritgoCMS_AIML_Admin_Settings {
                                 <span class="widget-badge warning">Service Niet Geconfigureerd</span>
                             <?php endif; ?>
                         </div>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-settings' ) ); ?>" class="widget-button">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-settings' ) ); ?>" class="widget-button">
                             Open Instellingen
                         </a>
                     </div>
@@ -576,7 +574,7 @@ class WritgoCMS_AIML_Admin_Settings {
                                 <span class="widget-badge info">Laatste analyse: <?php echo esc_html( isset( $site_analysis['date'] ) ? $site_analysis['date'] : 'Onbekend' ); ?></span>
                             <?php endif; ?>
                         </div>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="widget-button">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-analyse' ) ); ?>" class="widget-button">
                             <?php echo $has_analysis ? 'Ververs Analyse' : 'Start Analyse'; ?>
                         </a>
                     </div>
@@ -588,7 +586,7 @@ class WritgoCMS_AIML_Admin_Settings {
                             <h3>Contentplan</h3>
                             <p>Bekijk en beheer je gegenereerde contentplan items.</p>
                         </div>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="widget-button">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan' ) ); ?>" class="widget-button">
                             Bekijk Contentplan
                         </a>
                     </div>
@@ -600,7 +598,7 @@ class WritgoCMS_AIML_Admin_Settings {
                             <h3>Statistieken</h3>
                             <p>Bekijk gedetailleerde gebruiksstatistieken en activiteit.</p>
                         </div>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-stats' ) ); ?>" class="widget-button">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-stats' ) ); ?>" class="widget-button">
                             Bekijk Statistieken
                         </a>
                     </div>
@@ -660,7 +658,7 @@ class WritgoCMS_AIML_Admin_Settings {
                             </tbody>
                         </table>
                         <p style="margin-top: 15px;">
-                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-stats' ) ); ?>">Bekijk alle activiteit →</a>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-stats' ) ); ?>">Bekijk alle activiteit →</a>
                         </p>
                         <?php
                     endif;
@@ -675,10 +673,10 @@ class WritgoCMS_AIML_Admin_Settings {
      * Render website analysis page (Dutch: Website Analyse)
      */
     public function render_analyse_page() {
-        $site_analysis = get_option( 'writgocms_site_analysis', array() );
+        $site_analysis = get_option( 'writgoai_site_analysis', array() );
         $has_analysis = ! empty( $site_analysis );
         ?>
-        <div class="wrap writgocms-aiml-settings">
+        <div class="wrap writgoai-settings">
             <h1 class="aiml-header">
                 <span class="aiml-logo">🔍</span>
                 Website Analyse
@@ -809,10 +807,10 @@ class WritgoCMS_AIML_Admin_Settings {
      * Render content plan page (Dutch: Contentplan)
      */
     public function render_contentplan_page() {
-        $content_plan = get_option( 'writgocms_content_plan', array() );
+        $content_plan = get_option( 'writgoai_content_plan', array() );
         $filter_category = isset( $_GET['category'] ) ? sanitize_text_field( wp_unslash( $_GET['category'] ) ) : '';
         ?>
-        <div class="wrap writgocms-aiml-settings">
+        <div class="wrap writgoai-settings">
             <h1 class="aiml-header">
                 <span class="aiml-logo">📋</span>
                 Contentplan
@@ -825,7 +823,7 @@ class WritgoCMS_AIML_Admin_Settings {
                         <span class="empty-icon">📋</span>
                         <h3>Nog geen contentplan</h3>
                         <p>Start een website analyse om je eerste contentplan te genereren.</p>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button button-primary button-hero">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-analyse' ) ); ?>" class="button button-primary button-hero">
                             🔍 Start Website Analyse
                         </a>
                     </div>
@@ -834,19 +832,19 @@ class WritgoCMS_AIML_Admin_Settings {
                 
                 <!-- Category Filters -->
                 <div class="content-plan-filters">
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="filter-btn <?php echo empty( $filter_category ) ? 'active' : ''; ?>">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan' ) ); ?>" class="filter-btn <?php echo empty( $filter_category ) ? 'active' : ''; ?>">
                         Alle (<?php echo esc_html( $content_plan['total_items'] ); ?>)
                     </a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=informatief' ) ); ?>" class="filter-btn filter-informatief <?php echo 'informatief' === $filter_category ? 'active' : ''; ?>">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan&category=informatief' ) ); ?>" class="filter-btn filter-informatief <?php echo 'informatief' === $filter_category ? 'active' : ''; ?>">
                         📚 Informatief (<?php echo isset( $content_plan['categories']['informatief'] ) ? count( $content_plan['categories']['informatief'] ) : 0; ?>)
                     </a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=reviews' ) ); ?>" class="filter-btn filter-reviews <?php echo 'reviews' === $filter_category ? 'active' : ''; ?>">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan&category=reviews' ) ); ?>" class="filter-btn filter-reviews <?php echo 'reviews' === $filter_category ? 'active' : ''; ?>">
                         ⭐ Reviews (<?php echo isset( $content_plan['categories']['reviews'] ) ? count( $content_plan['categories']['reviews'] ) : 0; ?>)
                     </a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=top_lijstjes' ) ); ?>" class="filter-btn filter-top-lijstjes <?php echo 'top_lijstjes' === $filter_category ? 'active' : ''; ?>">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan&category=top_lijstjes' ) ); ?>" class="filter-btn filter-top-lijstjes <?php echo 'top_lijstjes' === $filter_category ? 'active' : ''; ?>">
                         🏆 Top Lijstjes (<?php echo isset( $content_plan['categories']['top_lijstjes'] ) ? count( $content_plan['categories']['top_lijstjes'] ) : 0; ?>)
                     </a>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan&category=vergelijkingen' ) ); ?>" class="filter-btn filter-vergelijkingen <?php echo 'vergelijkingen' === $filter_category ? 'active' : ''; ?>">
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan&category=vergelijkingen' ) ); ?>" class="filter-btn filter-vergelijkingen <?php echo 'vergelijkingen' === $filter_category ? 'active' : ''; ?>">
                         ⚖️ Vergelijkingen (<?php echo isset( $content_plan['categories']['vergelijkingen'] ) ? count( $content_plan['categories']['vergelijkingen'] ) : 0; ?>)
                     </a>
                 </div>
@@ -916,9 +914,9 @@ class WritgoCMS_AIML_Admin_Settings {
      * Render generated content page (Dutch: Gegenereerde Content)
      */
     public function render_generated_content_page() {
-        $generated_content = get_option( 'writgocms_generated_content', array() );
+        $generated_content = get_option( 'writgoai_generated_content', array() );
         ?>
-        <div class="wrap writgocms-aiml-settings">
+        <div class="wrap writgoai-settings">
             <h1 class="aiml-header">
                 <span class="aiml-logo">✍️</span>
                 Gegenereerde Content
@@ -931,7 +929,7 @@ class WritgoCMS_AIML_Admin_Settings {
                         <span class="empty-icon">✍️</span>
                         <h3>Nog geen gegenereerde content</h3>
                         <p>Ga naar je contentplan en klik op "Genereer Content" bij een onderwerp.</p>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="button button-primary button-hero">
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan' ) ); ?>" class="button button-primary button-hero">
                             📋 Bekijk Contentplan
                         </a>
                     </div>
@@ -977,7 +975,7 @@ class WritgoCMS_AIML_Admin_Settings {
      */
     public function render_stats_page() {
         ?>
-        <div class="wrap writgocms-aiml-settings">
+        <div class="wrap writgoai-settings">
             <h1 class="aiml-header">
                 <span class="aiml-logo">📈</span>
                 Statistieken
@@ -995,7 +993,7 @@ class WritgoCMS_AIML_Admin_Settings {
      */
     public function render_settings_page() {
         // Use new beginner-friendly settings template.
-        $settings_template = WRITGOCMS_DIR . 'inc/admin/views/settings.php';
+        $settings_template = WRITGOAI_DIR . 'inc/admin/views/settings.php';
         if ( file_exists( $settings_template ) ) {
             include $settings_template;
             return;
@@ -1003,7 +1001,7 @@ class WritgoCMS_AIML_Admin_Settings {
 
         // Fallback to old settings page.
         ?>
-        <div class="wrap writgocms-aiml-settings">
+        <div class="wrap writgoai-settings">
             <h1 class="aiml-header">
                 <span class="aiml-logo">⚙️</span>
                 WritgoAI Instellingen
@@ -1022,13 +1020,13 @@ class WritgoCMS_AIML_Admin_Settings {
     private function render_settings_tab() {
         $text_models  = $this->provider->get_text_models();
         $image_models = $this->provider->get_image_models();
-        $content_categories = get_option( 'writgocms_content_categories', array( 'informatief', 'reviews', 'top_lijstjes', 'vergelijkingen' ) );
+        $content_categories = get_option( 'writgoai_content_categories', array( 'informatief', 'reviews', 'top_lijstjes', 'vergelijkingen' ) );
         
         // Check if AI service is configured (API key available server-side).
         $service_active = $this->is_ai_service_active();
         ?>
         <form method="post" action="options.php">
-            <?php settings_fields( 'writgocms_aiml_settings' ); ?>
+            <?php settings_fields( 'writgoai_ai_settings' ); ?>
 
             <!-- License & API Settings Section -->
             <div class="aiml-settings-section">
@@ -1040,15 +1038,15 @@ class WritgoCMS_AIML_Admin_Settings {
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_license_key">Licentie Sleutel</label>
+                            <label for="writgoai_license_key">Licentie Sleutel</label>
                         </th>
                         <td>
-                            <input type="text" id="writgocms_license_key" name="writgocms_license_key" value="<?php echo esc_attr( get_option( 'writgocms_license_key', '' ) ); ?>" class="regular-text" placeholder="Voer je licentie sleutel in">
+                            <input type="text" id="writgoai_license_key" name="writgoai_license_key" value="<?php echo esc_attr( get_option( 'writgoai_license_key', '' ) ); ?>" class="regular-text" placeholder="Voer je licentie sleutel in">
                             <p class="description">Je WritgoAI licentie sleutel voor credit management en API toegang.</p>
                             <?php
                             // Show license status if available.
-                            if ( class_exists( 'WritgoCMS_API_Client' ) && ! empty( get_option( 'writgocms_license_key' ) ) ) {
-                                $api_client = WritgoCMS_API_Client::get_instance();
+                            if ( class_exists( 'WritgoAI_API_Client' ) && ! empty( get_option( 'writgoai_license_key' ) ) ) {
+                                $api_client = WritgoAI_API_Client::get_instance();
                                 $status = $api_client->get_subscription_status();
                                 if ( ! is_wp_error( $status ) && isset( $status['status'] ) ) :
                                     $status_class = ( 'active' === $status['status'] ) ? 'success' : 'warning';
@@ -1073,10 +1071,10 @@ class WritgoCMS_AIML_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_api_url">API URL (Optioneel)</label>
+                            <label for="writgoai_api_url">API URL (Optioneel)</label>
                         </th>
                         <td>
-                            <input type="url" id="writgocms_api_url" name="writgocms_api_url" value="<?php echo esc_attr( get_option( 'writgocms_api_url', 'https://api.writgoai.com' ) ); ?>" class="regular-text" placeholder="https://api.writgoai.com">
+                            <input type="url" id="writgoai_api_url" name="writgoai_api_url" value="<?php echo esc_attr( get_option( 'writgoai_api_url', 'https://api.writgoai.com' ) ); ?>" class="regular-text" placeholder="https://api.writgoai.com">
                             <p class="description">API endpoint URL. Laat standaard staan tenzij je een custom server gebruikt.</p>
                         </td>
                     </tr>
@@ -1135,12 +1133,12 @@ class WritgoCMS_AIML_Admin_Settings {
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_default_model">Tekst AI Model</label>
+                            <label for="writgoai_default_model">Tekst AI Model</label>
                         </th>
                         <td>
-                            <select id="writgocms_default_model" name="writgocms_default_model">
+                            <select id="writgoai_default_model" name="writgoai_default_model">
                                 <?php foreach ( $text_models as $model_key => $model_name ) : ?>
-                                    <option value="<?php echo esc_attr( $model_key ); ?>" <?php selected( get_option( 'writgocms_default_model', 'gpt-4o' ), $model_key ); ?>>
+                                    <option value="<?php echo esc_attr( $model_key ); ?>" <?php selected( get_option( 'writgoai_default_model', 'gpt-4o' ), $model_key ); ?>>
                                         <?php echo esc_html( $model_name ); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -1158,33 +1156,33 @@ class WritgoCMS_AIML_Admin_Settings {
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_website_theme">Hoofdthema</label>
+                            <label for="writgoai_website_theme">Hoofdthema</label>
                         </th>
                         <td>
-                            <input type="text" id="writgocms_website_theme" name="writgocms_website_theme" value="<?php echo esc_attr( get_option( 'writgocms_website_theme', '' ) ); ?>" class="regular-text" placeholder="Automatisch detecteren of handmatig invoeren">
+                            <input type="text" id="writgoai_website_theme" name="writgoai_website_theme" value="<?php echo esc_attr( get_option( 'writgoai_website_theme', '' ) ); ?>" class="regular-text" placeholder="Automatisch detecteren of handmatig invoeren">
                             <p class="description">Laat leeg voor automatische detectie of voer je hoofdthema handmatig in.</p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_target_audience">Doelgroep</label>
+                            <label for="writgoai_target_audience">Doelgroep</label>
                         </th>
                         <td>
-                            <textarea id="writgocms_target_audience" name="writgocms_target_audience" rows="2" class="large-text" placeholder="Bijv. Ondernemers tussen 30-50 jaar die geïnteresseerd zijn in..."><?php echo esc_textarea( get_option( 'writgocms_target_audience', '' ) ); ?></textarea>
+                            <textarea id="writgoai_target_audience" name="writgoai_target_audience" rows="2" class="large-text" placeholder="Bijv. Ondernemers tussen 30-50 jaar die geïnteresseerd zijn in..."><?php echo esc_textarea( get_option( 'writgoai_target_audience', '' ) ); ?></textarea>
                             <p class="description">Beschrijf je doelgroep voor betere content suggesties.</p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_content_tone">Toon</label>
+                            <label for="writgoai_content_tone">Toon</label>
                         </th>
                         <td>
-                            <select id="writgocms_content_tone" name="writgocms_content_tone">
-                                <option value="professioneel" <?php selected( get_option( 'writgocms_content_tone', 'professioneel' ), 'professioneel' ); ?>>Professioneel</option>
-                                <option value="informeel" <?php selected( get_option( 'writgocms_content_tone' ), 'informeel' ); ?>>Informeel</option>
-                                <option value="vriendelijk" <?php selected( get_option( 'writgocms_content_tone' ), 'vriendelijk' ); ?>>Vriendelijk</option>
-                                <option value="zakelijk" <?php selected( get_option( 'writgocms_content_tone' ), 'zakelijk' ); ?>>Zakelijk</option>
-                                <option value="enthousiast" <?php selected( get_option( 'writgocms_content_tone' ), 'enthousiast' ); ?>>Enthousiast</option>
+                            <select id="writgoai_content_tone" name="writgoai_content_tone">
+                                <option value="professioneel" <?php selected( get_option( 'writgoai_content_tone', 'professioneel' ), 'professioneel' ); ?>>Professioneel</option>
+                                <option value="informeel" <?php selected( get_option( 'writgoai_content_tone' ), 'informeel' ); ?>>Informeel</option>
+                                <option value="vriendelijk" <?php selected( get_option( 'writgoai_content_tone' ), 'vriendelijk' ); ?>>Vriendelijk</option>
+                                <option value="zakelijk" <?php selected( get_option( 'writgoai_content_tone' ), 'zakelijk' ); ?>>Zakelijk</option>
+                                <option value="enthousiast" <?php selected( get_option( 'writgoai_content_tone' ), 'enthousiast' ); ?>>Enthousiast</option>
                             </select>
                             <p class="description">De schrijfstijl voor gegenereerde content.</p>
                         </td>
@@ -1204,19 +1202,19 @@ class WritgoCMS_AIML_Admin_Settings {
                         <td>
                             <fieldset>
                                 <label>
-                                    <input type="checkbox" name="writgocms_content_categories[]" value="informatief" <?php checked( in_array( 'informatief', $content_categories, true ) ); ?>>
+                                    <input type="checkbox" name="writgoai_content_categories[]" value="informatief" <?php checked( in_array( 'informatief', $content_categories, true ) ); ?>>
                                     📚 Informatieve Content (How-to guides, uitleg artikelen, tutorials)
                                 </label><br>
                                 <label>
-                                    <input type="checkbox" name="writgocms_content_categories[]" value="reviews" <?php checked( in_array( 'reviews', $content_categories, true ) ); ?>>
+                                    <input type="checkbox" name="writgoai_content_categories[]" value="reviews" <?php checked( in_array( 'reviews', $content_categories, true ) ); ?>>
                                     ⭐ Reviews (Product reviews, service reviews, voor- en nadelen)
                                 </label><br>
                                 <label>
-                                    <input type="checkbox" name="writgocms_content_categories[]" value="top_lijstjes" <?php checked( in_array( 'top_lijstjes', $content_categories, true ) ); ?>>
+                                    <input type="checkbox" name="writgoai_content_categories[]" value="top_lijstjes" <?php checked( in_array( 'top_lijstjes', $content_categories, true ) ); ?>>
                                     🏆 Top Lijstjes (Beste X van 2025, Top 10, rankings)
                                 </label><br>
                                 <label>
-                                    <input type="checkbox" name="writgocms_content_categories[]" value="vergelijkingen" <?php checked( in_array( 'vergelijkingen', $content_categories, true ) ); ?>>
+                                    <input type="checkbox" name="writgoai_content_categories[]" value="vergelijkingen" <?php checked( in_array( 'vergelijkingen', $content_categories, true ) ); ?>>
                                     ⚖️ Vergelijkingen (X vs Y, feature comparisons, alternatieven)
                                 </label>
                             </fieldset>
@@ -1225,14 +1223,14 @@ class WritgoCMS_AIML_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_items_per_analysis">Items per Analyse</label>
+                            <label for="writgoai_items_per_analysis">Items per Analyse</label>
                         </th>
                         <td>
-                            <select id="writgocms_items_per_analysis" name="writgocms_items_per_analysis">
-                                <option value="10" <?php selected( get_option( 'writgocms_items_per_analysis', 20 ), 10 ); ?>>10</option>
-                                <option value="20" <?php selected( get_option( 'writgocms_items_per_analysis', 20 ), 20 ); ?>>20</option>
-                                <option value="30" <?php selected( get_option( 'writgocms_items_per_analysis', 20 ), 30 ); ?>>30</option>
-                                <option value="50" <?php selected( get_option( 'writgocms_items_per_analysis', 20 ), 50 ); ?>>50</option>
+                            <select id="writgoai_items_per_analysis" name="writgoai_items_per_analysis">
+                                <option value="10" <?php selected( get_option( 'writgoai_items_per_analysis', 20 ), 10 ); ?>>10</option>
+                                <option value="20" <?php selected( get_option( 'writgoai_items_per_analysis', 20 ), 20 ); ?>>20</option>
+                                <option value="30" <?php selected( get_option( 'writgoai_items_per_analysis', 20 ), 30 ); ?>>30</option>
+                                <option value="50" <?php selected( get_option( 'writgoai_items_per_analysis', 20 ), 50 ); ?>>50</option>
                             </select>
                             <p class="description">Aantal contentplan items per analyse.</p>
                         </td>
@@ -1252,11 +1250,11 @@ class WritgoCMS_AIML_Admin_Settings {
                         <td>
                             <fieldset>
                                 <label>
-                                    <input type="checkbox" name="writgocms_weekly_updates" value="1" <?php checked( get_option( 'writgocms_weekly_updates', 0 ), 1 ); ?>>
+                                    <input type="checkbox" name="writgoai_weekly_updates" value="1" <?php checked( get_option( 'writgoai_weekly_updates', 0 ), 1 ); ?>>
                                     Wekelijks nieuwe contentplan items genereren
                                 </label><br>
                                 <label>
-                                    <input type="checkbox" name="writgocms_notifications" value="1" <?php checked( get_option( 'writgocms_notifications', 0 ), 1 ); ?>>
+                                    <input type="checkbox" name="writgoai_notifications" value="1" <?php checked( get_option( 'writgoai_notifications', 0 ), 1 ); ?>>
                                     Notificaties bij nieuwe suggesties
                                 </label>
                             </fieldset>
@@ -1267,15 +1265,15 @@ class WritgoCMS_AIML_Admin_Settings {
 
             <!-- Gutenberg AI Toolbar Section -->
             <?php
-            $toolbar_enabled = get_option( 'writgocms_toolbar_enabled', 1 );
-            $toolbar_buttons = get_option( 'writgocms_toolbar_buttons', array(
+            $toolbar_enabled = get_option( 'writgoai_toolbar_enabled', 1 );
+            $toolbar_buttons = get_option( 'writgoai_toolbar_buttons', array(
                 'rewrite'     => true,
                 'links'       => true,
                 'image'       => true,
                 'rewrite_all' => true,
             ) );
-            $default_rewrite_tone = get_option( 'writgocms_toolbar_rewrite_tone', 'professional' );
-            $links_limit = get_option( 'writgocms_toolbar_links_limit', 5 );
+            $default_rewrite_tone = get_option( 'writgoai_toolbar_rewrite_tone', 'professional' );
+            $links_limit = get_option( 'writgoai_toolbar_links_limit', 5 );
             ?>
             <div class="aiml-settings-section">
                 <h2>🛠️ Gutenberg AI Toolbar</h2>
@@ -1290,7 +1288,7 @@ class WritgoCMS_AIML_Admin_Settings {
                         </th>
                         <td>
                             <label>
-                                <input type="checkbox" name="writgocms_toolbar_enabled" value="1" <?php checked( $toolbar_enabled, 1 ); ?>>
+                                <input type="checkbox" name="writgoai_toolbar_enabled" value="1" <?php checked( $toolbar_enabled, 1 ); ?>>
                                 AI Toolbar weergeven in Gutenberg editor
                             </label>
                             <p class="description">Schakel de AI-toolbar in of uit in de Gutenberg block editor.</p>
@@ -1303,19 +1301,19 @@ class WritgoCMS_AIML_Admin_Settings {
                         <td>
                             <fieldset>
                                 <label>
-                                    <input type="checkbox" name="writgocms_toolbar_buttons[rewrite]" value="1" <?php checked( isset( $toolbar_buttons['rewrite'] ) ? $toolbar_buttons['rewrite'] : true ); ?>>
+                                    <input type="checkbox" name="writgoai_toolbar_buttons[rewrite]" value="1" <?php checked( isset( $toolbar_buttons['rewrite'] ) ? $toolbar_buttons['rewrite'] : true ); ?>>
                                     🤖 AI Rewrite - Herschrijf geselecteerde tekst
                                 </label><br>
                                 <label>
-                                    <input type="checkbox" name="writgocms_toolbar_buttons[links]" value="1" <?php checked( isset( $toolbar_buttons['links'] ) ? $toolbar_buttons['links'] : true ); ?>>
+                                    <input type="checkbox" name="writgoai_toolbar_buttons[links]" value="1" <?php checked( isset( $toolbar_buttons['links'] ) ? $toolbar_buttons['links'] : true ); ?>>
                                     🔗 Add Links - Interne link suggesties
                                 </label><br>
                                 <label>
-                                    <input type="checkbox" name="writgocms_toolbar_buttons[image]" value="1" <?php checked( isset( $toolbar_buttons['image'] ) ? $toolbar_buttons['image'] : true ); ?>>
+                                    <input type="checkbox" name="writgoai_toolbar_buttons[image]" value="1" <?php checked( isset( $toolbar_buttons['image'] ) ? $toolbar_buttons['image'] : true ); ?>>
                                     🖼️ Generate Image - AI afbeelding genereren
                                 </label><br>
                                 <label>
-                                    <input type="checkbox" name="writgocms_toolbar_buttons[rewrite_all]" value="1" <?php checked( isset( $toolbar_buttons['rewrite_all'] ) ? $toolbar_buttons['rewrite_all'] : true ); ?>>
+                                    <input type="checkbox" name="writgoai_toolbar_buttons[rewrite_all]" value="1" <?php checked( isset( $toolbar_buttons['rewrite_all'] ) ? $toolbar_buttons['rewrite_all'] : true ); ?>>
                                     📝 Rewrite All - Hele blok herschrijven
                                 </label>
                             </fieldset>
@@ -1324,10 +1322,10 @@ class WritgoCMS_AIML_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_toolbar_rewrite_tone">Standaard Herschrijf Toon</label>
+                            <label for="writgoai_toolbar_rewrite_tone">Standaard Herschrijf Toon</label>
                         </th>
                         <td>
-                            <select id="writgocms_toolbar_rewrite_tone" name="writgocms_toolbar_rewrite_tone">
+                            <select id="writgoai_toolbar_rewrite_tone" name="writgoai_toolbar_rewrite_tone">
                                 <option value="professional" <?php selected( $default_rewrite_tone, 'professional' ); ?>>Professioneel</option>
                                 <option value="casual" <?php selected( $default_rewrite_tone, 'casual' ); ?>>Informeel</option>
                                 <option value="friendly" <?php selected( $default_rewrite_tone, 'friendly' ); ?>>Vriendelijk</option>
@@ -1339,10 +1337,10 @@ class WritgoCMS_AIML_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_toolbar_links_limit">Interne Links Limiet</label>
+                            <label for="writgoai_toolbar_links_limit">Interne Links Limiet</label>
                         </th>
                         <td>
-                            <select id="writgocms_toolbar_links_limit" name="writgocms_toolbar_links_limit">
+                            <select id="writgoai_toolbar_links_limit" name="writgoai_toolbar_links_limit">
                                 <option value="3" <?php selected( $links_limit, 3 ); ?>>3 links</option>
                                 <option value="5" <?php selected( $links_limit, 5 ); ?>>5 links</option>
                                 <option value="10" <?php selected( $links_limit, 10 ); ?>>10 links</option>
@@ -1361,20 +1359,20 @@ class WritgoCMS_AIML_Admin_Settings {
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_text_temperature">Temperatuur</label>
+                            <label for="writgoai_text_temperature">Temperatuur</label>
                         </th>
                         <td>
-                            <input type="range" id="writgocms_text_temperature" name="writgocms_text_temperature" min="0" max="2" step="0.1" value="<?php echo esc_attr( get_option( 'writgocms_text_temperature', '0.7' ) ); ?>" class="range-input">
-                            <span class="range-value"><?php echo esc_html( get_option( 'writgocms_text_temperature', '0.7' ) ); ?></span>
+                            <input type="range" id="writgoai_text_temperature" name="writgoai_text_temperature" min="0" max="2" step="0.1" value="<?php echo esc_attr( get_option( 'writgoai_text_temperature', '0.7' ) ); ?>" class="range-input">
+                            <span class="range-value"><?php echo esc_html( get_option( 'writgoai_text_temperature', '0.7' ) ); ?></span>
                             <p class="description">Hogere waarden maken output meer willekeurig, lagere waarden meer deterministisch.</p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_text_max_tokens">Maximale Tokens</label>
+                            <label for="writgoai_text_max_tokens">Maximale Tokens</label>
                         </th>
                         <td>
-                            <input type="number" id="writgocms_text_max_tokens" name="writgocms_text_max_tokens" value="<?php echo esc_attr( get_option( 'writgocms_text_max_tokens', '1000' ) ); ?>" min="100" max="4000" class="small-text">
+                            <input type="number" id="writgoai_text_max_tokens" name="writgoai_text_max_tokens" value="<?php echo esc_attr( get_option( 'writgoai_text_max_tokens', '1000' ) ); ?>" min="100" max="4000" class="small-text">
                             <p class="description">Maximum aantal tokens om te genereren.</p>
                         </td>
                     </tr>
@@ -1388,12 +1386,12 @@ class WritgoCMS_AIML_Admin_Settings {
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_default_image_model">Standaard Afbeelding Model</label>
+                            <label for="writgoai_default_image_model">Standaard Afbeelding Model</label>
                         </th>
                         <td>
-                            <select id="writgocms_default_image_model" name="writgocms_default_image_model">
+                            <select id="writgoai_default_image_model" name="writgoai_default_image_model">
                                 <?php foreach ( $image_models as $model_key => $model_name ) : ?>
-                                    <option value="<?php echo esc_attr( $model_key ); ?>" <?php selected( get_option( 'writgocms_default_image_model', 'dall-e-3' ), $model_key ); ?>>
+                                    <option value="<?php echo esc_attr( $model_key ); ?>" <?php selected( get_option( 'writgoai_default_image_model', 'dall-e-3' ), $model_key ); ?>>
                                         <?php echo esc_html( $model_name ); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -1403,25 +1401,25 @@ class WritgoCMS_AIML_Admin_Settings {
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_image_size">Afbeelding Grootte</label>
+                            <label for="writgoai_image_size">Afbeelding Grootte</label>
                         </th>
                         <td>
-                            <select id="writgocms_image_size" name="writgocms_image_size">
-                                <option value="1024x1024" <?php selected( get_option( 'writgocms_image_size', '1024x1024' ), '1024x1024' ); ?>>1024x1024</option>
-                                <option value="1792x1024" <?php selected( get_option( 'writgocms_image_size', '1024x1024' ), '1792x1024' ); ?>>1792x1024</option>
-                                <option value="1024x1792" <?php selected( get_option( 'writgocms_image_size', '1024x1024' ), '1024x1792' ); ?>>1024x1792</option>
-                                <option value="512x512" <?php selected( get_option( 'writgocms_image_size', '1024x1024' ), '512x512' ); ?>>512x512</option>
+                            <select id="writgoai_image_size" name="writgoai_image_size">
+                                <option value="1024x1024" <?php selected( get_option( 'writgoai_image_size', '1024x1024' ), '1024x1024' ); ?>>1024x1024</option>
+                                <option value="1792x1024" <?php selected( get_option( 'writgoai_image_size', '1024x1024' ), '1792x1024' ); ?>>1792x1024</option>
+                                <option value="1024x1792" <?php selected( get_option( 'writgoai_image_size', '1024x1024' ), '1024x1792' ); ?>>1024x1792</option>
+                                <option value="512x512" <?php selected( get_option( 'writgoai_image_size', '1024x1024' ), '512x512' ); ?>>512x512</option>
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">
-                            <label for="writgocms_image_quality">Afbeelding Kwaliteit (DALL-E 3)</label>
+                            <label for="writgoai_image_quality">Afbeelding Kwaliteit (DALL-E 3)</label>
                         </th>
                         <td>
-                            <select id="writgocms_image_quality" name="writgocms_image_quality">
-                                <option value="standard" <?php selected( get_option( 'writgocms_image_quality', 'standard' ), 'standard' ); ?>>Standaard</option>
-                                <option value="hd" <?php selected( get_option( 'writgocms_image_quality', 'standard' ), 'hd' ); ?>>HD</option>
+                            <select id="writgoai_image_quality" name="writgoai_image_quality">
+                                <option value="standard" <?php selected( get_option( 'writgoai_image_quality', 'standard' ), 'standard' ); ?>>Standaard</option>
+                                <option value="hd" <?php selected( get_option( 'writgoai_image_quality', 'standard' ), 'hd' ); ?>>HD</option>
                             </select>
                         </td>
                     </tr>
@@ -1435,10 +1433,10 @@ class WritgoCMS_AIML_Admin_Settings {
 
         <!-- DataForSEO Settings Section (PR #2) -->
         <form method="post" action="options.php">
-            <?php settings_fields( 'writgocms_dataforseo_settings' ); ?>
+            <?php settings_fields( 'writgoai_dataforseo_settings' ); ?>
             <?php
-            if ( class_exists( 'WritgoCMS_DataForSEO_Settings' ) ) {
-                $dataforseo_settings = WritgoCMS_DataForSEO_Settings::get_instance();
+            if ( class_exists( 'WritgoAI_DataForSEO_Settings' ) ) {
+                $dataforseo_settings = WritgoAI_DataForSEO_Settings::get_instance();
                 $dataforseo_settings->render_settings_section();
             }
             ?>
@@ -1506,7 +1504,7 @@ class WritgoCMS_AIML_Admin_Settings {
      * Render statistics tab (Dutch: Statistieken)
      */
     private function render_stats_tab() {
-        $stats = get_option( 'writgocms_aiml_usage_stats', array() );
+        $stats = get_option( 'writgoai_ai_usage_stats', array() );
         $totals = array(
             'text'  => 0,
             'image' => 0,
@@ -1724,19 +1722,19 @@ class WritgoCMS_AIML_Admin_Settings {
      */
     private function is_ai_service_active() {
         // Check wp-config.php constant.
-        if ( defined( 'WRITGO_AIML_API_KEY' ) && WRITGO_AIML_API_KEY ) {
+        if ( defined( 'WRITGO_AI_API_KEY' ) && WRITGO_AI_API_KEY ) {
             return true;
         }
 
         // Check environment variable.
-        $env_key = getenv( 'WRITGO_AIML_API_KEY' );
+        $env_key = getenv( 'WRITGO_AI_API_KEY' );
         if ( $env_key ) {
             return true;
         }
 
         // Check license manager for injected key.
-        if ( class_exists( 'WritgoCMS_License_Manager' ) ) {
-            $license_manager = WritgoCMS_License_Manager::get_instance();
+        if ( class_exists( 'WritgoAI_License_Manager' ) ) {
+            $license_manager = WritgoAI_License_Manager::get_instance();
             $injected_key    = $license_manager->get_injected_api_key();
 
             if ( ! is_wp_error( $injected_key ) && ! empty( $injected_key ) ) {
@@ -1753,17 +1751,17 @@ class WritgoCMS_AIML_Admin_Settings {
      * @return void
      */
     public function ajax_get_credits() {
-        check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Geen toestemming.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Geen toestemming.', 'writgoai' ) ) );
         }
 
-        if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
-            wp_send_json_error( array( 'message' => __( 'API Client niet beschikbaar.', 'writgocms' ) ) );
+        if ( ! class_exists( 'WritgoAI_API_Client' ) ) {
+            wp_send_json_error( array( 'message' => __( 'API Client niet beschikbaar.', 'writgoai' ) ) );
         }
 
-        $api_client = WritgoCMS_API_Client::get_instance();
+        $api_client = WritgoAI_API_Client::get_instance();
         $balance = $api_client->get_credit_balance();
 
         if ( is_wp_error( $balance ) ) {
@@ -1782,17 +1780,17 @@ class WritgoCMS_AIML_Admin_Settings {
      * @return void
      */
     public function ajax_refresh_credits() {
-        check_ajax_referer( 'writgocms_aiml_nonce', 'nonce' );
+        check_ajax_referer( 'writgoai_ai_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Geen toestemming.', 'writgocms' ) ) );
+            wp_send_json_error( array( 'message' => __( 'Geen toestemming.', 'writgoai' ) ) );
         }
 
-        if ( ! class_exists( 'WritgoCMS_API_Client' ) ) {
-            wp_send_json_error( array( 'message' => __( 'API Client niet beschikbaar.', 'writgocms' ) ) );
+        if ( ! class_exists( 'WritgoAI_API_Client' ) ) {
+            wp_send_json_error( array( 'message' => __( 'API Client niet beschikbaar.', 'writgoai' ) ) );
         }
 
-        $api_client = WritgoCMS_API_Client::get_instance();
+        $api_client = WritgoAI_API_Client::get_instance();
         
         // Force refresh by passing true.
         $balance = $api_client->get_credit_balance( true );
@@ -1809,4 +1807,4 @@ class WritgoCMS_AIML_Admin_Settings {
 }
 
 // Initialize admin settings
-WritgoCMS_AIML_Admin_Settings::get_instance();
+WritgoAI_AI_Admin_Settings::get_instance();

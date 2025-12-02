@@ -4,7 +4,7 @@
  * Handles manual update check via AJAX
  */
 jQuery(document).ready(function($) {
-    $('.writgocms-check-update').on('click', function(e) {
+    $('.writgoai-check-update').on('click', function(e) {
         e.preventDefault();
         
         var $link = $(this);
@@ -16,11 +16,11 @@ jQuery(document).ready(function($) {
         
         // Make AJAX request
         $.ajax({
-            url: writgocmsUpdater.ajaxurl,
+            url: writgoaiUpdater.ajaxurl,
             type: 'POST',
             data: {
-                action: 'writgocms_check_updates',
-                nonce: writgocmsUpdater.nonce
+                action: 'writgoai_check_updates',
+                nonce: writgoaiUpdater.nonce
             },
             success: function(response) {
                 if (response.success) {

@@ -4,7 +4,7 @@
  *
  * Main dashboard for WritgoAI with website health score, stats, and workflow progress.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Dashboard
+ * Class WritgoAI_Dashboard
  */
-class WritgoCMS_Dashboard {
+class WritgoAI_Dashboard {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Dashboard
+	 * @var WritgoAI_Dashboard
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Dashboard
+	 * @return WritgoAI_Dashboard
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -39,9 +39,9 @@ class WritgoCMS_Dashboard {
 	 * Constructor
 	 */
 	private function __construct() {
-		// Dashboard is rendered through admin-aiml-settings.php.
+		// Dashboard is rendered through admin-ai-settings.php.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'wp_ajax_writgocms_get_dashboard_stats', array( $this, 'ajax_get_dashboard_stats' ) );
+		add_action( 'wp_ajax_writgoai_get_dashboard_stats', array( $this, 'ajax_get_dashboard_stats' ) );
 	}
 
 	/**
@@ -50,31 +50,31 @@ class WritgoCMS_Dashboard {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( strpos( $hook, 'writgocms-aiml' ) === false ) {
+		if ( strpos( $hook, 'writgoai' ) === false ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'writgocms-dashboard',
-			WRITGOCMS_URL . 'assets/css/dashboard.css',
+			'writgoai-dashboard',
+			WRITGOAI_URL . 'assets/css/dashboard.css',
 			array(),
-			WRITGOCMS_VERSION
+			WRITGOAI_VERSION
 		);
 
 		wp_enqueue_script(
-			'writgocms-dashboard',
-			WRITGOCMS_URL . 'assets/js/dashboard.js',
+			'writgoai-dashboard',
+			WRITGOAI_URL . 'assets/js/dashboard.js',
 			array( 'jquery' ),
-			WRITGOCMS_VERSION,
+			WRITGOAI_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'writgocms-dashboard',
-			'writgocmsDashboard',
+			'writgoai-dashboard',
+			'writgoaiDashboard',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'writgocms_dashboard_nonce' ),
+				'nonce'   => wp_create_nonce( 'writgoai_dashboard_nonce' ),
 			)
 		);
 	}
@@ -85,12 +85,12 @@ class WritgoCMS_Dashboard {
 	public function render() {
 		$stats = $this->get_dashboard_stats();
 		?>
-		<div class="wrap writgocms-dashboard">
-			<h1><?php esc_html_e( 'WritgoAI Dashboard', 'writgocms' ); ?></h1>
+		<div class="wrap writgoai-dashboard">
+			<h1><?php esc_html_e( 'WritgoAI Dashboard', 'writgoai' ); ?></h1>
 
 			<!-- Health Score Section -->
 			<div class="dashboard-section health-score-section">
-				<h2><?php esc_html_e( 'Website Health Score', 'writgocms' ); ?></h2>
+				<h2><?php esc_html_e( 'Website Health Score', 'writgoai' ); ?></h2>
 				<div class="health-score-container">
 					<div class="health-score-circle">
 						<div class="score-value <?php echo esc_attr( $this->get_score_class( $stats['health_score'] ) ); ?>">
@@ -100,19 +100,19 @@ class WritgoCMS_Dashboard {
 					</div>
 					<div class="health-metrics">
 						<div class="metric">
-							<span class="metric-label"><?php esc_html_e( 'Content Coverage', 'writgocms' ); ?></span>
+							<span class="metric-label"><?php esc_html_e( 'Content Coverage', 'writgoai' ); ?></span>
 							<span class="metric-value"><?php echo esc_html( $stats['content_coverage'] ); ?>%</span>
 						</div>
 						<div class="metric">
-							<span class="metric-label"><?php esc_html_e( 'Topical Authority', 'writgocms' ); ?></span>
+							<span class="metric-label"><?php esc_html_e( 'Topical Authority', 'writgoai' ); ?></span>
 							<span class="metric-value"><?php echo esc_html( $stats['topical_authority'] ); ?>%</span>
 						</div>
 						<div class="metric">
-							<span class="metric-label"><?php esc_html_e( 'Internal Links Score', 'writgocms' ); ?></span>
+							<span class="metric-label"><?php esc_html_e( 'Internal Links Score', 'writgoai' ); ?></span>
 							<span class="metric-value"><?php echo esc_html( $stats['internal_links_score'] ); ?>%</span>
 						</div>
 						<div class="metric">
-							<span class="metric-label"><?php esc_html_e( 'Technical SEO Score', 'writgocms' ); ?></span>
+							<span class="metric-label"><?php esc_html_e( 'Technical SEO Score', 'writgoai' ); ?></span>
 							<span class="metric-value"><?php echo esc_html( $stats['technical_seo_score'] ); ?>%</span>
 						</div>
 					</div>
@@ -121,34 +121,34 @@ class WritgoCMS_Dashboard {
 
 			<!-- Quick Stats Cards -->
 			<div class="dashboard-section quick-stats-section">
-				<h2><?php esc_html_e( 'Quick Stats', 'writgocms' ); ?></h2>
+				<h2><?php esc_html_e( 'Quick Stats', 'writgoai' ); ?></h2>
 				<div class="stats-cards">
 					<div class="stat-card">
 						<div class="stat-icon">📝</div>
 						<div class="stat-content">
 							<div class="stat-value"><?php echo esc_html( $stats['total_posts'] ); ?></div>
-							<div class="stat-label"><?php esc_html_e( 'Total Posts', 'writgocms' ); ?></div>
+							<div class="stat-label"><?php esc_html_e( 'Total Posts', 'writgoai' ); ?></div>
 						</div>
 					</div>
 					<div class="stat-card">
 						<div class="stat-icon">✅</div>
 						<div class="stat-content">
 							<div class="stat-value"><?php echo esc_html( $stats['optimized_posts'] ); ?></div>
-							<div class="stat-label"><?php esc_html_e( 'Optimized Posts', 'writgocms' ); ?></div>
+							<div class="stat-label"><?php esc_html_e( 'Optimized Posts', 'writgoai' ); ?></div>
 						</div>
 					</div>
 					<div class="stat-card">
 						<div class="stat-icon">📊</div>
 						<div class="stat-content">
 							<div class="stat-value"><?php echo esc_html( $stats['avg_ranking'] ); ?></div>
-							<div class="stat-label"><?php esc_html_e( 'Average Ranking', 'writgocms' ); ?></div>
+							<div class="stat-label"><?php esc_html_e( 'Average Ranking', 'writgoai' ); ?></div>
 						</div>
 					</div>
 					<div class="stat-card">
 						<div class="stat-icon">👥</div>
 						<div class="stat-content">
 							<div class="stat-value"><?php echo esc_html( number_format( $stats['monthly_traffic'] ) ); ?></div>
-							<div class="stat-label"><?php esc_html_e( 'Monthly Traffic', 'writgocms' ); ?></div>
+							<div class="stat-label"><?php esc_html_e( 'Monthly Traffic', 'writgoai' ); ?></div>
 						</div>
 					</div>
 				</div>
@@ -156,25 +156,25 @@ class WritgoCMS_Dashboard {
 
 			<!-- Workflow Progress -->
 			<div class="dashboard-section workflow-section">
-				<h2><?php esc_html_e( 'Workflow Progress', 'writgocms' ); ?></h2>
+				<h2><?php esc_html_e( 'Workflow Progress', 'writgoai' ); ?></h2>
 				<div class="workflow-steps">
 					<div class="workflow-step <?php echo esc_attr( $stats['workflow_step_1']['status'] ); ?>">
 						<div class="step-number">1</div>
 						<div class="step-content">
-							<h3><?php esc_html_e( 'Website Analyse', 'writgocms' ); ?></h3>
-							<p class="step-description"><?php esc_html_e( 'Analyze your website content and SEO performance', 'writgocms' ); ?></p>
+							<h3><?php esc_html_e( 'Website Analyse', 'writgoai' ); ?></h3>
+							<p class="step-description"><?php esc_html_e( 'Analyze your website content and SEO performance', 'writgoai' ); ?></p>
 							<?php if ( $stats['workflow_step_1']['status'] === 'completed' ) : ?>
 								<p class="step-status completed">
-									✓ <?php esc_html_e( 'Completed', 'writgocms' ); ?>
+									✓ <?php esc_html_e( 'Completed', 'writgoai' ); ?>
 									<?php if ( $stats['workflow_step_1']['completed_at'] ) : ?>
 										- <?php echo esc_html( $stats['workflow_step_1']['completed_at'] ); ?>
 									<?php endif; ?>
 								</p>
 							<?php elseif ( $stats['workflow_step_1']['status'] === 'in-progress' ) : ?>
-								<p class="step-status in-progress">⏳ <?php esc_html_e( 'In Progress', 'writgocms' ); ?></p>
+								<p class="step-status in-progress">⏳ <?php esc_html_e( 'In Progress', 'writgoai' ); ?></p>
 							<?php else : ?>
-								<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-analyse' ) ); ?>" class="button button-primary">
-									<?php esc_html_e( 'Start Analysis', 'writgocms' ); ?>
+								<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-analyse' ) ); ?>" class="button button-primary">
+									<?php esc_html_e( 'Start Analysis', 'writgoai' ); ?>
 								</a>
 							<?php endif; ?>
 						</div>
@@ -183,15 +183,15 @@ class WritgoCMS_Dashboard {
 					<div class="workflow-step <?php echo esc_attr( $stats['workflow_step_2']['status'] ); ?>">
 						<div class="step-number">2</div>
 						<div class="step-content">
-							<h3><?php esc_html_e( 'Content Strategie', 'writgocms' ); ?></h3>
-							<p class="step-description"><?php esc_html_e( 'Create your content strategy and plan', 'writgocms' ); ?></p>
+							<h3><?php esc_html_e( 'Content Strategie', 'writgoai' ); ?></h3>
+							<p class="step-description"><?php esc_html_e( 'Create your content strategy and plan', 'writgoai' ); ?></p>
 							<?php if ( $stats['workflow_step_1']['status'] !== 'completed' ) : ?>
-								<p class="step-status locked">🔒 <?php esc_html_e( 'Locked - Complete Step 1 first', 'writgocms' ); ?></p>
+								<p class="step-status locked">🔒 <?php esc_html_e( 'Locked - Complete Step 1 first', 'writgoai' ); ?></p>
 							<?php elseif ( $stats['workflow_step_2']['status'] === 'completed' ) : ?>
-								<p class="step-status completed">✓ <?php esc_html_e( 'Completed', 'writgocms' ); ?></p>
+								<p class="step-status completed">✓ <?php esc_html_e( 'Completed', 'writgoai' ); ?></p>
 							<?php else : ?>
-								<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-aiml-contentplan' ) ); ?>" class="button button-primary">
-									<?php esc_html_e( 'Create Strategy', 'writgocms' ); ?>
+								<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-contentplan' ) ); ?>" class="button button-primary">
+									<?php esc_html_e( 'Create Strategy', 'writgoai' ); ?>
 								</a>
 							<?php endif; ?>
 						</div>
@@ -200,8 +200,8 @@ class WritgoCMS_Dashboard {
 					<div class="workflow-step locked">
 						<div class="step-number">3-6</div>
 						<div class="step-content">
-							<h3><?php esc_html_e( 'Coming Soon', 'writgocms' ); ?></h3>
-							<p class="step-description"><?php esc_html_e( 'More workflow steps will be added in future updates', 'writgocms' ); ?></p>
+							<h3><?php esc_html_e( 'Coming Soon', 'writgoai' ); ?></h3>
+							<p class="step-description"><?php esc_html_e( 'More workflow steps will be added in future updates', 'writgoai' ); ?></p>
 						</div>
 					</div>
 				</div>
@@ -209,7 +209,7 @@ class WritgoCMS_Dashboard {
 
 			<!-- Recent Activity -->
 			<div class="dashboard-section recent-activity-section">
-				<h2><?php esc_html_e( 'Recent Activity', 'writgocms' ); ?></h2>
+				<h2><?php esc_html_e( 'Recent Activity', 'writgoai' ); ?></h2>
 				<div class="activity-list">
 					<?php if ( ! empty( $stats['recent_activity'] ) ) : ?>
 						<?php foreach ( $stats['recent_activity'] as $activity ) : ?>
@@ -220,7 +220,7 @@ class WritgoCMS_Dashboard {
 							</div>
 						<?php endforeach; ?>
 					<?php else : ?>
-						<p><?php esc_html_e( 'No recent activity', 'writgocms' ); ?></p>
+						<p><?php esc_html_e( 'No recent activity', 'writgoai' ); ?></p>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -341,12 +341,12 @@ class WritgoCMS_Dashboard {
 		$activity = array();
 
 		// Get last sync time.
-		$last_sync = get_option( 'writgocms_last_daily_sync' );
+		$last_sync = get_option( 'writgoai_last_daily_sync' );
 		if ( $last_sync ) {
 			$activity[] = array(
 				'icon' => '🔄',
-				'text' => __( 'Daily sync completed', 'writgocms' ),
-				'time' => human_time_diff( strtotime( $last_sync ) ) . ' ' . __( 'ago', 'writgocms' ),
+				'text' => __( 'Daily sync completed', 'writgoai' ),
+				'time' => human_time_diff( strtotime( $last_sync ) ) . ' ' . __( 'ago', 'writgoai' ),
 			);
 		}
 
@@ -360,8 +360,8 @@ class WritgoCMS_Dashboard {
 		if ( $last_analysis ) {
 			$activity[] = array(
 				'icon' => '🔍',
-				'text' => __( 'Site analysis completed', 'writgocms' ),
-				'time' => human_time_diff( strtotime( $last_analysis ) ) . ' ' . __( 'ago', 'writgocms' ),
+				'text' => __( 'Site analysis completed', 'writgoai' ),
+				'time' => human_time_diff( strtotime( $last_analysis ) ) . ' ' . __( 'ago', 'writgoai' ),
 			);
 		}
 
@@ -388,7 +388,7 @@ class WritgoCMS_Dashboard {
 	 * AJAX handler for getting dashboard stats
 	 */
 	public function ajax_get_dashboard_stats() {
-		check_ajax_referer( 'writgocms_dashboard_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_dashboard_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -400,4 +400,4 @@ class WritgoCMS_Dashboard {
 }
 
 // Initialize.
-WritgoCMS_Dashboard::get_instance();
+WritgoAI_Dashboard::get_instance();

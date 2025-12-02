@@ -9,7 +9,7 @@
 (function(window, $) {
     'use strict';
 
-    var settings = window.writgocmsAiToolbar || {};
+    var settings = window.writgoaiAiToolbar || {};
 
     /**
      * WritgoAI API Client
@@ -137,7 +137,7 @@
          * @returns {Promise}
          */
         rewriteText: function(text) {
-            return this.request('writgocms_ai_rewrite', { text: text });
+            return this.request('writgoai_ai_rewrite', { text: text });
         },
 
         /**
@@ -147,7 +147,7 @@
          * @returns {Promise}
          */
         improveText: function(text) {
-            return this.request('writgocms_ai_improve', { text: text });
+            return this.request('writgoai_ai_improve', { text: text });
         },
 
         /**
@@ -157,7 +157,7 @@
          * @returns {Promise}
          */
         expandText: function(text) {
-            return this.request('writgocms_ai_expand', { text: text }, { timeout: 90000 });
+            return this.request('writgoai_ai_expand', { text: text }, { timeout: 90000 });
         },
 
         /**
@@ -167,7 +167,7 @@
          * @returns {Promise}
          */
         shortenText: function(text) {
-            return this.request('writgocms_ai_shorten', { text: text });
+            return this.request('writgoai_ai_shorten', { text: text });
         },
 
         /**
@@ -177,7 +177,7 @@
          * @returns {Promise}
          */
         addLinks: function(text) {
-            return this.request('writgocms_ai_add_links', { text: text }, { timeout: 90000 });
+            return this.request('writgoai_ai_add_links', { text: text }, { timeout: 90000 });
         },
 
         /**
@@ -187,7 +187,7 @@
          * @returns {Promise}
          */
         rewriteBlock: function(content) {
-            return this.request('writgocms_ai_rewrite_block', { content: content }, { timeout: 90000 });
+            return this.request('writgoai_ai_rewrite_block', { content: content }, { timeout: 90000 });
         },
 
         /**
@@ -198,7 +198,7 @@
          * @returns {Promise}
          */
         rewriteArticle: function(content, title) {
-            return this.request('writgocms_ai_rewrite_article', { content: content, title: title }, { timeout: 180000 });
+            return this.request('writgoai_ai_rewrite_article', { content: content, title: title }, { timeout: 180000 });
         },
 
         /**
@@ -210,7 +210,7 @@
          * @returns {Promise}
          */
         seoOptimize: function(content, title, keyword) {
-            return this.request('writgocms_ai_seo_optimize', { content: content, title: title, keyword: keyword || '' }, { timeout: 90000 });
+            return this.request('writgoai_ai_seo_optimize', { content: content, title: title, keyword: keyword || '' }, { timeout: 90000 });
         },
 
         /**
@@ -221,7 +221,7 @@
          * @returns {Promise}
          */
         generateMeta: function(content, title) {
-            return this.request('writgocms_ai_generate_meta', { content: content, title: title });
+            return this.request('writgoai_ai_generate_meta', { content: content, title: title });
         },
 
         /**
@@ -231,7 +231,7 @@
          * @returns {Promise}
          */
         generateImage: function(prompt) {
-            return this.request('writgocms_generate_image', { prompt: prompt }, { timeout: 120000 });
+            return this.request('writgoai_generate_image', { prompt: prompt }, { timeout: 120000 });
         },
 
         /**
@@ -241,7 +241,7 @@
          * @returns {Promise}
          */
         generateText: function(prompt) {
-            return this.request('writgocms_generate_text', { prompt: prompt });
+            return this.request('writgoai_generate_text', { prompt: prompt });
         },
 
         /**
@@ -250,7 +250,7 @@
          * @returns {Promise}
          */
         getUsage: function() {
-            return this.request('writgocms_ai_get_usage', {}, { skipLicenseCheck: true });
+            return this.request('writgoai_ai_get_usage', {}, { skipLicenseCheck: true });
         },
 
         /**

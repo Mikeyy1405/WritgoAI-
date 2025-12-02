@@ -201,11 +201,11 @@
             var $list = $('#blog-posts-list');
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_get_blog_posts',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_get_blog_posts',
+                    nonce: writgoaiSocialMedia.nonce,
                     search: query
                 },
                 success: function(response) {
@@ -255,7 +255,7 @@
             }
 
             if (!title || !content) {
-                self.showNotification(writgocmsSocialMedia.i18n.enterContent, 'error');
+                self.showNotification(writgoaiSocialMedia.i18n.enterContent, 'error');
                 return;
             }
 
@@ -265,7 +265,7 @@
             });
 
             if (platforms.length === 0) {
-                self.showNotification(writgocmsSocialMedia.i18n.selectPlatform, 'error');
+                self.showNotification(writgoaiSocialMedia.i18n.selectPlatform, 'error');
                 return;
             }
 
@@ -273,15 +273,15 @@
             var useHashtags = $('#use-hashtags').is(':checked');
             var useEmojis = $('#use-emojis').is(':checked');
 
-            $btn.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgocmsSocialMedia.i18n.generating);
+            $btn.prop('disabled', true).html('<span class="loading-spinner"></span> ' + writgoaiSocialMedia.i18n.generating);
             $status.text('').removeClass('success error');
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_generate_social_posts',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_generate_social_posts',
+                    nonce: writgoaiSocialMedia.nonce,
                     title: title,
                     content: content,
                     platforms: platforms,
@@ -295,7 +295,7 @@
                         self.generatedPosts = response.data.posts;
                         self.renderGeneratedPosts(response.data.posts);
                         $('#generated-posts').show();
-                        $status.text(writgocmsSocialMedia.i18n.success).addClass('success');
+                        $status.text(writgoaiSocialMedia.i18n.success).addClass('success');
                         self.showNotification(response.data.message, 'success');
                     } else {
                         $status.text(response.data.message).addClass('error');
@@ -318,7 +318,7 @@
         renderGeneratedPosts: function(posts) {
             var self = this;
             var $list = $('#posts-preview-list');
-            var platforms = writgocmsSocialMedia.platforms;
+            var platforms = writgoaiSocialMedia.platforms;
             var html = '';
 
             Object.keys(posts).forEach(function(platform) {
@@ -330,7 +330,7 @@
                 html += '<div class="post-preview-header">';
                 html += '<span class="platform-icon">' + platformInfo.icon + '</span>';
                 html += '<span class="platform-name">' + platformInfo.name + '</span>';
-                html += '<span class="char-count ' + charClass + '">' + post.char_count + '/' + post.max_chars + ' ' + writgocmsSocialMedia.i18n.characters + '</span>';
+                html += '<span class="char-count ' + charClass + '">' + post.char_count + '/' + post.max_chars + ' ' + writgoaiSocialMedia.i18n.characters + '</span>';
                 html += '</div>';
                 html += '<div class="post-preview-content">';
                 html += '<textarea class="post-textarea" data-platform="' + platform + '" data-max="' + post.max_chars + '">' + self.escapeHtml(post.content) + '</textarea>';
@@ -355,7 +355,7 @@
             var max = parseInt($textarea.data('max'), 10);
             var $counter = $item.find('.char-count');
 
-            $counter.text(count + '/' + max + ' ' + writgocmsSocialMedia.i18n.characters);
+            $counter.text(count + '/' + max + ' ' + writgoaiSocialMedia.i18n.characters);
             
             if (count > max) {
                 $counter.addClass('over-limit');
@@ -377,14 +377,14 @@
 
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(content).then(function() {
-                    self.showNotification(writgocmsSocialMedia.i18n.copied, 'success');
+                    self.showNotification(writgoaiSocialMedia.i18n.copied, 'success');
                 });
             } else {
                 // Fallback for older browsers
                 var $temp = $('<textarea>').val(content).appendTo('body').select();
                 document.execCommand('copy');
                 $temp.remove();
-                self.showNotification(writgocmsSocialMedia.i18n.copied, 'success');
+                self.showNotification(writgoaiSocialMedia.i18n.copied, 'success');
             }
         },
 
@@ -394,7 +394,7 @@
         copyAllPosts: function() {
             var self = this;
             var allContent = '';
-            var platforms = writgocmsSocialMedia.platforms;
+            var platforms = writgoaiSocialMedia.platforms;
 
             Object.keys(this.generatedPosts).forEach(function(platform) {
                 var platformInfo = platforms[platform] || { name: platform };
@@ -405,7 +405,7 @@
 
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(allContent).then(function() {
-                    self.showNotification(writgocmsSocialMedia.i18n.copied, 'success');
+                    self.showNotification(writgoaiSocialMedia.i18n.copied, 'success');
                 });
             }
         },
@@ -419,11 +419,11 @@
             var postId = $('#selected-post-id').val() || 0;
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_save_social_post',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_save_social_post',
+                    nonce: writgoaiSocialMedia.nonce,
                     platform: platform,
                     content: content,
                     post_id: postId,
@@ -431,7 +431,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        self.showNotification(writgocmsSocialMedia.i18n.saved, 'success');
+                        self.showNotification(writgoaiSocialMedia.i18n.saved, 'success');
                     } else {
                         self.showNotification(response.data.message, 'error');
                     }
@@ -474,11 +474,11 @@
             var postId = $('#selected-post-id').val() || 0;
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_schedule_social_post',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_schedule_social_post',
+                    nonce: writgoaiSocialMedia.nonce,
                     platform: platform,
                     content: content,
                     post_id: postId,
@@ -487,7 +487,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        self.showNotification(writgocmsSocialMedia.i18n.scheduled, 'success');
+                        self.showNotification(writgoaiSocialMedia.i18n.scheduled, 'success');
                     } else {
                         self.showNotification(response.data.message, 'error');
                     }
@@ -589,7 +589,7 @@
         loadScheduledPosts: function() {
             var self = this;
             var $list = $('#scheduled-posts-list');
-            var platforms = writgocmsSocialMedia.platforms;
+            var platforms = writgoaiSocialMedia.platforms;
 
             var parts = this.currentMonth.split('-');
             var year = parseInt(parts[0], 10);
@@ -599,11 +599,11 @@
             var to = year + '-' + String(month).padStart(2, '0') + '-' + lastDay + ' 23:59:59';
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_get_scheduled_posts',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_get_scheduled_posts',
+                    nonce: writgoaiSocialMedia.nonce,
                     from: from,
                     to: to
                 },
@@ -612,7 +612,7 @@
                         var posts = response.data.posts;
                         
                         if (posts.length === 0) {
-                            $list.html('<p class="no-posts">' + writgocmsSocialMedia.i18n.noPostsScheduled + '</p>');
+                            $list.html('<p class="no-posts">' + writgoaiSocialMedia.i18n.noPostsScheduled + '</p>');
                             return;
                         }
 
@@ -669,21 +669,21 @@
         deleteScheduledPost: function(postId) {
             var self = this;
 
-            if (!confirm(writgocmsSocialMedia.i18n.confirmDelete)) {
+            if (!confirm(writgoaiSocialMedia.i18n.confirmDelete)) {
                 return;
             }
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_delete_scheduled_post',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_delete_scheduled_post',
+                    nonce: writgoaiSocialMedia.nonce,
                     social_post_id: postId
                 },
                 success: function(response) {
                     if (response.success) {
-                        self.showNotification(writgocmsSocialMedia.i18n.deleted, 'success');
+                        self.showNotification(writgoaiSocialMedia.i18n.deleted, 'success');
                         self.loadScheduledPosts();
                     } else {
                         self.showNotification(response.data.message, 'error');
@@ -712,11 +712,11 @@
             $btn.prop('disabled', true).html('<span class="loading-spinner"></span> Zoeken...');
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_suggest_hashtags',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_suggest_hashtags',
+                    nonce: writgoaiSocialMedia.nonce,
                     content: topic,
                     platform: platform,
                     count: 15
@@ -729,7 +729,7 @@
                         });
                         $('#suggested-hashtags .hashtags-list').html(html);
                         $('#suggested-hashtags').show();
-                        self.showNotification(response.data.hashtags.length + ' ' + writgocmsSocialMedia.i18n.hashtagsSuggested, 'success');
+                        self.showNotification(response.data.hashtags.length + ' ' + writgoaiSocialMedia.i18n.hashtagsSuggested, 'success');
                     } else {
                         self.showNotification(response.data.message || 'Geen hashtags gevonden', 'error');
                     }
@@ -763,18 +763,18 @@
             if (!setName) return;
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_save_hashtag_set',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_save_hashtag_set',
+                    nonce: writgoaiSocialMedia.nonce,
                     name: setName,
                     hashtags: selectedHashtags,
                     category: $('#hashtag-topic').val()
                 },
                 success: function(response) {
                     if (response.success) {
-                        self.showNotification(writgocmsSocialMedia.i18n.saved, 'success');
+                        self.showNotification(writgoaiSocialMedia.i18n.saved, 'success');
                         self.loadHashtagSets();
                     } else {
                         self.showNotification(response.data.message, 'error');
@@ -807,18 +807,18 @@
             });
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_save_hashtag_set',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_save_hashtag_set',
+                    nonce: writgoaiSocialMedia.nonce,
                     name: name,
                     hashtags: hashtags,
                     category: category
                 },
                 success: function(response) {
                     if (response.success) {
-                        self.showNotification(writgocmsSocialMedia.i18n.saved, 'success');
+                        self.showNotification(writgoaiSocialMedia.i18n.saved, 'success');
                         $('#new-set-name').val('');
                         $('#new-set-category').val('');
                         $('#new-set-hashtags').val('');
@@ -841,11 +841,11 @@
             var $list = $('#hashtag-sets-list');
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_get_hashtag_sets',
-                    nonce: writgocmsSocialMedia.nonce
+                    action: 'writgoai_get_hashtag_sets',
+                    nonce: writgoaiSocialMedia.nonce
                 },
                 success: function(response) {
                     if (response.success && response.data.sets) {
@@ -903,7 +903,7 @@
 
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(hashtagsStr).then(function() {
-                    self.showNotification(writgocmsSocialMedia.i18n.copied, 'success');
+                    self.showNotification(writgoaiSocialMedia.i18n.copied, 'success');
                 });
             }
         },
@@ -915,14 +915,14 @@
             var self = this;
             var $totals = $('#analytics-totals');
             var $byPlatform = $('#analytics-by-platform');
-            var platforms = writgocmsSocialMedia.platforms;
+            var platforms = writgoaiSocialMedia.platforms;
 
             $.ajax({
-                url: writgocmsSocialMedia.ajaxUrl,
+                url: writgoaiSocialMedia.ajaxUrl,
                 type: 'POST',
                 data: {
-                    action: 'writgocms_get_social_analytics',
-                    nonce: writgocmsSocialMedia.nonce,
+                    action: 'writgoai_get_social_analytics',
+                    nonce: writgoaiSocialMedia.nonce,
                     days: days
                 },
                 success: function(response) {

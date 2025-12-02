@@ -5,37 +5,37 @@
  */
 
 /* Base Settings for Readability */
-.writgocms-aiml-settings {
+.writgoai-ai-settings {
     font-size: 14px;
     line-height: 1.6;
     color: #1e293b;
 }
 
-.writgocms-aiml-settings h1,
-.writgocms-aiml-settings h2,
-.writgocms-aiml-settings h3 {
+.writgoai-ai-settings h1,
+.writgoai-ai-settings h2,
+.writgoai-ai-settings h3 {
     color: #0f172a;
     font-weight: 600;
 }
 
-.writgocms-aiml-settings h2 {
+.writgoai-ai-settings h2 {
     font-size: 18px;
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom: 2px solid #e2e8f0;
 }
 
-.writgocms-aiml-settings h3 {
+.writgoai-ai-settings h3 {
     font-size: 16px;
 }
 
-.writgocms-aiml-settings label {
+.writgoai-ai-settings label {
     font-weight: 500;
     color: #1e293b;
     font-size: 14px;
 }
 
-.writgocms-aiml-settings .description {
+.writgoai-ai-settings .description {
     font-size: 13px;
     color: #64748b;
     margin-top: 6px;
@@ -501,21 +501,21 @@
 
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-    .writgocms-aiml-settings {
+    .writgoai-ai-settings {
         color: #e2e8f0;
     }
 
-    .writgocms-aiml-settings h1,
-    .writgocms-aiml-settings h2,
-    .writgocms-aiml-settings h3 {
+    .writgoai-ai-settings h1,
+    .writgoai-ai-settings h2,
+    .writgoai-ai-settings h3 {
         color: #f1f5f9;
     }
 
-    .writgocms-aiml-settings label {
+    .writgoai-ai-settings label {
         color: #e2e8f0;
     }
 
-    .writgocms-aiml-settings .description {
+    .writgoai-ai-settings .description {
         color: #94a3b8;
     }
 
@@ -586,37 +586,37 @@
         color: #f1f5f9;
     }
 
-    .writgocms-aiml-settings .form-table th {
+    .writgoai-ai-settings .form-table th {
         color: #e2e8f0;
     }
 
-    .writgocms-aiml-settings .form-table td {
+    .writgoai-ai-settings .form-table td {
         color: #cbd5e1;
     }
 
-    .writgocms-aiml-settings .form-table td p.description {
+    .writgoai-ai-settings .form-table td p.description {
         color: #94a3b8;
     }
 
-    .writgocms-aiml-settings .form-table select {
+    .writgoai-ai-settings .form-table select {
         background-color: #334155;
         border-color: #475569;
         color: #e2e8f0;
     }
 
-    .writgocms-aiml-settings .form-table select optgroup {
+    .writgoai-ai-settings .form-table select optgroup {
         background-color: #1e293b;
         color: #f1f5f9;
     }
 
-    .writgocms-aiml-settings .form-table select option {
+    .writgoai-ai-settings .form-table select option {
         color: #e2e8f0;
         background-color: #334155;
     }
 
-    .writgocms-aiml-settings .form-table input[type="number"],
-    .writgocms-aiml-settings .form-table input[type="text"],
-    .writgocms-aiml-settings .form-table input[type="password"] {
+    .writgoai-ai-settings .form-table input[type="number"],
+    .writgoai-ai-settings .form-table input[type="text"],
+    .writgoai-ai-settings .form-table input[type="password"] {
         background-color: #334155;
         border-color: #475569;
         color: #e2e8f0;
@@ -675,7 +675,7 @@
 }
 
 /* Form Table Styling */
-.writgocms-aiml-settings .form-table th {
+.writgoai-ai-settings .form-table th {
     padding-top: 20px;
     padding-bottom: 20px;
     font-weight: 600;
@@ -685,20 +685,20 @@
     width: 220px;
 }
 
-.writgocms-aiml-settings .form-table td {
+.writgoai-ai-settings .form-table td {
     padding-top: 15px;
     padding-bottom: 15px;
     color: #334155;
 }
 
-.writgocms-aiml-settings .form-table td p.description {
+.writgoai-ai-settings .form-table td p.description {
     color: #64748b;
     font-size: 13px;
     margin-top: 8px;
     line-height: 1.5;
 }
 
-.writgocms-aiml-settings .form-table select {
+.writgoai-ai-settings .form-table select {
     min-width: 280px;
     padding: 8px 12px;
     font-size: 14px;
@@ -710,26 +710,26 @@
     transition: border-color 0.2s ease;
 }
 
-.writgocms-aiml-settings .form-table select:focus {
+.writgoai-ai-settings .form-table select:focus {
     border-color: #1877F2;
     outline: none;
     box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
 }
 
-.writgocms-aiml-settings .form-table select optgroup {
+.writgoai-ai-settings .form-table select optgroup {
     font-weight: 600;
     color: #0f172a;
     background-color: #f1f5f9;
 }
 
-.writgocms-aiml-settings .form-table select option {
+.writgoai-ai-settings .form-table select option {
     padding: 8px;
     color: #334155;
 }
 
-.writgocms-aiml-settings .form-table input[type="number"],
-.writgocms-aiml-settings .form-table input[type="text"],
-.writgocms-aiml-settings .form-table input[type="password"] {
+.writgoai-ai-settings .form-table input[type="number"],
+.writgoai-ai-settings .form-table input[type="text"],
+.writgoai-ai-settings .form-table input[type="password"] {
     padding: 8px 12px;
     font-size: 14px;
     border: 2px solid #e2e8f0;
@@ -738,9 +738,9 @@
     transition: border-color 0.2s ease;
 }
 
-.writgocms-aiml-settings .form-table input[type="number"]:focus,
-.writgocms-aiml-settings .form-table input[type="text"]:focus,
-.writgocms-aiml-settings .form-table input[type="password"]:focus {
+.writgoai-ai-settings .form-table input[type="number"]:focus,
+.writgoai-ai-settings .form-table input[type="text"]:focus,
+.writgoai-ai-settings .form-table input[type="password"]:focus {
     border-color: #1877F2;
     outline: none;
     box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
@@ -1607,7 +1607,7 @@
     margin-bottom: 30px;
 }
 
-.writgocms-dashboard .stat-card {
+.writgoai-dashboard .stat-card {
     background: linear-gradient(145deg, #fff 0%, #f8fafc 100%);
     border: 1px solid #e2e8f0;
     border-radius: 12px;
@@ -1618,7 +1618,7 @@
     transition: all 0.3s ease;
 }
 
-.writgocms-dashboard .stat-card:hover {
+.writgoai-dashboard .stat-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
 }
@@ -1822,7 +1822,7 @@
         color: #cbd5e1;
     }
 
-    .writgocms-dashboard .stat-card {
+    .writgoai-dashboard .stat-card {
         background: linear-gradient(145deg, #334155 0%, #1f2937 100%);
         border-color: #475569;
     }
@@ -2965,7 +2965,7 @@
  */
 
 /* Separator after Dashboard (before Licentie) */
-#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(2)::after {
+#adminmenu #toplevel_page_writgoai-ai .wp-submenu li:nth-child(2)::after {
     content: '';
     display: block;
     height: 1px;
@@ -2974,7 +2974,7 @@
 }
 
 /* Separator after Content Tools section (after Gegenereerde Content) */
-#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(5)::after {
+#adminmenu #toplevel_page_writgoai-ai .wp-submenu li:nth-child(5)::after {
     content: '';
     display: block;
     height: 1px;
@@ -2983,7 +2983,7 @@
 }
 
 /* Separator after Licentie page (using href matching for maintainability) */
-#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href$="writgocms-license"]::after {
+#adminmenu #toplevel_page_writgoai-ai .wp-submenu li a[href$="writgoai-license"]::after {
     content: '';
     display: block;
     position: absolute;
@@ -2995,7 +2995,7 @@
 }
 
 /* Separator after GSC Settings (using href matching for maintainability) */
-#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href$="writgocms-gsc-settings"]::after {
+#adminmenu #toplevel_page_writgoai-ai .wp-submenu li a[href$="writgoai-gsc-settings"]::after {
     content: '';
     display: block;
     position: absolute;
@@ -3007,29 +3007,29 @@
 }
 
 /* Enhanced menu item hover states */
-#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a:hover {
+#adminmenu #toplevel_page_writgoai-ai .wp-submenu li a:hover {
     background-color: #f6f7f7;
     transition: background-color 0.2s ease;
 }
 
 /* Improved menu item focus */
-#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li.current a,
-#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a.current {
+#adminmenu #toplevel_page_writgoai-ai .wp-submenu li.current a,
+#adminmenu #toplevel_page_writgoai-ai .wp-submenu li a.current {
     font-weight: 600;
     color: #1877F2;
 }
 
 /* Add subtle indentation for better visual hierarchy */
-#adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a {
+#adminmenu #toplevel_page_writgoai-ai .wp-submenu li a {
     padding-left: 16px;
 }
 
 /* Responsive menu adjustments */
 @media screen and (max-width: 782px) {
-    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(2)::after,
-    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li:nth-child(5)::after,
-    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href$="writgocms-license"]::after,
-    #adminmenu #toplevel_page_writgocms-aiml .wp-submenu li a[href$="writgocms-gsc-settings"]::after {
+    #adminmenu #toplevel_page_writgoai-ai .wp-submenu li:nth-child(2)::after,
+    #adminmenu #toplevel_page_writgoai-ai .wp-submenu li:nth-child(5)::after,
+    #adminmenu #toplevel_page_writgoai-ai .wp-submenu li a[href$="writgoai-license"]::after,
+    #adminmenu #toplevel_page_writgoai-ai .wp-submenu li a[href$="writgoai-gsc-settings"]::after {
         margin: 6px 8px;
     }
 }

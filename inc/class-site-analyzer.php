@@ -4,7 +4,7 @@
  *
  * Analyzes WordPress site content, calculates SEO scores, and detects niche/topics.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,21 +12,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Site_Analyzer
+ * Class WritgoAI_Site_Analyzer
  */
-class WritgoCMS_Site_Analyzer {
+class WritgoAI_Site_Analyzer {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Site_Analyzer
+	 * @var WritgoAI_Site_Analyzer
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Site_Analyzer
+	 * @return WritgoAI_Site_Analyzer
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -39,9 +39,9 @@ class WritgoCMS_Site_Analyzer {
 	 * Constructor
 	 */
 	private function __construct() {
-		add_action( 'wp_ajax_writgocms_analyze_site', array( $this, 'ajax_analyze_site' ) );
-		add_action( 'wp_ajax_writgocms_analyze_post', array( $this, 'ajax_analyze_post' ) );
-		add_action( 'wp_ajax_writgocms_get_analysis_status', array( $this, 'ajax_get_analysis_status' ) );
+		add_action( 'wp_ajax_writgoai_analyze_site', array( $this, 'ajax_analyze_site' ) );
+		add_action( 'wp_ajax_writgoai_analyze_post', array( $this, 'ajax_analyze_post' ) );
+		add_action( 'wp_ajax_writgoai_get_analysis_status', array( $this, 'ajax_get_analysis_status' ) );
 	}
 
 	/**
@@ -473,7 +473,7 @@ class WritgoCMS_Site_Analyzer {
 	 * AJAX handler for site analysis
 	 */
 	public function ajax_analyze_site() {
-		check_ajax_referer( 'writgocms_analyzer_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_analyzer_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -487,7 +487,7 @@ class WritgoCMS_Site_Analyzer {
 	 * AJAX handler for post analysis
 	 */
 	public function ajax_analyze_post() {
-		check_ajax_referer( 'writgocms_analyzer_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_analyzer_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -506,7 +506,7 @@ class WritgoCMS_Site_Analyzer {
 	 * AJAX handler for getting analysis status
 	 */
 	public function ajax_get_analysis_status() {
-		check_ajax_referer( 'writgocms_analyzer_nonce', 'nonce' );
+		check_ajax_referer( 'writgoai_analyzer_nonce', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized' ) );
@@ -550,4 +550,4 @@ class WritgoCMS_Site_Analyzer {
 }
 
 // Initialize.
-WritgoCMS_Site_Analyzer::get_instance();
+WritgoAI_Site_Analyzer::get_instance();

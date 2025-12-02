@@ -4,16 +4,16 @@
  * Styling for WritgoAI Keyword Research page.
  */
 
-.writgocms-keyword-research {
+.writgoai-keyword-research {
 	max-width: 1200px;
 	margin: 20px 0;
 }
 
-.writgocms-keyword-research h1 {
+.writgoai-keyword-research h1 {
 	margin-bottom: 8px;
 }
 
-.writgocms-keyword-research .description {
+.writgoai-keyword-research .description {
 	margin-bottom: 24px;
 	color: #646970;
 }

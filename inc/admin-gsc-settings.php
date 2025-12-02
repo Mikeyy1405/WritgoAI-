@@ -4,7 +4,7 @@
  *
  * Admin interface for Google Search Console integration.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,35 +12,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_GSC_Admin_Settings
+ * Class WritgoAI_GSC_Admin_Settings
  */
-class WritgoCMS_GSC_Admin_Settings {
+class WritgoAI_GSC_Admin_Settings {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_GSC_Admin_Settings
+	 * @var WritgoAI_GSC_Admin_Settings
 	 */
 	private static $instance = null;
 
 	/**
 	 * GSC Provider instance
 	 *
-	 * @var WritgoCMS_GSC_Provider
+	 * @var WritgoAI_GSC_Provider
 	 */
 	private $provider;
 
 	/**
 	 * GSC Data Handler instance
 	 *
-	 * @var WritgoCMS_GSC_Data_Handler
+	 * @var WritgoAI_GSC_Data_Handler
 	 */
 	private $data_handler;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_GSC_Admin_Settings
+	 * @return WritgoAI_GSC_Admin_Settings
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -53,8 +53,8 @@ class WritgoCMS_GSC_Admin_Settings {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->provider     = WritgoCMS_GSC_Provider::get_instance();
-		$this->data_handler = WritgoCMS_GSC_Data_Handler::get_instance();
+		$this->provider     = WritgoAI_GSC_Provider::get_instance();
+		$this->data_handler = WritgoAI_GSC_Data_Handler::get_instance();
 
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
@@ -69,9 +69,9 @@ class WritgoCMS_GSC_Admin_Settings {
 		
 		// Add GSC Dashboard submenu under WritgoAI.
 		add_submenu_page(
-			'writgocms-aiml',
-			__( 'Search Console', 'writgocms' ),
-			'🔎 ' . __( 'Search Console', 'writgocms' ),
+			'writgoai',
+			__( 'Search Console', 'writgoai' ),
+			'🔎 ' . __( 'Search Console', 'writgoai' ),
 			'manage_options',
 			'writgocms-gsc',
 			array( $this, 'render_dashboard_page' )
@@ -79,9 +79,9 @@ class WritgoCMS_GSC_Admin_Settings {
 
 		// Add CTR Optimizer submenu.
 		add_submenu_page(
-			'writgocms-aiml',
-			__( 'CTR Optimalisatie', 'writgocms' ),
-			'📊 ' . __( 'CTR Optimalisatie', 'writgocms' ),
+			'writgoai',
+			__( 'CTR Optimalisatie', 'writgoai' ),
+			'📊 ' . __( 'CTR Optimalisatie', 'writgoai' ),
 			'manage_options',
 			'writgocms-ctr-optimizer',
 			array( $this, 'render_ctr_optimizer_page' )
@@ -89,9 +89,9 @@ class WritgoCMS_GSC_Admin_Settings {
 
 		// Add GSC Settings submenu.
 		add_submenu_page(
-			'writgocms-aiml',
-			__( 'GSC Instellingen', 'writgocms' ),
-			'🔧 ' . __( 'GSC Instellingen', 'writgocms' ),
+			'writgoai',
+			__( 'GSC Instellingen', 'writgoai' ),
+			'🔧 ' . __( 'GSC Instellingen', 'writgoai' ),
 			'manage_options',
 			'writgocms-gsc-settings',
 			array( $this, 'render_settings_page' )
@@ -102,8 +102,8 @@ class WritgoCMS_GSC_Admin_Settings {
 	 * Register settings
 	 */
 	public function register_settings() {
-		register_setting( 'writgocms_gsc_settings', 'writgocms_gsc_client_id', array( 'sanitize_callback' => 'sanitize_text_field' ) );
-		register_setting( 'writgocms_gsc_settings', 'writgocms_gsc_client_secret', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( 'writgoai_gsc_settings', 'writgoai_gsc_client_id', array( 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( 'writgoai_gsc_settings', 'writgoai_gsc_client_secret', array( 'sanitize_callback' => 'sanitize_text_field' ) );
 	}
 
 	/**
@@ -124,16 +124,16 @@ class WritgoCMS_GSC_Admin_Settings {
 
 		wp_enqueue_style(
 			'writgocms-gsc-admin',
-			WRITGOCMS_URL . 'assets/css/gsc-admin.css',
+			WRITGOAI_URL . 'assets/css/gsc-admin.css',
 			array(),
-			WRITGOCMS_VERSION
+			WRITGOAI_VERSION
 		);
 
 		wp_enqueue_script(
 			'writgocms-gsc-admin',
-			WRITGOCMS_URL . 'assets/js/gsc-admin.js',
+			WRITGOAI_URL . 'assets/js/gsc-admin.js',
 			array( 'jquery' ),
-			WRITGOCMS_VERSION,
+			WRITGOAI_VERSION,
 			true
 		);
 
@@ -142,26 +142,26 @@ class WritgoCMS_GSC_Admin_Settings {
 			'writgocmsGsc',
 			array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-				'nonce'        => wp_create_nonce( 'writgocms_gsc_nonce' ),
+				'nonce'        => wp_create_nonce( 'writgoai_gsc_nonce' ),
 				'isConnected'  => $this->provider->is_connected(),
 				'selectedSite' => $this->provider->get_selected_site(),
 				'i18n'         => array(
-					'connecting'         => __( 'Verbinden...', 'writgocms' ),
-					'connected'          => __( 'Verbonden', 'writgocms' ),
-					'disconnected'       => __( 'Niet verbonden', 'writgocms' ),
-					'syncing'            => __( 'Synchroniseren...', 'writgocms' ),
-					'syncComplete'       => __( 'Synchronisatie voltooid', 'writgocms' ),
-					'error'              => __( 'Fout', 'writgocms' ),
-					'loading'            => __( 'Laden...', 'writgocms' ),
-					'noData'             => __( 'Geen data beschikbaar', 'writgocms' ),
-					'quickWins'          => __( 'Quick Wins', 'writgocms' ),
-					'lowCtr'             => __( 'Lage CTR', 'writgocms' ),
-					'declining'          => __( 'Dalende Rankings', 'writgocms' ),
-					'contentGaps'        => __( 'Content Gaps', 'writgocms' ),
-					'analyzing'          => __( 'Analyseren...', 'writgocms' ),
-					'generating'         => __( 'Suggesties genereren...', 'writgocms' ),
-					'selectSite'         => __( 'Selecteer een site', 'writgocms' ),
-					'confirmDisconnect'  => __( 'Weet je zeker dat je de verbinding wilt verbreken?', 'writgocms' ),
+					'connecting'         => __( 'Verbinden...', 'writgoai' ),
+					'connected'          => __( 'Verbonden', 'writgoai' ),
+					'disconnected'       => __( 'Niet verbonden', 'writgoai' ),
+					'syncing'            => __( 'Synchroniseren...', 'writgoai' ),
+					'syncComplete'       => __( 'Synchronisatie voltooid', 'writgoai' ),
+					'error'              => __( 'Fout', 'writgoai' ),
+					'loading'            => __( 'Laden...', 'writgoai' ),
+					'noData'             => __( 'Geen data beschikbaar', 'writgoai' ),
+					'quickWins'          => __( 'Quick Wins', 'writgoai' ),
+					'lowCtr'             => __( 'Lage CTR', 'writgoai' ),
+					'declining'          => __( 'Dalende Rankings', 'writgoai' ),
+					'contentGaps'        => __( 'Content Gaps', 'writgoai' ),
+					'analyzing'          => __( 'Analyseren...', 'writgoai' ),
+					'generating'         => __( 'Suggesties genereren...', 'writgoai' ),
+					'selectSite'         => __( 'Selecteer een site', 'writgoai' ),
+					'confirmDisconnect'  => __( 'Weet je zeker dat je de verbinding wilt verbreken?', 'writgoai' ),
 				),
 			)
 		);
@@ -173,32 +173,32 @@ class WritgoCMS_GSC_Admin_Settings {
 	public function render_dashboard_page() {
 		$is_connected  = $this->provider->is_connected();
 		$selected_site = $this->provider->get_selected_site();
-		$last_sync     = get_option( 'writgocms_gsc_last_sync', '' );
+		$last_sync     = get_option( 'writgoai_gsc_last_sync', '' );
 		?>
-		<div class="wrap writgocms-aiml-settings writgocms-gsc-dashboard">
+		<div class="wrap writgoai-settings writgocms-gsc-dashboard">
 			<h1 class="aiml-header">
 				<span class="aiml-logo">📊</span>
-				<?php esc_html_e( 'Google Search Console Dashboard', 'writgocms' ); ?>
+				<?php esc_html_e( 'Google Search Console Dashboard', 'writgoai' ); ?>
 			</h1>
 
 			<div class="aiml-tab-content">
 				<?php if ( ! $is_connected ) : ?>
 					<div class="gsc-not-connected">
 						<div class="gsc-icon">🔗</div>
-						<h2><?php esc_html_e( 'Verbind met Google Search Console', 'writgocms' ); ?></h2>
-						<p><?php esc_html_e( 'Verbind je Google Search Console account om search data te bekijken en keyword opportuniteiten te ontdekken.', 'writgocms' ); ?></p>
+						<h2><?php esc_html_e( 'Verbind met Google Search Console', 'writgoai' ); ?></h2>
+						<p><?php esc_html_e( 'Verbind je Google Search Console account om search data te bekijken en keyword opportuniteiten te ontdekken.', 'writgoai' ); ?></p>
 						<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-gsc-settings' ) ); ?>" class="button button-primary button-hero">
-							⚙️ <?php esc_html_e( 'Configureer GSC Verbinding', 'writgocms' ); ?>
+							⚙️ <?php esc_html_e( 'Configureer GSC Verbinding', 'writgoai' ); ?>
 						</a>
 					</div>
 				<?php elseif ( empty( $selected_site ) ) : ?>
 					<div class="gsc-not-connected">
 						<div class="gsc-icon">🌐</div>
-						<h2><?php esc_html_e( 'Selecteer een Site', 'writgocms' ); ?></h2>
-						<p><?php esc_html_e( 'Je bent verbonden met Google Search Console. Selecteer nu een site om data te bekijken.', 'writgocms' ); ?></p>
+						<h2><?php esc_html_e( 'Selecteer een Site', 'writgoai' ); ?></h2>
+						<p><?php esc_html_e( 'Je bent verbonden met Google Search Console. Selecteer nu een site om data te bekijken.', 'writgoai' ); ?></p>
 						<div id="gsc-site-selector">
 							<button type="button" id="load-sites-btn" class="button button-secondary">
-								<?php esc_html_e( 'Laad beschikbare sites', 'writgocms' ); ?>
+								<?php esc_html_e( 'Laad beschikbare sites', 'writgoai' ); ?>
 							</button>
 							<div id="sites-list" style="display:none; margin-top: 15px;"></div>
 						</div>
@@ -207,16 +207,16 @@ class WritgoCMS_GSC_Admin_Settings {
 					<!-- Connected Dashboard -->
 					<div class="gsc-status-bar">
 						<div class="status-item">
-							<span class="status-label"><?php esc_html_e( 'Verbonden site:', 'writgocms' ); ?></span>
+							<span class="status-label"><?php esc_html_e( 'Verbonden site:', 'writgoai' ); ?></span>
 							<span class="status-value"><?php echo esc_html( $selected_site ); ?></span>
 						</div>
 						<div class="status-item">
-							<span class="status-label"><?php esc_html_e( 'Laatste sync:', 'writgocms' ); ?></span>
-							<span class="status-value"><?php echo esc_html( $last_sync ? $last_sync : __( 'Nog niet gesynchroniseerd', 'writgocms' ) ); ?></span>
+							<span class="status-label"><?php esc_html_e( 'Laatste sync:', 'writgoai' ); ?></span>
+							<span class="status-value"><?php echo esc_html( $last_sync ? $last_sync : __( 'Nog niet gesynchroniseerd', 'writgoai' ) ); ?></span>
 						</div>
 						<div class="status-actions">
 							<button type="button" id="sync-now-btn" class="button button-secondary">
-								🔄 <?php esc_html_e( 'Synchroniseer Nu', 'writgocms' ); ?>
+								🔄 <?php esc_html_e( 'Synchroniseer Nu', 'writgoai' ); ?>
 							</button>
 						</div>
 					</div>
@@ -227,72 +227,72 @@ class WritgoCMS_GSC_Admin_Settings {
 							<span class="metric-icon">👆</span>
 							<div class="metric-content">
 								<span class="metric-value" id="total-clicks">-</span>
-								<span class="metric-label"><?php esc_html_e( 'Clicks', 'writgocms' ); ?></span>
+								<span class="metric-label"><?php esc_html_e( 'Clicks', 'writgoai' ); ?></span>
 							</div>
 						</div>
 						<div class="gsc-metric-card">
 							<span class="metric-icon">👁️</span>
 							<div class="metric-content">
 								<span class="metric-value" id="total-impressions">-</span>
-								<span class="metric-label"><?php esc_html_e( 'Impressies', 'writgocms' ); ?></span>
+								<span class="metric-label"><?php esc_html_e( 'Impressies', 'writgoai' ); ?></span>
 							</div>
 						</div>
 						<div class="gsc-metric-card">
 							<span class="metric-icon">📈</span>
 							<div class="metric-content">
 								<span class="metric-value" id="avg-ctr">-</span>
-								<span class="metric-label"><?php esc_html_e( 'Gemiddelde CTR', 'writgocms' ); ?></span>
+								<span class="metric-label"><?php esc_html_e( 'Gemiddelde CTR', 'writgoai' ); ?></span>
 							</div>
 						</div>
 						<div class="gsc-metric-card">
 							<span class="metric-icon">🎯</span>
 							<div class="metric-content">
 								<span class="metric-value" id="avg-position">-</span>
-								<span class="metric-label"><?php esc_html_e( 'Gemiddelde Positie', 'writgocms' ); ?></span>
+								<span class="metric-label"><?php esc_html_e( 'Gemiddelde Positie', 'writgoai' ); ?></span>
 							</div>
 						</div>
 					</div>
 
 					<!-- Opportunities Section -->
 					<div class="gsc-opportunities-section">
-						<h2>🎯 <?php esc_html_e( 'Keyword Opportuniteiten', 'writgocms' ); ?></h2>
+						<h2>🎯 <?php esc_html_e( 'Keyword Opportuniteiten', 'writgoai' ); ?></h2>
 						
 						<div class="opportunity-tabs">
 							<button type="button" class="opportunity-tab active" data-type="quick_win">
-								🚀 <?php esc_html_e( 'Quick Wins', 'writgocms' ); ?>
+								🚀 <?php esc_html_e( 'Quick Wins', 'writgoai' ); ?>
 								<span class="tab-count" id="count-quick_win">0</span>
 							</button>
 							<button type="button" class="opportunity-tab" data-type="low_ctr">
-								📉 <?php esc_html_e( 'Lage CTR', 'writgocms' ); ?>
+								📉 <?php esc_html_e( 'Lage CTR', 'writgoai' ); ?>
 								<span class="tab-count" id="count-low_ctr">0</span>
 							</button>
 							<button type="button" class="opportunity-tab" data-type="declining">
-								⬇️ <?php esc_html_e( 'Dalende Rankings', 'writgocms' ); ?>
+								⬇️ <?php esc_html_e( 'Dalende Rankings', 'writgoai' ); ?>
 								<span class="tab-count" id="count-declining">0</span>
 							</button>
 							<button type="button" class="opportunity-tab" data-type="content_gap">
-								📝 <?php esc_html_e( 'Content Gaps', 'writgocms' ); ?>
+								📝 <?php esc_html_e( 'Content Gaps', 'writgoai' ); ?>
 								<span class="tab-count" id="count-content_gap">0</span>
 							</button>
 						</div>
 
 						<div id="opportunities-list" class="opportunities-list">
-							<p class="loading-text"><?php esc_html_e( 'Laden...', 'writgocms' ); ?></p>
+							<p class="loading-text"><?php esc_html_e( 'Laden...', 'writgoai' ); ?></p>
 						</div>
 					</div>
 
 					<!-- Top Content Section -->
 					<div class="gsc-content-section">
 						<div class="content-column">
-							<h3>🔍 <?php esc_html_e( 'Top Keywords', 'writgocms' ); ?></h3>
+							<h3>🔍 <?php esc_html_e( 'Top Keywords', 'writgoai' ); ?></h3>
 							<div id="top-queries" class="data-table-container">
-								<p class="loading-text"><?php esc_html_e( 'Laden...', 'writgocms' ); ?></p>
+								<p class="loading-text"><?php esc_html_e( 'Laden...', 'writgoai' ); ?></p>
 							</div>
 						</div>
 						<div class="content-column">
-							<h3>📄 <?php esc_html_e( 'Top Pagina\'s', 'writgocms' ); ?></h3>
+							<h3>📄 <?php esc_html_e( 'Top Pagina\'s', 'writgoai' ); ?></h3>
 							<div id="top-pages" class="data-table-container">
-								<p class="loading-text"><?php esc_html_e( 'Laden...', 'writgocms' ); ?></p>
+								<p class="loading-text"><?php esc_html_e( 'Laden...', 'writgoai' ); ?></p>
 							</div>
 						</div>
 					</div>
@@ -314,23 +314,23 @@ class WritgoCMS_GSC_Admin_Settings {
 			'order'          => 'DESC',
 		) );
 		?>
-		<div class="wrap writgocms-aiml-settings writgocms-ctr-optimizer">
+		<div class="wrap writgoai-settings writgocms-ctr-optimizer">
 			<h1 class="aiml-header">
 				<span class="aiml-logo">✨</span>
-				<?php esc_html_e( 'CTR Optimalisatie Tool', 'writgocms' ); ?>
+				<?php esc_html_e( 'CTR Optimalisatie Tool', 'writgoai' ); ?>
 			</h1>
 
 			<div class="aiml-tab-content">
 				<div class="ctr-optimizer-intro">
-					<h2><?php esc_html_e( 'Verbeter je Click-Through Rate', 'writgocms' ); ?></h2>
-					<p><?php esc_html_e( 'Analyseer je meta titles en descriptions en krijg AI-gegenereerde suggesties voor betere CTR.', 'writgocms' ); ?></p>
+					<h2><?php esc_html_e( 'Verbeter je Click-Through Rate', 'writgoai' ); ?></h2>
+					<p><?php esc_html_e( 'Analyseer je meta titles en descriptions en krijg AI-gegenereerde suggesties voor betere CTR.', 'writgoai' ); ?></p>
 				</div>
 
 				<div class="ctr-optimizer-grid">
 					<div class="ctr-selector-panel">
-						<h3>📄 <?php esc_html_e( 'Selecteer een Post', 'writgocms' ); ?></h3>
+						<h3>📄 <?php esc_html_e( 'Selecteer een Post', 'writgoai' ); ?></h3>
 						<div class="post-search">
-							<input type="text" id="post-search-input" placeholder="<?php esc_attr_e( 'Zoek posts...', 'writgocms' ); ?>">
+							<input type="text" id="post-search-input" placeholder="<?php esc_attr_e( 'Zoek posts...', 'writgoai' ); ?>">
 						</div>
 						<div class="post-list" id="post-list">
 							<?php foreach ( $posts as $post ) : ?>
@@ -343,23 +343,23 @@ class WritgoCMS_GSC_Admin_Settings {
 					</div>
 
 					<div class="ctr-analysis-panel" id="ctr-analysis-panel" style="display: none;">
-						<h3>📊 <?php esc_html_e( 'CTR Analyse', 'writgocms' ); ?></h3>
+						<h3>📊 <?php esc_html_e( 'CTR Analyse', 'writgoai' ); ?></h3>
 						<div id="ctr-analysis-content">
 							<!-- Dynamic content -->
 						</div>
 
 						<div class="ctr-actions">
 							<div class="keyword-input">
-								<label for="target-keyword"><?php esc_html_e( 'Target Keyword (optioneel):', 'writgocms' ); ?></label>
-								<input type="text" id="target-keyword" placeholder="<?php esc_attr_e( 'Voer target keyword in', 'writgocms' ); ?>">
+								<label for="target-keyword"><?php esc_html_e( 'Target Keyword (optioneel):', 'writgoai' ); ?></label>
+								<input type="text" id="target-keyword" placeholder="<?php esc_attr_e( 'Voer target keyword in', 'writgoai' ); ?>">
 							</div>
 							<button type="button" id="generate-suggestions-btn" class="button button-primary button-hero">
-								✨ <?php esc_html_e( 'Genereer AI Suggesties', 'writgocms' ); ?>
+								✨ <?php esc_html_e( 'Genereer AI Suggesties', 'writgoai' ); ?>
 							</button>
 						</div>
 
 						<div id="ctr-suggestions" style="display: none;">
-							<h3>💡 <?php esc_html_e( 'AI Suggesties', 'writgocms' ); ?></h3>
+							<h3>💡 <?php esc_html_e( 'AI Suggesties', 'writgoai' ); ?></h3>
 							<div id="suggestions-content">
 								<!-- Dynamic content -->
 							</div>
@@ -377,48 +377,48 @@ class WritgoCMS_GSC_Admin_Settings {
 	public function render_settings_page() {
 		$is_connected = $this->provider->is_connected();
 		?>
-		<div class="wrap writgocms-aiml-settings">
+		<div class="wrap writgoai-settings">
 			<h1 class="aiml-header">
 				<span class="aiml-logo">⚙️</span>
-				<?php esc_html_e( 'Google Search Console Instellingen', 'writgocms' ); ?>
+				<?php esc_html_e( 'Google Search Console Instellingen', 'writgoai' ); ?>
 			</h1>
 
 			<div class="aiml-tab-content">
 				<form method="post" action="options.php">
-					<?php settings_fields( 'writgocms_gsc_settings' ); ?>
+					<?php settings_fields( 'writgoai_gsc_settings' ); ?>
 
 					<div class="aiml-settings-section">
-						<h2><?php esc_html_e( 'OAuth 2.0 Configuratie', 'writgocms' ); ?></h2>
+						<h2><?php esc_html_e( 'OAuth 2.0 Configuratie', 'writgoai' ); ?></h2>
 						<p class="description">
 							<?php
 							printf(
 								/* translators: %s: Google Cloud Console URL */
-								esc_html__( 'Maak een OAuth 2.0 Client ID aan in de %s. Voeg de redirect URI toe aan de authorized redirect URIs.', 'writgocms' ),
+								esc_html__( 'Maak een OAuth 2.0 Client ID aan in de %s. Voeg de redirect URI toe aan de authorized redirect URIs.', 'writgoai' ),
 								'<a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer">Google Cloud Console</a>'
 							);
 							?>
 						</p>
 						<p class="description">
-							<strong><?php esc_html_e( 'Redirect URI:', 'writgocms' ); ?></strong>
+							<strong><?php esc_html_e( 'Redirect URI:', 'writgoai' ); ?></strong>
 							<code><?php echo esc_html( $this->provider->get_redirect_uri() ); ?></code>
 						</p>
 
 						<table class="form-table">
 							<tr>
 								<th scope="row">
-									<label for="writgocms_gsc_client_id"><?php esc_html_e( 'Client ID', 'writgocms' ); ?></label>
+									<label for="writgoai_gsc_client_id"><?php esc_html_e( 'Client ID', 'writgoai' ); ?></label>
 								</th>
 								<td>
-									<input type="text" id="writgocms_gsc_client_id" name="writgocms_gsc_client_id" value="<?php echo esc_attr( get_option( 'writgocms_gsc_client_id' ) ); ?>" class="regular-text">
+									<input type="text" id="writgoai_gsc_client_id" name="writgoai_gsc_client_id" value="<?php echo esc_attr( get_option( 'writgoai_gsc_client_id' ) ); ?>" class="regular-text">
 								</td>
 							</tr>
 							<tr>
 								<th scope="row">
-									<label for="writgocms_gsc_client_secret"><?php esc_html_e( 'Client Secret', 'writgocms' ); ?></label>
+									<label for="writgoai_gsc_client_secret"><?php esc_html_e( 'Client Secret', 'writgoai' ); ?></label>
 								</th>
 								<td>
 									<div class="api-key-field">
-										<input type="password" id="writgocms_gsc_client_secret" name="writgocms_gsc_client_secret" value="<?php echo esc_attr( get_option( 'writgocms_gsc_client_secret' ) ); ?>" class="regular-text">
+										<input type="password" id="writgoai_gsc_client_secret" name="writgoai_gsc_client_secret" value="<?php echo esc_attr( get_option( 'writgoai_gsc_client_secret' ) ); ?>" class="regular-text">
 										<button type="button" class="button toggle-password">👁️</button>
 									</div>
 								</td>
@@ -426,65 +426,65 @@ class WritgoCMS_GSC_Admin_Settings {
 						</table>
 					</div>
 
-					<?php submit_button( __( 'Instellingen Opslaan', 'writgocms' ) ); ?>
+					<?php submit_button( __( 'Instellingen Opslaan', 'writgoai' ) ); ?>
 				</form>
 
 				<div class="aiml-settings-section">
-					<h2><?php esc_html_e( 'Verbindingsstatus', 'writgocms' ); ?></h2>
+					<h2><?php esc_html_e( 'Verbindingsstatus', 'writgoai' ); ?></h2>
 					
 					<?php if ( $is_connected ) : ?>
 						<div class="gsc-connection-status connected">
 							<span class="status-icon">✅</span>
-							<span class="status-text"><?php esc_html_e( 'Verbonden met Google Search Console', 'writgocms' ); ?></span>
+							<span class="status-text"><?php esc_html_e( 'Verbonden met Google Search Console', 'writgoai' ); ?></span>
 						</div>
 						<p>
-							<strong><?php esc_html_e( 'Geselecteerde site:', 'writgocms' ); ?></strong>
-							<?php echo esc_html( $this->provider->get_selected_site() ?: __( 'Geen site geselecteerd', 'writgocms' ) ); ?>
+							<strong><?php esc_html_e( 'Geselecteerde site:', 'writgoai' ); ?></strong>
+							<?php echo esc_html( $this->provider->get_selected_site() ?: __( 'Geen site geselecteerd', 'writgoai' ) ); ?>
 						</p>
 						<button type="button" id="disconnect-gsc-btn" class="button button-secondary">
-							🔌 <?php esc_html_e( 'Verbinding Verbreken', 'writgocms' ); ?>
+							🔌 <?php esc_html_e( 'Verbinding Verbreken', 'writgoai' ); ?>
 						</button>
 					<?php else : ?>
 						<div class="gsc-connection-status disconnected">
 							<span class="status-icon">❌</span>
-							<span class="status-text"><?php esc_html_e( 'Niet verbonden', 'writgocms' ); ?></span>
+							<span class="status-text"><?php esc_html_e( 'Niet verbonden', 'writgoai' ); ?></span>
 						</div>
 						<?php
 						$auth_url = $this->provider->get_auth_url();
 						if ( ! empty( $auth_url ) ) :
 							?>
-							<p><?php esc_html_e( 'Klik op de knop hieronder om te verbinden met Google Search Console.', 'writgocms' ); ?></p>
+							<p><?php esc_html_e( 'Klik op de knop hieronder om te verbinden met Google Search Console.', 'writgoai' ); ?></p>
 							<a href="<?php echo esc_url( $auth_url ); ?>" class="button button-primary button-hero">
-								🔗 <?php esc_html_e( 'Verbind met Google', 'writgocms' ); ?>
+								🔗 <?php esc_html_e( 'Verbind met Google', 'writgoai' ); ?>
 							</a>
 						<?php else : ?>
-							<p class="notice notice-warning"><?php esc_html_e( 'Configureer eerst de Client ID en Client Secret hierboven.', 'writgocms' ); ?></p>
+							<p class="notice notice-warning"><?php esc_html_e( 'Configureer eerst de Client ID en Client Secret hierboven.', 'writgoai' ); ?></p>
 						<?php endif; ?>
 					<?php endif; ?>
 				</div>
 
 				<?php if ( $is_connected ) : ?>
 					<div class="aiml-settings-section">
-						<h2><?php esc_html_e( 'Site Selectie', 'writgocms' ); ?></h2>
-						<p class="description"><?php esc_html_e( 'Selecteer de site waarvan je data wilt bekijken.', 'writgocms' ); ?></p>
+						<h2><?php esc_html_e( 'Site Selectie', 'writgoai' ); ?></h2>
+						<p class="description"><?php esc_html_e( 'Selecteer de site waarvan je data wilt bekijken.', 'writgoai' ); ?></p>
 						
 						<button type="button" id="load-sites-btn" class="button button-secondary">
-							🔄 <?php esc_html_e( 'Laad Sites', 'writgocms' ); ?>
+							🔄 <?php esc_html_e( 'Laad Sites', 'writgoai' ); ?>
 						</button>
 						<div id="sites-list" style="margin-top: 15px;"></div>
 					</div>
 
 					<div class="aiml-settings-section">
-						<h2><?php esc_html_e( 'Data Synchronisatie', 'writgocms' ); ?></h2>
-						<p class="description"><?php esc_html_e( 'Data wordt automatisch dagelijks gesynchroniseerd. Je kunt ook handmatig synchroniseren.', 'writgocms' ); ?></p>
+						<h2><?php esc_html_e( 'Data Synchronisatie', 'writgoai' ); ?></h2>
+						<p class="description"><?php esc_html_e( 'Data wordt automatisch dagelijks gesynchroniseerd. Je kunt ook handmatig synchroniseren.', 'writgoai' ); ?></p>
 						
 						<p>
-							<strong><?php esc_html_e( 'Laatste synchronisatie:', 'writgocms' ); ?></strong>
-							<?php echo esc_html( get_option( 'writgocms_gsc_last_sync', __( 'Nog niet gesynchroniseerd', 'writgocms' ) ) ); ?>
+							<strong><?php esc_html_e( 'Laatste synchronisatie:', 'writgoai' ); ?></strong>
+							<?php echo esc_html( get_option( 'writgoai_gsc_last_sync', __( 'Nog niet gesynchroniseerd', 'writgoai' ) ) ); ?>
 						</p>
 						
 						<button type="button" id="sync-now-btn" class="button button-primary">
-							🔄 <?php esc_html_e( 'Nu Synchroniseren', 'writgocms' ); ?>
+							🔄 <?php esc_html_e( 'Nu Synchroniseren', 'writgoai' ); ?>
 						</button>
 					</div>
 				<?php endif; ?>
@@ -495,4 +495,4 @@ class WritgoCMS_GSC_Admin_Settings {
 }
 
 // Initialize admin settings.
-WritgoCMS_GSC_Admin_Settings::get_instance();
+WritgoAI_GSC_Admin_Settings::get_instance();

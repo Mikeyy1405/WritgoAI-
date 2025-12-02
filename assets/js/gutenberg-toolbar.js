@@ -39,7 +39,7 @@
 	var addFilter = wp.hooks.addFilter;
 	var __ = wp.i18n.__;
 
-	var settings = window.writgocmsToolbar || {};
+	var settings = window.writgoaiToolbar || {};
 	var i18n = settings.i18n || {};
 	var buttons = settings.buttons || {};
 
@@ -81,7 +81,7 @@
 	function showToast( message, type ) {
 		type = type || 'success';
 		var toast = document.createElement( 'div' );
-		toast.className = 'writgocms-toast ' + type;
+		toast.className = 'writgoai-toast ' + type;
 		
 		var icon = type === 'success' ? '✅' : ( type === 'error' ? '❌' : 'ℹ️' );
 		toast.innerHTML = '<span class="toast-icon">' + icon + '</span><span>' + message + '</span>';
@@ -228,7 +228,7 @@
 			setRewrittenText( '' );
 
 			ajaxRequest( {
-				action: 'writgocms_toolbar_rewrite',
+				action: 'writgoai_toolbar_rewrite',
 				data: {
 					text: selectedText,
 					tone: selectedTone
@@ -291,7 +291,7 @@
 			setIsLoading( true );
 
 			ajaxRequest( {
-				action: 'writgocms_toolbar_get_internal_links',
+				action: 'writgoai_toolbar_get_internal_links',
 				data: {
 					text: text,
 					limit: settings.linksLimit || 5
@@ -365,7 +365,7 @@
 			setGeneratedImage( null );
 
 			ajaxRequest( {
-				action: 'writgocms_toolbar_generate_image',
+				action: 'writgoai_toolbar_generate_image',
 				data: {
 					prompt: imagePrompt
 				}
@@ -419,21 +419,21 @@
 				{
 					title: createElement(
 						'span',
-						{ className: 'writgocms-modal-title' },
+						{ className: 'writgoai-modal-title' },
 						createElement( 'span', { className: 'header-icon' }, '🤖' ),
 						' ',
 						isRewriteAll ? ( i18n.rewriteAll || 'Rewrite All' ) : ( i18n.rewriteTitle || 'AI Rewrite Text' )
 					),
 					onRequestClose: function() { setShowRewriteModal( false ); },
-					className: 'writgocms-rewrite-modal'
+					className: 'writgoai-rewrite-modal'
 				},
 				createElement(
 					'div',
-					{ className: 'writgocms-modal-body' },
+					{ className: 'writgoai-modal-body' },
 					// Tone selector
 					createElement(
 						'div',
-						{ className: 'writgocms-tone-selector' },
+						{ className: 'writgoai-tone-selector' },
 						createElement(
 							SelectControl,
 							{
@@ -455,22 +455,22 @@
 					isLoading ? 
 						createElement(
 							'div',
-							{ className: 'writgocms-loading' },
-							createElement( 'div', { className: 'writgocms-spinner' } ),
-							createElement( 'span', { className: 'writgocms-loading-text' }, i18n.loading || 'Generating...' )
+							{ className: 'writgoai-loading' },
+							createElement( 'div', { className: 'writgoai-spinner' } ),
+							createElement( 'span', { className: 'writgoai-loading-text' }, i18n.loading || 'Generating...' )
 						) :
 						createElement(
 							'div',
-							{ className: 'writgocms-text-preview' },
+							{ className: 'writgoai-text-preview' },
 							createElement(
 								'div',
-								{ className: 'writgocms-text-section original' },
+								{ className: 'writgoai-text-section original' },
 								createElement( 'h4', null, i18n.originalText || 'Original Text' ),
 								createElement( 'p', null, selectedText )
 							),
 							rewrittenText && createElement(
 								'div',
-								{ className: 'writgocms-text-section rewritten' },
+								{ className: 'writgoai-text-section rewritten' },
 								createElement( 'h4', null, i18n.rewrittenText || 'Rewritten Text' ),
 								createElement( 'p', null, rewrittenText )
 							)
@@ -478,7 +478,7 @@
 				),
 				createElement(
 					'div',
-					{ className: 'writgocms-modal-footer' },
+					{ className: 'writgoai-modal-footer' },
 					! rewrittenText ? 
 						createElement(
 							Fragment,
@@ -486,7 +486,7 @@
 							createElement(
 								Button,
 								{
-									className: 'writgocms-btn writgocms-btn-secondary',
+									className: 'writgoai-btn writgoai-btn-secondary',
 									onClick: function() { setShowRewriteModal( false ); }
 								},
 								i18n.cancel || 'Cancel'
@@ -494,7 +494,7 @@
 							createElement(
 								Button,
 								{
-									className: 'writgocms-btn writgocms-btn-primary',
+									className: 'writgoai-btn writgoai-btn-primary',
 									onClick: performRewrite,
 									disabled: isLoading
 								},
@@ -508,7 +508,7 @@
 							createElement(
 								Button,
 								{
-									className: 'writgocms-btn writgocms-btn-secondary',
+									className: 'writgoai-btn writgoai-btn-secondary',
 									onClick: performRewrite,
 									disabled: isLoading
 								},
@@ -518,7 +518,7 @@
 							createElement(
 								Button,
 								{
-									className: 'writgocms-btn writgocms-btn-success',
+									className: 'writgoai-btn writgoai-btn-success',
 									onClick: acceptRewrite
 								},
 								'✓ ',
@@ -540,40 +540,40 @@
 				{
 					title: createElement(
 						'span',
-						{ className: 'writgocms-modal-title' },
+						{ className: 'writgoai-modal-title' },
 						createElement( 'span', { className: 'header-icon' }, '🔗' ),
 						' ',
 						i18n.linksTitle || 'Suggested Internal Links'
 					),
 					onRequestClose: function() { setShowLinksModal( false ); },
-					className: 'writgocms-links-modal'
+					className: 'writgoai-links-modal'
 				},
 				createElement(
 					'div',
-					{ className: 'writgocms-modal-body' },
+					{ className: 'writgoai-modal-body' },
 					isLoading ?
 						createElement(
 							'div',
-							{ className: 'writgocms-loading' },
-							createElement( 'div', { className: 'writgocms-spinner' } ),
-							createElement( 'span', { className: 'writgocms-loading-text' }, i18n.loading || 'Loading...' )
+							{ className: 'writgoai-loading' },
+							createElement( 'div', { className: 'writgoai-spinner' } ),
+							createElement( 'span', { className: 'writgoai-loading-text' }, i18n.loading || 'Loading...' )
 						) :
 						suggestedLinks.length > 0 ?
 							createElement(
 								'div',
-								{ className: 'writgocms-links-list' },
+								{ className: 'writgoai-links-list' },
 								suggestedLinks.map( function( link ) {
 									var isSelected = selectedLinks.indexOf( link.id ) !== -1;
 									return createElement(
 										'div',
 										{
 											key: link.id,
-											className: 'writgocms-link-item' + ( isSelected ? ' selected' : '' ),
+											className: 'writgoai-link-item' + ( isSelected ? ' selected' : '' ),
 											onClick: function() { toggleLinkSelection( link.id ); }
 										},
 										createElement(
 											'div',
-											{ className: 'writgocms-link-checkbox' },
+											{ className: 'writgoai-link-checkbox' },
 											createElement(
 												'input',
 												{
@@ -585,13 +585,13 @@
 										),
 										createElement(
 											'div',
-											{ className: 'writgocms-link-content' },
-											createElement( 'div', { className: 'writgocms-link-title' }, link.title ),
-											createElement( 'div', { className: 'writgocms-link-excerpt' }, link.excerpt )
+											{ className: 'writgoai-link-content' },
+											createElement( 'div', { className: 'writgoai-link-title' }, link.title ),
+											createElement( 'div', { className: 'writgoai-link-excerpt' }, link.excerpt )
 										),
 										createElement(
 											'span',
-											{ className: 'writgocms-link-type' },
+											{ className: 'writgoai-link-type' },
 											link.type
 										)
 									);
@@ -599,18 +599,18 @@
 							) :
 							createElement(
 								'div',
-								{ className: 'writgocms-no-links' },
+								{ className: 'writgoai-no-links' },
 								createElement( 'span', { className: 'no-links-icon' }, '🔍' ),
 								createElement( 'p', null, i18n.noLinksFound || 'No relevant internal links found.' )
 							)
 				),
 				createElement(
 					'div',
-					{ className: 'writgocms-modal-footer' },
+					{ className: 'writgoai-modal-footer' },
 					createElement(
 						Button,
 						{
-							className: 'writgocms-btn writgocms-btn-secondary',
+							className: 'writgoai-btn writgoai-btn-secondary',
 							onClick: function() { setShowLinksModal( false ); }
 						},
 						i18n.cancel || 'Cancel'
@@ -618,7 +618,7 @@
 					createElement(
 						Button,
 						{
-							className: 'writgocms-btn writgocms-btn-primary',
+							className: 'writgoai-btn writgoai-btn-primary',
 							onClick: insertSelectedLinks,
 							disabled: selectedLinks.length === 0
 						},
@@ -641,21 +641,21 @@
 				{
 					title: createElement(
 						'span',
-						{ className: 'writgocms-modal-title' },
+						{ className: 'writgoai-modal-title' },
 						createElement( 'span', { className: 'header-icon' }, '🖼️' ),
 						' ',
 						i18n.imageTitle || 'Generate AI Image'
 					),
 					onRequestClose: function() { setShowImageModal( false ); },
-					className: 'writgocms-image-modal'
+					className: 'writgoai-image-modal'
 				},
 				createElement(
 					'div',
-					{ className: 'writgocms-modal-body' },
+					{ className: 'writgoai-modal-body' },
 					! generatedImage ?
 						createElement(
 							'div',
-							{ className: 'writgocms-image-form' },
+							{ className: 'writgoai-image-form' },
 							createElement(
 								TextareaControl,
 								{
@@ -668,25 +668,25 @@
 							),
 							selectedText && createElement(
 								'p',
-								{ className: 'writgocms-image-hint' },
+								{ className: 'writgoai-image-hint' },
 								i18n.useSelectedText || 'Selected text has been used as the initial prompt.'
 							),
 							isLoading && createElement(
 								'div',
-								{ className: 'writgocms-loading' },
-								createElement( 'div', { className: 'writgocms-spinner' } ),
-								createElement( 'span', { className: 'writgocms-loading-text' }, i18n.loading || 'Generating image...' )
+								{ className: 'writgoai-loading' },
+								createElement( 'div', { className: 'writgoai-spinner' } ),
+								createElement( 'span', { className: 'writgoai-loading-text' }, i18n.loading || 'Generating image...' )
 							)
 						) :
 						createElement(
 							'div',
-							{ className: 'writgocms-image-preview' },
+							{ className: 'writgoai-image-preview' },
 							createElement( 'img', { src: generatedImage.url, alt: imagePrompt } )
 						)
 				),
 				createElement(
 					'div',
-					{ className: 'writgocms-modal-footer' },
+					{ className: 'writgoai-modal-footer' },
 					! generatedImage ?
 						createElement(
 							Fragment,
@@ -694,7 +694,7 @@
 							createElement(
 								Button,
 								{
-									className: 'writgocms-btn writgocms-btn-secondary',
+									className: 'writgoai-btn writgoai-btn-secondary',
 									onClick: function() { setShowImageModal( false ); }
 								},
 								i18n.cancel || 'Cancel'
@@ -702,7 +702,7 @@
 							createElement(
 								Button,
 								{
-									className: 'writgocms-btn writgocms-btn-primary',
+									className: 'writgoai-btn writgoai-btn-primary',
 									onClick: generateImage,
 									disabled: isLoading || ! imagePrompt.trim()
 								},
@@ -716,7 +716,7 @@
 							createElement(
 								Button,
 								{
-									className: 'writgocms-btn writgocms-btn-secondary',
+									className: 'writgoai-btn writgoai-btn-secondary',
 									onClick: function() {
 										setGeneratedImage( null );
 									}
@@ -727,7 +727,7 @@
 							createElement(
 								Button,
 								{
-									className: 'writgocms-btn writgocms-btn-success',
+									className: 'writgoai-btn writgoai-btn-success',
 									onClick: insertImage
 								},
 								'➕ ',
@@ -795,10 +795,10 @@
 	}
 
 	// Register the format type with the toolbar
-	registerFormatType( 'writgocms/ai-toolbar', {
+	registerFormatType( 'writgoai/ai-toolbar', {
 		title: 'WritgoAI',
 		tagName: 'span',
-		className: 'writgocms-ai-enhanced',
+		className: 'writgoai-ai-enhanced',
 		edit: WritgoCMSAIToolbar
 	} );
 
@@ -830,7 +830,7 @@
     var MenuItem = wp.components.MenuItem;
     var __ = wp.i18n.__;
 
-    var settings = window.writgocmsAiToolbar || {};
+    var settings = window.writgoaiAiToolbar || {};
     var i18n = settings.i18n || {};
 
     /**
@@ -1619,7 +1619,7 @@
     // Add the block toolbar extension
     addFilter(
         'editor.BlockEdit',
-        'writgocms/ai-toolbar',
+        'writgoai/ai-toolbar',
         withWritgoAIToolbar
     );
 

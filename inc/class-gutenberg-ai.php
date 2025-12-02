@@ -5,7 +5,7 @@
  * Adds AI-powered toolbar to the Gutenberg editor with text selection,
  * block toolbar, and sidebar panel functionality.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,21 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WritgoCMS_Gutenberg_AI
+ * Class WritgoAI_Gutenberg_AI
  */
-class WritgoCMS_Gutenberg_AI {
+class WritgoAI_Gutenberg_AI {
 
 	/**
 	 * Instance
 	 *
-	 * @var WritgoCMS_Gutenberg_AI
+	 * @var WritgoAI_Gutenberg_AI
 	 */
 	private static $instance = null;
 
 	/**
 	 * Get instance
 	 *
-	 * @return WritgoCMS_Gutenberg_AI
+	 * @return WritgoAI_Gutenberg_AI
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -54,24 +54,24 @@ class WritgoCMS_Gutenberg_AI {
 
 		// Enqueue AI toolbar JavaScript.
 		wp_enqueue_script(
-			'writgocms-ai-api-client',
-			WRITGOCMS_URL . 'assets/js/ai-api-client.js',
+			'writgoai-api-client',
+			WRITGOAI_URL . 'assets/js/ai-api-client.js',
 			array( 'jquery' ),
-			WRITGOCMS_VERSION,
+			WRITGOAI_VERSION,
 			true
 		);
 
 		wp_enqueue_script(
 			'writgocms-text-selection',
-			WRITGOCMS_URL . 'assets/js/text-selection.js',
-			array( 'jquery', 'writgocms-ai-api-client' ),
-			WRITGOCMS_VERSION,
+			WRITGOAI_URL . 'assets/js/text-selection.js',
+			array( 'jquery', 'writgoai-api-client' ),
+			WRITGOAI_VERSION,
 			true
 		);
 
 		wp_enqueue_script(
 			'writgocms-gutenberg-toolbar',
-			WRITGOCMS_URL . 'assets/js/gutenberg-toolbar.js',
+			WRITGOAI_URL . 'assets/js/gutenberg-toolbar.js',
 			array(
 				'wp-plugins',
 				'wp-edit-post',
@@ -82,19 +82,19 @@ class WritgoCMS_Gutenberg_AI {
 				'wp-rich-text',
 				'wp-block-editor',
 				'wp-compose',
-				'writgocms-ai-api-client',
+				'writgoai-api-client',
 				'writgocms-text-selection',
 			),
-			WRITGOCMS_VERSION,
+			WRITGOAI_VERSION,
 			true
 		);
 
 		// Enqueue AI toolbar CSS.
 		wp_enqueue_style(
-			'writgocms-ai-toolbar',
-			WRITGOCMS_URL . 'assets/css/ai-toolbar.css',
+			'writgoai-toolbar',
+			WRITGOAI_URL . 'assets/css/ai-toolbar.css',
 			array(),
-			WRITGOCMS_VERSION
+			WRITGOAI_VERSION
 		);
 
 		// Get license info for usage display.
@@ -102,12 +102,12 @@ class WritgoCMS_Gutenberg_AI {
 
 		// Localize script with necessary data.
 		wp_localize_script(
-			'writgocms-ai-api-client',
+			'writgoai-api-client',
 			'writgocmsAiToolbar',
 			array(
 				'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
 				'restUrl'    => rest_url( 'writgo/v1/' ),
-				'nonce'      => wp_create_nonce( 'writgocms_ai_toolbar_nonce' ),
+				'nonce'      => wp_create_nonce( 'writgoai_ai_toolbar_nonce' ),
 				'restNonce'  => wp_create_nonce( 'wp_rest' ),
 				'postId'     => get_the_ID(),
 				'isLicensed' => $license_info['is_valid'],
@@ -133,8 +133,8 @@ class WritgoCMS_Gutenberg_AI {
 			),
 		);
 
-		if ( class_exists( 'WritgoCMS_License_Manager' ) ) {
-			$license_manager = WritgoCMS_License_Manager::get_instance();
+		if ( class_exists( 'WritgoAI_License_Manager' ) ) {
+			$license_manager = WritgoAI_License_Manager::get_instance();
 			$status = $license_manager->get_license_status();
 
 			// Use the license manager's validation which already checks admin status
@@ -160,51 +160,51 @@ class WritgoCMS_Gutenberg_AI {
 	private function get_translations() {
 		return array(
 			// Selection toolbar.
-			'rewrite'              => __( 'Herschrijven', 'writgocms' ),
-			'improve'              => __( 'Verbeteren', 'writgocms' ),
-			'expand'               => __( 'Uitbreiden', 'writgocms' ),
-			'shorten'              => __( 'Inkorten', 'writgocms' ),
-			'addLinks'             => __( 'Links toevoegen', 'writgocms' ),
+			'rewrite'              => __( 'Herschrijven', 'writgoai' ),
+			'improve'              => __( 'Verbeteren', 'writgoai' ),
+			'expand'               => __( 'Uitbreiden', 'writgoai' ),
+			'shorten'              => __( 'Inkorten', 'writgoai' ),
+			'addLinks'             => __( 'Links toevoegen', 'writgoai' ),
 
 			// Block toolbar.
-			'aiActions'            => __( 'WritgoAI', 'writgocms' ),
-			'rewriteBlock'         => __( 'Blok herschrijven', 'writgocms' ),
-			'generateImage'        => __( 'Afbeelding genereren', 'writgocms' ),
-			'autoLink'             => __( 'Auto-link', 'writgocms' ),
+			'aiActions'            => __( 'WritgoAI', 'writgoai' ),
+			'rewriteBlock'         => __( 'Blok herschrijven', 'writgoai' ),
+			'generateImage'        => __( 'Afbeelding genereren', 'writgoai' ),
+			'autoLink'             => __( 'Auto-link', 'writgoai' ),
 
 			// Sidebar.
-			'sidebarTitle'         => __( 'WritgoAI', 'writgocms' ),
-			'rewriteArticle'       => __( 'Artikel herschrijven', 'writgocms' ),
-			'seoOptimize'          => __( 'SEO optimaliseren', 'writgocms' ),
-			'generateMeta'         => __( 'Meta description genereren', 'writgocms' ),
-			'generateFeatured'     => __( 'Featured image genereren', 'writgocms' ),
-			'autoLinkContent'      => __( 'Content auto-linken', 'writgocms' ),
+			'sidebarTitle'         => __( 'WritgoAI', 'writgoai' ),
+			'rewriteArticle'       => __( 'Artikel herschrijven', 'writgoai' ),
+			'seoOptimize'          => __( 'SEO optimaliseren', 'writgoai' ),
+			'generateMeta'         => __( 'Meta description genereren', 'writgoai' ),
+			'generateFeatured'     => __( 'Featured image genereren', 'writgoai' ),
+			'autoLinkContent'      => __( 'Content auto-linken', 'writgoai' ),
 
 			// Status messages.
-			'processing'           => __( 'Bezig...', 'writgocms' ),
-			'success'              => __( 'Klaar!', 'writgocms' ),
-			'error'                => __( 'Er is een fout opgetreden', 'writgocms' ),
-			'noTextSelected'       => __( 'Selecteer eerst tekst', 'writgocms' ),
-			'licenseInvalid'       => __( 'Licentie niet actief', 'writgocms' ),
-			'limitReached'         => __( 'Dagelijkse limiet bereikt', 'writgocms' ),
+			'processing'           => __( 'Bezig...', 'writgoai' ),
+			'success'              => __( 'Klaar!', 'writgoai' ),
+			'error'                => __( 'Er is een fout opgetreden', 'writgoai' ),
+			'noTextSelected'       => __( 'Selecteer eerst tekst', 'writgoai' ),
+			'licenseInvalid'       => __( 'Licentie niet actief', 'writgoai' ),
+			'limitReached'         => __( 'Dagelijkse limiet bereikt', 'writgoai' ),
 
 			// Usage.
-			'usageLabel'           => __( 'Gebruik', 'writgocms' ),
-			'requestsRemaining'    => __( 'verzoeken over', 'writgocms' ),
+			'usageLabel'           => __( 'Gebruik', 'writgoai' ),
+			'requestsRemaining'    => __( 'verzoeken over', 'writgoai' ),
 
 			// Actions.
-			'apply'                => __( 'Toepassen', 'writgocms' ),
-			'cancel'               => __( 'Annuleren', 'writgocms' ),
-			'undo'                 => __( 'Ongedaan maken', 'writgocms' ),
-			'preview'              => __( 'Voorbeeld', 'writgocms' ),
+			'apply'                => __( 'Toepassen', 'writgoai' ),
+			'cancel'               => __( 'Annuleren', 'writgoai' ),
+			'undo'                 => __( 'Ongedaan maken', 'writgoai' ),
+			'preview'              => __( 'Voorbeeld', 'writgoai' ),
 
 			// Image generation.
-			'imagePrompt'          => __( 'Beschrijf de afbeelding die je wilt genereren', 'writgocms' ),
-			'generateBtn'          => __( 'Genereren', 'writgocms' ),
-			'insertImage'          => __( 'Afbeelding invoegen', 'writgocms' ),
+			'imagePrompt'          => __( 'Beschrijf de afbeelding die je wilt genereren', 'writgoai' ),
+			'generateBtn'          => __( 'Genereren', 'writgoai' ),
+			'insertImage'          => __( 'Afbeelding invoegen', 'writgoai' ),
 		);
 	}
 }
 
 // Initialize.
-WritgoCMS_Gutenberg_AI::get_instance();
+WritgoAI_Gutenberg_AI::get_instance();
