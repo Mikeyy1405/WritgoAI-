@@ -165,7 +165,7 @@ class WritgoAI_GSC_Provider {
 	 * @return string
 	 */
 	public function get_redirect_uri() {
-		return admin_url( 'admin.php?page=writgocms-gsc' );
+		return admin_url( 'admin.php?page=writgoai-gsc' );
 	}
 
 	/**
@@ -200,7 +200,7 @@ class WritgoAI_GSC_Provider {
 	 */
 	public function handle_oauth_callback() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( ! isset( $_GET['page'] ) || 'writgocms-gsc' !== $_GET['page'] ) {
+		if ( ! isset( $_GET['page'] ) || 'writgoai-gsc' !== $_GET['page'] ) {
 			return;
 		}
 
@@ -240,7 +240,7 @@ class WritgoAI_GSC_Provider {
 		}
 
 		// Redirect to remove code from URL.
-		wp_safe_redirect( admin_url( 'admin.php?page=writgocms-gsc&connected=1' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=writgoai-gsc&connected=1' ) );
 		exit;
 	}
 

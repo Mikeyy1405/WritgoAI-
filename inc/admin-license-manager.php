@@ -72,19 +72,19 @@ class WritgoAI_Admin_License_Manager {
      * @return void
      */
     public function enqueue_scripts( $hook ) {
-        if ( strpos( $hook, 'writgocms-license-manager' ) === false ) {
+        if ( strpos( $hook, 'writgoai-license-manager' ) === false ) {
             return;
         }
 
         wp_enqueue_style(
-            'writgocms-license-manager',
+            'writgoai-license-manager',
             WRITGOAI_URL . 'assets/css/admin-ai.css',
             array(),
             WRITGOAI_VERSION
         );
 
         wp_enqueue_script(
-            'writgocms-license-manager',
+            'writgoai-license-manager',
             WRITGOAI_URL . 'assets/js/admin-ai.js',
             array( 'jquery' ),
             WRITGOAI_VERSION,
@@ -92,8 +92,8 @@ class WritgoAI_Admin_License_Manager {
         );
 
         wp_localize_script(
-            'writgocms-license-manager',
-            'writgocmsLicenseManager',
+            'writgoai-license-manager',
+            'writgoaiLicenseManager',
             array(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'writgoai_license_manager_nonce' ),
@@ -136,19 +136,19 @@ class WritgoAI_Admin_License_Manager {
 
             <!-- Tabs -->
             <nav class="nav-tab-wrapper">
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license-manager&tab=licenses' ) ); ?>" 
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-license-manager&tab=licenses' ) ); ?>" 
                    class="nav-tab <?php echo 'licenses' === $tab ? 'nav-tab-active' : ''; ?>">
                     <?php esc_html_e( 'All Licenses', 'writgoai' ); ?>
                 </a>
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license-manager&tab=activity' ) ); ?>" 
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-license-manager&tab=activity' ) ); ?>" 
                    class="nav-tab <?php echo 'activity' === $tab ? 'nav-tab-active' : ''; ?>">
                     <?php esc_html_e( 'Activity Log', 'writgoai' ); ?>
                 </a>
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license-manager&tab=credits' ) ); ?>" 
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-license-manager&tab=credits' ) ); ?>" 
                    class="nav-tab <?php echo 'credits' === $tab ? 'nav-tab-active' : ''; ?>">
                     <?php esc_html_e( 'Credit Usage', 'writgoai' ); ?>
                 </a>
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license-manager&tab=stats' ) ); ?>" 
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-license-manager&tab=stats' ) ); ?>" 
                    class="nav-tab <?php echo 'stats' === $tab ? 'nav-tab-active' : ''; ?>">
                     <?php esc_html_e( 'Statistics', 'writgoai' ); ?>
                 </a>
@@ -448,11 +448,11 @@ class WritgoAI_Admin_License_Manager {
                 $btn.prop('disabled', true).text('<?php esc_html_e( 'Adding...', 'writgoai' ); ?>');
                 
                 $.ajax({
-                    url: writgocmsLicenseManager.ajaxUrl,
+                    url: writgoaiLicenseManager.ajaxUrl,
                     type: 'POST',
                     data: {
                         action: 'writgoai_admin_add_credits',
-                        nonce: writgocmsLicenseManager.nonce,
+                        nonce: writgoaiLicenseManager.nonce,
                         license_key: key,
                         amount: amount,
                         reason: reason
@@ -502,11 +502,11 @@ class WritgoAI_Admin_License_Manager {
                 $btn.prop('disabled', true).text('<?php esc_html_e( 'Generating...', 'writgoai' ); ?>');
                 
                 $.ajax({
-                    url: writgocmsLicenseManager.ajaxUrl,
+                    url: writgoaiLicenseManager.ajaxUrl,
                     type: 'POST',
                     data: {
                         action: 'writgoai_admin_generate_test_license',
-                        nonce: writgocmsLicenseManager.nonce,
+                        nonce: writgoaiLicenseManager.nonce,
                         use_demo: useDemo ? '1' : '0',
                         email: email,
                         plan: plan

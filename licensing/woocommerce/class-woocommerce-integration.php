@@ -476,7 +476,7 @@ class WritgoAI_WooCommerce_Integration {
             </ol>
             
             <p style="text-align: center;">
-                <a href="' . esc_url( admin_url( 'admin.php?page=writgocms-license' ) ) . '" class="cta-button">Activate Your License →</a>
+                <a href="' . esc_url( admin_url( 'admin.php?page=writgoai-license' ) ) . '" class="cta-button">Activate Your License →</a>
             </p>
             
             <div class="footer">
@@ -503,7 +503,7 @@ class WritgoAI_WooCommerce_Integration {
             __( 'Subscription Products', 'writgoai' ),
             __( '📦 Products', 'writgoai' ),
             'manage_options',
-            'writgocms-products',
+            'writgoai-products',
             array( $this, 'render_products_page' )
         );
     }
@@ -526,7 +526,7 @@ class WritgoAI_WooCommerce_Integration {
 
         // Sanitize and check if we're on the products page with create action.
         $page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
-        if ( 'writgocms-products' !== $page ) {
+        if ( 'writgoai-products' !== $page ) {
             return;
         }
 
@@ -544,7 +544,7 @@ class WritgoAI_WooCommerce_Integration {
         update_option( 'writgoai_products_created', true );
 
         // Redirect to remove query args.
-        wp_safe_redirect( admin_url( 'admin.php?page=writgocms-products&created=1' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=writgoai-products&created=1' ) );
         exit;
     }
 
@@ -734,7 +734,7 @@ class WritgoAI_WooCommerce_Integration {
 
                     <?php if ( $woocommerce_active && empty( $existing_products ) ) : ?>
                     <p style="margin-top: 20px;">
-                        <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=writgocms-products&action=create_products' ), 'writgoai_create_products' ) ); ?>" class="button button-primary button-hero">
+                        <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=writgoai-products&action=create_products' ), 'writgoai_create_products' ) ); ?>" class="button button-primary button-hero">
                             <?php esc_html_e( 'Create Subscription Products', 'writgoai' ); ?>
                         </a>
                     </p>

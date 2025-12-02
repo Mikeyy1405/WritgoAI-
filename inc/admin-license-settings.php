@@ -74,19 +74,19 @@ class WritgoAI_License_Admin {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( strpos( $hook, 'writgocms-license' ) === false ) {
+		if ( strpos( $hook, 'writgoai-license' ) === false ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'writgocms-license-admin',
+			'writgoai-license-admin',
 			WRITGOAI_URL . 'assets/css/admin-ai.css',
 			array(),
 			WRITGOAI_VERSION
 		);
 
 		wp_enqueue_script(
-			'writgocms-license-admin',
+			'writgoai-license-admin',
 			WRITGOAI_URL . 'assets/js/admin-ai.js',
 			array( 'jquery' ),
 			WRITGOAI_VERSION,
@@ -94,8 +94,8 @@ class WritgoAI_License_Admin {
 		);
 
 		wp_localize_script(
-			'writgocms-license-admin',
-			'writgocmsLicense',
+			'writgoai-license-admin',
+			'writgoaiLicense',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'writgoai_auth_nonce' ), // Changed to auth_nonce for auth actions.
@@ -128,7 +128,7 @@ class WritgoAI_License_Admin {
 		$is_valid      = $this->license_manager->is_license_valid();
 		$days_remaining = $this->license_manager->get_days_remaining();
 		?>
-		<div class="wrap writgoai-settings writgocms-license-page">
+		<div class="wrap writgoai-settings writgoai-license-page">
 			<h1 class="aiml-header">
 				<span class="aiml-logo">🔑</span>
 				WritgoAI Licentie
@@ -412,7 +412,7 @@ class WritgoAI_License_Admin {
 
 		<style>
 			/* Consistent Card Grid */
-			.writgocms-license-page .license-info-grid {
+			.writgoai-license-page .license-info-grid {
 				display: grid;
 				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 				gap: 15px;
@@ -420,7 +420,7 @@ class WritgoAI_License_Admin {
 			}
 
 			/* License Info Cards - Consistent Styling */
-			.writgocms-license-page .license-info-card {
+			.writgoai-license-page .license-info-card {
 				background: #fff;
 				border: 1px solid #e2e8f0;
 				border-radius: 8px;
@@ -431,55 +431,55 @@ class WritgoAI_License_Admin {
 				transition: all 0.2s ease;
 			}
 
-			.writgocms-license-page .license-info-card:hover {
+			.writgoai-license-page .license-info-card:hover {
 				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 				transform: translateY(-1px);
 			}
 
-			.writgocms-license-page .license-info-card.status-valid {
+			.writgoai-license-page .license-info-card.status-valid {
 				background: #f0fdf4;
 				border-color: #86efac;
 			}
 
-			.writgocms-license-page .license-info-card.status-invalid {
+			.writgoai-license-page .license-info-card.status-invalid {
 				background: #fef2f2;
 				border-color: #fca5a5;
 			}
 
-			.writgocms-license-page .info-icon {
+			.writgoai-license-page .info-icon {
 				font-size: 24px;
 				line-height: 1;
 			}
 
-			.writgocms-license-page .info-content {
+			.writgoai-license-page .info-content {
 				display: flex;
 				flex-direction: column;
 			}
 
-			.writgocms-license-page .info-label {
+			.writgoai-license-page .info-label {
 				font-size: 12px;
 				color: #6c757d;
 				text-transform: uppercase;
 				letter-spacing: 0.5px;
 			}
 
-			.writgocms-license-page .info-value {
+			.writgoai-license-page .info-value {
 				font-size: 16px;
 				font-weight: 600;
 				color: #212529;
 			}
 
-			.writgocms-license-page .info-subtext {
+			.writgoai-license-page .info-subtext {
 				font-size: 12px;
 				color: #6c757d;
 			}
 
-			.writgocms-license-page .license-key-masked {
+			.writgoai-license-page .license-key-masked {
 				font-family: monospace;
 				letter-spacing: 1px;
 			}
 
-			.writgocms-license-page .license-actions {
+			.writgoai-license-page .license-actions {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 10px;
@@ -489,7 +489,7 @@ class WritgoAI_License_Admin {
 			}
 
 			/* Better button styling */
-			.writgocms-license-page .license-actions .button {
+			.writgoai-license-page .license-actions .button {
 				padding: 8px 16px;
 				min-height: 36px;
 				display: inline-flex;
@@ -499,75 +499,75 @@ class WritgoAI_License_Admin {
 				transition: all 0.2s ease;
 			}
 
-			.writgocms-license-page .license-actions .button:hover {
+			.writgoai-license-page .license-actions .button:hover {
 				transform: translateY(-1px);
 				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 			}
 
-			.writgocms-license-page .button-primary {
+			.writgoai-license-page .button-primary {
 				background: linear-gradient(135deg, #1877F2 0%, #3b82f6 100%);
 				border: none;
 				color: #fff;
 			}
 
-			.writgocms-license-page .button-secondary {
+			.writgoai-license-page .button-secondary {
 				background: #fff;
 				border: 1px solid #e2e8f0;
 				color: #1e293b;
 			}
 
-			.writgocms-license-page .button-secondary:hover {
+			.writgoai-license-page .button-secondary:hover {
 				border-color: #1877F2;
 				color: #1877F2;
 			}
 
-			.writgocms-license-page .button-link-delete {
+			.writgoai-license-page .button-link-delete {
 				color: #dc2626;
 			}
 
-			.writgocms-license-page .button-link-delete:hover {
+			.writgoai-license-page .button-link-delete:hover {
 				color: #991b1b;
 				background: #fef2f2;
 			}
 
-			.writgocms-license-page .license-usage-section,
-			.writgocms-license-page .license-features-section {
+			.writgoai-license-page .license-usage-section,
+			.writgoai-license-page .license-features-section {
 				margin-top: 25px;
 				padding-top: 20px;
 				border-top: 1px solid #e9ecef;
 			}
 
-			.writgocms-license-page .usage-grid {
+			.writgoai-license-page .usage-grid {
 				display: grid;
 				gap: 15px;
 			}
 
-			.writgocms-license-page .usage-item {
+			.writgoai-license-page .usage-item {
 				display: flex;
 				flex-direction: column;
 				gap: 5px;
 			}
 
-			.writgocms-license-page .usage-bar {
+			.writgoai-license-page .usage-bar {
 				height: 8px;
 				background: #e9ecef;
 				border-radius: 4px;
 				overflow: hidden;
 			}
 
-			.writgocms-license-page .usage-progress {
+			.writgoai-license-page .usage-progress {
 				height: 100%;
 				background: linear-gradient(90deg, #007bff, #28a745);
 				border-radius: 4px;
 				transition: width 0.3s ease;
 			}
 
-			.writgocms-license-page .usage-value {
+			.writgoai-license-page .usage-value {
 				font-size: 12px;
 				color: #6c757d;
 			}
 
-			.writgocms-license-page .features-list {
+			.writgoai-license-page .features-list {
 				columns: 2;
 				column-gap: 20px;
 				list-style: none;
@@ -575,17 +575,17 @@ class WritgoAI_License_Admin {
 				padding: 0;
 			}
 
-			.writgocms-license-page .features-list li {
+			.writgoai-license-page .features-list li {
 				padding: 5px 0;
 			}
 
-			.writgocms-license-page .quick-links-grid {
+			.writgoai-license-page .quick-links-grid {
 				display: grid;
 				grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 				gap: 12px;
 			}
 
-			.writgocms-license-page .quick-link {
+			.writgoai-license-page .quick-link {
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -599,7 +599,7 @@ class WritgoAI_License_Admin {
 				transition: all 0.2s ease;
 			}
 
-			.writgocms-license-page .quick-link:hover {
+			.writgoai-license-page .quick-link:hover {
 				background: #f8fafc;
 				border-color: #1877F2;
 				color: #1877F2;
@@ -607,48 +607,48 @@ class WritgoAI_License_Admin {
 				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 			}
 
-			.writgocms-license-page .license-help-section {
+			.writgoai-license-page .license-help-section {
 				margin-top: 30px;
 				padding-top: 25px;
 				border-top: 1px solid #e9ecef;
 			}
 
-			.writgocms-license-page .license-help-section h3 {
+			.writgoai-license-page .license-help-section h3 {
 				color: #0f172a;
 				font-size: 18px;
 				margin-bottom: 12px;
 			}
 
-			.writgocms-license-page .license-help-section ul {
+			.writgoai-license-page .license-help-section ul {
 				list-style: none;
 				padding: 0;
 				margin: 15px 0;
 			}
 
-			.writgocms-license-page .license-help-section li {
+			.writgoai-license-page .license-help-section li {
 				padding: 8px 0;
 				font-size: 14px;
 				color: #475569;
 			}
 
 			/* License activation form styling */
-			.writgocms-license-page .license-activation-form .button-primary.button-hero,
-			.writgocms-license-page .button-hero {
+			.writgoai-license-page .license-activation-form .button-primary.button-hero,
+			.writgoai-license-page .button-hero {
 				padding: 12px 24px;
 				font-size: 16px;
 				min-height: 44px;
 			}
 
-			.writgocms-license-page .license-status-message {
+			.writgoai-license-page .license-status-message {
 				margin-left: 15px;
 				font-weight: 500;
 			}
 
-			.writgocms-license-page .license-status-message.success {
+			.writgoai-license-page .license-status-message.success {
 				color: #28a745;
 			}
 
-			.writgocms-license-page .license-status-message.error {
+			.writgoai-license-page .license-status-message.error {
 				color: #dc3545;
 			}
 
@@ -670,7 +670,7 @@ class WritgoAI_License_Admin {
 			}
 
 			/* Consistent Planner Cards */
-			.writgocms-license-page .planner-card {
+			.writgoai-license-page .planner-card {
 				background: #fff;
 				border: 1px solid #e2e8f0;
 				border-radius: 12px;
@@ -680,11 +680,11 @@ class WritgoAI_License_Admin {
 				transition: all 0.2s ease;
 			}
 
-			.writgocms-license-page .planner-card:hover {
+			.writgoai-license-page .planner-card:hover {
 				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 			}
 
-			.writgocms-license-page .planner-card h2 {
+			.writgoai-license-page .planner-card h2 {
 				margin: 0 0 20px 0;
 				padding-bottom: 15px;
 				border-bottom: 2px solid #e2e8f0;
@@ -694,13 +694,13 @@ class WritgoAI_License_Admin {
 			}
 
 			/* Credit Display Styles */
-			.writgocms-license-page .license-credits-section {
+			.writgoai-license-page .license-credits-section {
 				margin-top: 25px;
 				padding-top: 20px;
 				border-top: 1px solid #e9ecef;
 			}
 
-			.writgocms-license-page .credits-display-large {
+			.writgoai-license-page .credits-display-large {
 				text-align: center;
 				padding: 20px;
 				background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
@@ -708,20 +708,20 @@ class WritgoAI_License_Admin {
 				margin-bottom: 15px;
 			}
 
-			.writgocms-license-page .credits-number {
+			.writgoai-license-page .credits-number {
 				font-size: 48px;
 				font-weight: bold;
 				color: #0369a1;
 				line-height: 1;
 			}
 
-			.writgocms-license-page .credits-label {
+			.writgoai-license-page .credits-label {
 				font-size: 14px;
 				color: #64748b;
 				margin-top: 5px;
 			}
 
-			.writgocms-license-page .credits-bar-large {
+			.writgoai-license-page .credits-bar-large {
 				height: 12px;
 				background: #e2e8f0;
 				border-radius: 6px;
@@ -729,111 +729,111 @@ class WritgoAI_License_Admin {
 				margin-bottom: 15px;
 			}
 
-			.writgocms-license-page .credits-bar-fill {
+			.writgoai-license-page .credits-bar-fill {
 				height: 100%;
 				border-radius: 6px;
 				transition: width 0.3s ease;
 			}
 
-			.writgocms-license-page .credits-details {
+			.writgoai-license-page .credits-details {
 				display: grid;
 				grid-template-columns: repeat(3, 1fr);
 				gap: 15px;
 				margin-bottom: 20px;
 			}
 
-			.writgocms-license-page .credits-detail-item {
+			.writgoai-license-page .credits-detail-item {
 				text-align: center;
 				padding: 10px;
 				background: #f8f9fa;
 				border-radius: 8px;
 			}
 
-			.writgocms-license-page .credits-detail-label {
+			.writgoai-license-page .credits-detail-label {
 				display: block;
 				font-size: 12px;
 				color: #64748b;
 				text-transform: uppercase;
 			}
 
-			.writgocms-license-page .credits-detail-value {
+			.writgoai-license-page .credits-detail-value {
 				display: block;
 				font-size: 18px;
 				font-weight: 600;
 				color: #1e293b;
 			}
 
-			.writgocms-license-page .credits-cost-table {
+			.writgoai-license-page .credits-cost-table {
 				margin-top: 20px;
 			}
 
-			.writgocms-license-page .credits-cost-table h4 {
+			.writgoai-license-page .credits-cost-table h4 {
 				margin: 0 0 10px 0;
 				font-size: 14px;
 				color: #475569;
 			}
 
-			.writgocms-license-page .credits-cost-table table {
+			.writgoai-license-page .credits-cost-table table {
 				max-width: 400px;
 			}
 
-			.writgocms-license-page .credits-cost-table td {
+			.writgoai-license-page .credits-cost-table td {
 				padding: 8px 12px;
 			}
 
-			.writgocms-license-page .credits-cost-table td:last-child {
+			.writgoai-license-page .credits-cost-table td:last-child {
 				text-align: right;
 				color: #0369a1;
 			}
 
 			/* Mobile Responsiveness */
 			@media screen and (max-width: 782px) {
-				.writgocms-license-page .license-info-grid {
+				.writgoai-license-page .license-info-grid {
 					grid-template-columns: 1fr;
 					gap: 12px;
 				}
 
-				.writgocms-license-page .license-info-card {
+				.writgoai-license-page .license-info-card {
 					padding: 14px;
 				}
 
-				.writgocms-license-page .quick-links-grid {
+				.writgoai-license-page .quick-links-grid {
 					grid-template-columns: 1fr;
 					gap: 10px;
 				}
 
-				.writgocms-license-page .license-actions {
+				.writgoai-license-page .license-actions {
 					flex-direction: column;
 					gap: 8px;
 				}
 
-				.writgocms-license-page .license-actions .button {
+				.writgoai-license-page .license-actions .button {
 					width: 100%;
 					text-align: center;
 				}
 
-				.writgocms-license-page .credits-details {
+				.writgoai-license-page .credits-details {
 					grid-template-columns: 1fr;
 					gap: 10px;
 				}
 
-				.writgocms-license-page .features-list {
+				.writgoai-license-page .features-list {
 					columns: 1;
 				}
 			}
 
 			@media screen and (max-width: 480px) {
-				.writgocms-license-page .info-value {
+				.writgoai-license-page .info-value {
 					font-size: 14px;
 				}
 
-				.writgocms-license-page .credits-number {
+				.writgoai-license-page .credits-number {
 					font-size: 36px;
 				}
 			}
 
 			/* Auth User Panel Styles */
-			.writgocms-license-page .auth-user-info {
+			.writgoai-license-page .auth-user-info {
 				display: flex;
 				align-items: center;
 				gap: 24px;
@@ -843,11 +843,11 @@ class WritgoAI_License_Admin {
 				margin-bottom: 24px;
 			}
 
-			.writgocms-license-page .user-avatar {
+			.writgoai-license-page .user-avatar {
 				flex-shrink: 0;
 			}
 
-			.writgocms-license-page .user-icon {
+			.writgoai-license-page .user-icon {
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -859,30 +859,30 @@ class WritgoAI_License_Admin {
 				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 			}
 
-			.writgocms-license-page .user-details {
+			.writgoai-license-page .user-details {
 				flex: 1;
 			}
 
-			.writgocms-license-page .user-name {
+			.writgoai-license-page .user-name {
 				font-size: 24px;
 				font-weight: 600;
 				color: #0f172a;
 				margin: 0 0 8px 0;
 			}
 
-			.writgocms-license-page .user-email {
+			.writgoai-license-page .user-email {
 				font-size: 14px;
 				color: #64748b;
 				margin: 4px 0;
 			}
 
-			.writgocms-license-page .user-company {
+			.writgoai-license-page .user-company {
 				font-size: 14px;
 				color: #94a3b8;
 				margin: 4px 0;
 			}
 
-			.writgocms-license-page .auth-actions {
+			.writgoai-license-page .auth-actions {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 12px;
@@ -890,7 +890,7 @@ class WritgoAI_License_Admin {
 				border-top: 1px solid #e2e8f0;
 			}
 
-			.writgocms-license-page .auth-status-message-settings {
+			.writgoai-license-page .auth-status-message-settings {
 				margin-top: 16px;
 				padding: 12px 16px;
 				border-radius: 8px;
@@ -898,37 +898,37 @@ class WritgoAI_License_Admin {
 				display: none;
 			}
 
-			.writgocms-license-page .auth-status-message-settings.success {
+			.writgoai-license-page .auth-status-message-settings.success {
 				background: #d1fae5;
 				color: #065f46;
 				border: 1px solid #10b981;
 				display: block;
 			}
 
-			.writgocms-license-page .auth-status-message-settings.error {
+			.writgoai-license-page .auth-status-message-settings.error {
 				background: #fee2e2;
 				color: #991b1b;
 				border: 1px solid #ef4444;
 				display: block;
 			}
 
-			.writgocms-license-page .auth-help-section {
+			.writgoai-license-page .auth-help-section {
 				margin-top: 24px;
 				padding-top: 24px;
 				border-top: 1px solid #e9ecef;
 			}
 
 			@media screen and (max-width: 782px) {
-				.writgocms-license-page .auth-user-info {
+				.writgoai-license-page .auth-user-info {
 					flex-direction: column;
 					text-align: center;
 				}
 
-				.writgocms-license-page .auth-actions {
+				.writgoai-license-page .auth-actions {
 					flex-direction: column;
 				}
 
-				.writgocms-license-page .auth-actions .button {
+				.writgoai-license-page .auth-actions .button {
 					width: 100%;
 					text-align: center;
 				}
@@ -950,11 +950,11 @@ class WritgoAI_License_Admin {
 				$message.removeClass('success error').text('');
 
 				$.ajax({
-					url: writgocmsLicense.ajaxUrl,
+					url: writgoaiLicense.ajaxUrl,
 					type: 'POST',
 					data: {
 						action: 'writgoai_activate_license',
-						nonce: writgocmsLicense.nonce,
+						nonce: writgoaiLicense.nonce,
 						email: email,
 						license_key: licenseKey
 					},
@@ -978,7 +978,7 @@ class WritgoAI_License_Admin {
 
 			// Deactivate license.
 			$('#deactivate-license-btn').on('click', function() {
-				if (!confirm(writgocmsLicense.i18n.confirmDeactivate)) {
+				if (!confirm(writgoaiLicense.i18n.confirmDeactivate)) {
 					return;
 				}
 
@@ -989,11 +989,11 @@ class WritgoAI_License_Admin {
 				$message.removeClass('success error').text('');
 
 				$.ajax({
-					url: writgocmsLicense.ajaxUrl,
+					url: writgoaiLicense.ajaxUrl,
 					type: 'POST',
 					data: {
 						action: 'writgoai_deactivate_license',
-						nonce: writgocmsLicense.nonce
+						nonce: writgoaiLicense.nonce
 					},
 					success: function(response) {
 						if (response.success) {
@@ -1022,11 +1022,11 @@ class WritgoAI_License_Admin {
 				$message.removeClass('success error').text('');
 
 				$.ajax({
-					url: writgocmsLicense.ajaxUrl,
+					url: writgoaiLicense.ajaxUrl,
 					type: 'POST',
 					data: {
 						action: 'writgoai_refresh_license',
-						nonce: writgocmsLicense.nonce
+						nonce: writgoaiLicense.nonce
 					},
 					success: function(response) {
 						if (response.success) {
@@ -1055,11 +1055,11 @@ class WritgoAI_License_Admin {
 				$result.removeClass('visible has-update').html('');
 
 				$.ajax({
-					url: writgocmsLicense.ajaxUrl,
+					url: writgoaiLicense.ajaxUrl,
 					type: 'POST',
 					data: {
 						action: 'writgoai_check_updates',
-						nonce: writgocmsLicense.nonce
+						nonce: writgoaiLicense.nonce
 					},
 					success: function(response) {
 						if (response.success) {
@@ -1069,7 +1069,7 @@ class WritgoAI_License_Admin {
 
 							if (response.data.has_update) {
 								$result.addClass('has-update');
-								html += '<p><a href="' + writgocmsLicense.updateUrl + '" class="button button-primary">Ga naar Updates</a></p>';
+								html += '<p><a href="' + writgoaiLicense.updateUrl + '" class="button button-primary">Ga naar Updates</a></p>';
 							}
 
 							$result.html(html).addClass('visible');
@@ -1105,11 +1105,11 @@ class WritgoAI_License_Admin {
 			$message.removeClass('success error').text('');
 
 			$.ajax({
-				url: writgocmsLicense.ajaxUrl,
+				url: writgoaiLicense.ajaxUrl,
 				type: 'POST',
 				data: {
 					action: 'writgoai_login',
-					nonce: writgocmsLicense.nonce,
+					nonce: writgoaiLicense.nonce,
 					email: email,
 					password: password
 				},
@@ -1144,11 +1144,11 @@ class WritgoAI_License_Admin {
 			$message.removeClass('success error').text('');
 
 			$.ajax({
-				url: writgocmsLicense.ajaxUrl,
+				url: writgoaiLicense.ajaxUrl,
 				type: 'POST',
 				data: {
 					action: 'writgoai_logout',
-					nonce: writgocmsLicense.nonce
+					nonce: writgoaiLicense.nonce
 				},
 				success: function(response) {
 					if (response.success) {

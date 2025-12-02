@@ -83,7 +83,7 @@ class WritgoAI_Setup_Wizard {
 			__( 'WritgoAI Setup Wizard', 'writgoai' ),
 			__( 'Setup Wizard', 'writgoai' ),
 			'manage_options',
-			'writgocms-setup-wizard',
+			'writgoai-setup-wizard',
 			array( $this, 'render_wizard' )
 		);
 	}
@@ -98,7 +98,7 @@ class WritgoAI_Setup_Wizard {
 			
 			// Don't redirect if wizard already completed.
 			if ( ! get_option( 'writgoai_wizard_completed', false ) ) {
-				wp_safe_redirect( admin_url( 'admin.php?page=writgocms-setup-wizard' ) );
+				wp_safe_redirect( admin_url( 'admin.php?page=writgoai-setup-wizard' ) );
 				exit;
 			}
 		}

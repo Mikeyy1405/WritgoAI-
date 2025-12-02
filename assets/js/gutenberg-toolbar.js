@@ -8,7 +8,7 @@
  * - Full block rewriting
  * Adds AI-powered block toolbar and sidebar panel to Gutenberg.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 ( function( wp ) {
@@ -101,7 +101,7 @@
 	/**
 	 * AI Toolbar Component
 	 */
-	function WritgoCMSAIToolbar( props ) {
+	function WritgoAIAIToolbar( props ) {
 		var value = props.value;
 		var onChange = props.onChange;
 		var isActive = props.isActive;
@@ -799,7 +799,7 @@
 		title: 'WritgoAI',
 		tagName: 'span',
 		className: 'writgoai-ai-enhanced',
-		edit: WritgoCMSAIToolbar
+		edit: WritgoAIAIToolbar
 	} );
 
 } )( window.wp );

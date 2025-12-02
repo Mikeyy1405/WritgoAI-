@@ -61,7 +61,7 @@ class WritgoAI_Social_Media_Admin {
 			'Social Media',
 			'📱 Social Media',
 			'manage_options',
-			'writgocms-social-media',
+			'writgoai-social-media',
 			array( $this, 'render_social_media_page' )
 		);
 	}
@@ -72,19 +72,19 @@ class WritgoAI_Social_Media_Admin {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_admin_scripts( $hook ) {
-		if ( strpos( $hook, 'writgocms-social-media' ) === false ) {
+		if ( strpos( $hook, 'writgoai-social-media' ) === false ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'writgocms-social-media',
+			'writgoai-social-media',
 			WRITGOAI_URL . 'assets/css/social-media.css',
 			array(),
 			WRITGOAI_VERSION
 		);
 
 		wp_enqueue_script(
-			'writgocms-social-media',
+			'writgoai-social-media',
 			WRITGOAI_URL . 'assets/js/social-media.js',
 			array( 'jquery' ),
 			WRITGOAI_VERSION,
@@ -92,8 +92,8 @@ class WritgoAI_Social_Media_Admin {
 		);
 
 		wp_localize_script(
-			'writgocms-social-media',
-			'writgocmsSocialMedia',
+			'writgoai-social-media',
+			'writgoaiSocialMedia',
 			array(
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
 				'nonce'     => wp_create_nonce( 'writgoai_ai_nonce' ),
@@ -139,7 +139,7 @@ class WritgoAI_Social_Media_Admin {
 		$templates  = $this->manager->get_template_types();
 		$best_times = $this->manager->get_best_posting_times();
 		?>
-		<div class="wrap writgocms-social-media">
+		<div class="wrap writgoai-social-media">
 			<h1 class="social-media-header">
 				<span class="social-media-logo">📱</span>
 				Social Media Manager
@@ -148,23 +148,23 @@ class WritgoAI_Social_Media_Admin {
 
 			<!-- Navigation Tabs -->
 			<nav class="social-media-nav">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-social-media&tab=dashboard' ) ); ?>" 
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-social-media&tab=dashboard' ) ); ?>" 
 				   class="nav-tab <?php echo 'dashboard' === $active_tab ? 'active' : ''; ?>">
 					📊 Dashboard
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-social-media&tab=create' ) ); ?>" 
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-social-media&tab=create' ) ); ?>" 
 				   class="nav-tab <?php echo 'create' === $active_tab ? 'active' : ''; ?>">
 					✍️ Nieuwe Post
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-social-media&tab=calendar' ) ); ?>" 
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-social-media&tab=calendar' ) ); ?>" 
 				   class="nav-tab <?php echo 'calendar' === $active_tab ? 'active' : ''; ?>">
 					📅 Kalender
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-social-media&tab=hashtags' ) ); ?>" 
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-social-media&tab=hashtags' ) ); ?>" 
 				   class="nav-tab <?php echo 'hashtags' === $active_tab ? 'active' : ''; ?>">
 					#️⃣ Hashtags
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-social-media&tab=analytics' ) ); ?>" 
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-social-media&tab=analytics' ) ); ?>" 
 				   class="nav-tab <?php echo 'analytics' === $active_tab ? 'active' : ''; ?>">
 					📈 Analytics
 				</a>
@@ -250,10 +250,10 @@ class WritgoAI_Social_Media_Admin {
 			<div class="social-card actions-card">
 				<h3>⚡ Snelle Acties</h3>
 				<div class="quick-actions">
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-social-media&tab=create' ) ); ?>" class="action-button primary">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-social-media&tab=create' ) ); ?>" class="action-button primary">
 						📝 Nieuwe Post Maken
 					</a>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-social-media&tab=calendar' ) ); ?>" class="action-button secondary">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-social-media&tab=calendar' ) ); ?>" class="action-button secondary">
 						📅 Planning Kalender
 					</a>
 				</div>

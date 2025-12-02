@@ -85,7 +85,7 @@ class WritgoAI_Plugin_Updater {
         }
         
         wp_enqueue_script(
-            'writgocms-plugin-updater',
+            'writgoai-plugin-updater',
             plugin_dir_url($this->plugin_file) . 'assets/js/plugin-updater.js',
             ['jquery'],
             $this->current_version,
@@ -93,8 +93,8 @@ class WritgoAI_Plugin_Updater {
         );
         
         wp_localize_script(
-            'writgocms-plugin-updater',
-            'writgocmsUpdater',
+            'writgoai-plugin-updater',
+            'writgoaiUpdater',
             [
                 'nonce' => wp_create_nonce('writgoai_update_nonce'),
                 'ajaxurl' => admin_url('admin-ajax.php'),

@@ -169,7 +169,7 @@ class WritgoAI_Credit_Manager {
         // Localize script for AJAX operations.
         wp_localize_script(
             'jquery',
-            'writgocmsCredits',
+            'writgoaiCredits',
             array(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'writgoai_credits_nonce' ),
@@ -630,7 +630,7 @@ class WritgoAI_Credit_Manager {
             </div>
 
             <p style="margin-top: 15px; margin-bottom: 0;">
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-license' ) ); ?>" class="button button-small">
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-license' ) ); ?>" class="button button-small">
                     <?php esc_html_e( 'View Details', 'writgoai' ); ?>
                 </a>
             </p>
@@ -663,7 +663,7 @@ class WritgoAI_Credit_Manager {
                 number_format( $credit_info['credits_remaining'] ),
                 esc_html__( 'credits', 'writgoai' )
             ),
-            'href'  => admin_url( 'admin.php?page=writgocms-license' ),
+            'href'  => admin_url( 'admin.php?page=writgoai-license' ),
             'meta'  => array(
                 'title' => sprintf(
                     /* translators: 1: remaining credits, 2: total credits */

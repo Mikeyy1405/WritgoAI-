@@ -73,7 +73,7 @@ class WritgoAI_GSC_Admin_Settings {
 			__( 'Search Console', 'writgoai' ),
 			'🔎 ' . __( 'Search Console', 'writgoai' ),
 			'manage_options',
-			'writgocms-gsc',
+			'writgoai-gsc',
 			array( $this, 'render_dashboard_page' )
 		);
 
@@ -83,7 +83,7 @@ class WritgoAI_GSC_Admin_Settings {
 			__( 'CTR Optimalisatie', 'writgoai' ),
 			'📊 ' . __( 'CTR Optimalisatie', 'writgoai' ),
 			'manage_options',
-			'writgocms-ctr-optimizer',
+			'writgoai-ctr-optimizer',
 			array( $this, 'render_ctr_optimizer_page' )
 		);
 
@@ -93,7 +93,7 @@ class WritgoAI_GSC_Admin_Settings {
 			__( 'GSC Instellingen', 'writgoai' ),
 			'🔧 ' . __( 'GSC Instellingen', 'writgoai' ),
 			'manage_options',
-			'writgocms-gsc-settings',
+			'writgoai-gsc-settings',
 			array( $this, 'render_settings_page' )
 		);
 	}
@@ -113,9 +113,9 @@ class WritgoAI_GSC_Admin_Settings {
 	 */
 	public function enqueue_admin_scripts( $hook ) {
 		$allowed_hooks = array(
-			'writgoai_page_writgocms-gsc',
-			'writgoai_page_writgocms-ctr-optimizer',
-			'writgoai_page_writgocms-gsc-settings',
+			'writgoai_page_writgoai-gsc',
+			'writgoai_page_writgoai-ctr-optimizer',
+			'writgoai_page_writgoai-gsc-settings',
 		);
 
 		if ( ! in_array( $hook, $allowed_hooks, true ) ) {
@@ -123,14 +123,14 @@ class WritgoAI_GSC_Admin_Settings {
 		}
 
 		wp_enqueue_style(
-			'writgocms-gsc-admin',
+			'writgoai-gsc-admin',
 			WRITGOAI_URL . 'assets/css/gsc-admin.css',
 			array(),
 			WRITGOAI_VERSION
 		);
 
 		wp_enqueue_script(
-			'writgocms-gsc-admin',
+			'writgoai-gsc-admin',
 			WRITGOAI_URL . 'assets/js/gsc-admin.js',
 			array( 'jquery' ),
 			WRITGOAI_VERSION,
@@ -138,8 +138,8 @@ class WritgoAI_GSC_Admin_Settings {
 		);
 
 		wp_localize_script(
-			'writgocms-gsc-admin',
-			'writgocmsGsc',
+			'writgoai-gsc-admin',
+			'writgoaiGsc',
 			array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'nonce'        => wp_create_nonce( 'writgoai_gsc_nonce' ),
@@ -175,7 +175,7 @@ class WritgoAI_GSC_Admin_Settings {
 		$selected_site = $this->provider->get_selected_site();
 		$last_sync     = get_option( 'writgoai_gsc_last_sync', '' );
 		?>
-		<div class="wrap writgoai-settings writgocms-gsc-dashboard">
+		<div class="wrap writgoai-settings writgoai-gsc-dashboard">
 			<h1 class="aiml-header">
 				<span class="aiml-logo">📊</span>
 				<?php esc_html_e( 'Google Search Console Dashboard', 'writgoai' ); ?>
@@ -187,7 +187,7 @@ class WritgoAI_GSC_Admin_Settings {
 						<div class="gsc-icon">🔗</div>
 						<h2><?php esc_html_e( 'Verbind met Google Search Console', 'writgoai' ); ?></h2>
 						<p><?php esc_html_e( 'Verbind je Google Search Console account om search data te bekijken en keyword opportuniteiten te ontdekken.', 'writgoai' ); ?></p>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-gsc-settings' ) ); ?>" class="button button-primary button-hero">
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-gsc-settings' ) ); ?>" class="button button-primary button-hero">
 							⚙️ <?php esc_html_e( 'Configureer GSC Verbinding', 'writgoai' ); ?>
 						</a>
 					</div>
@@ -314,7 +314,7 @@ class WritgoAI_GSC_Admin_Settings {
 			'order'          => 'DESC',
 		) );
 		?>
-		<div class="wrap writgoai-settings writgocms-ctr-optimizer">
+		<div class="wrap writgoai-settings writgoai-ctr-optimizer">
 			<h1 class="aiml-header">
 				<span class="aiml-logo">✨</span>
 				<?php esc_html_e( 'CTR Optimalisatie Tool', 'writgoai' ); ?>

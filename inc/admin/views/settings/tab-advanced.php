@@ -271,11 +271,11 @@ jQuery(document).ready(function($) {
 		$result.text('').removeClass('success error');
 		
 		$.ajax({
-			url: writgocmsAdmin.ajaxUrl,
+			url: writgoaiAdmin.ajaxUrl,
 			type: 'POST',
 			data: {
 				action: 'writgoai_test_api_connection',
-				nonce: writgocmsAdmin.nonce,
+				nonce: writgoaiAdmin.nonce,
 				api_url: $('#writgoai_api_url').val()
 			},
 			success: function(response) {
@@ -304,11 +304,11 @@ jQuery(document).ready(function($) {
 		$button.prop('disabled', true).text('<?php esc_html_e( 'Bezig...', 'writgoai' ); ?>');
 		
 		$.ajax({
-			url: writgocmsAdmin.ajaxUrl,
+			url: writgoaiAdmin.ajaxUrl,
 			type: 'POST',
 			data: {
 				action: 'writgoai_clear_cache',
-				nonce: writgocmsAdmin.nonce
+				nonce: writgoaiAdmin.nonce
 			},
 			success: function(response) {
 				if (response.success) {
@@ -333,15 +333,15 @@ jQuery(document).ready(function($) {
 		$button.prop('disabled', true).text('<?php esc_html_e( 'Bezig...', 'writgoai' ); ?>');
 		
 		$.ajax({
-			url: writgocmsAdmin.ajaxUrl,
+			url: writgoaiAdmin.ajaxUrl,
 			type: 'POST',
 			data: {
 				action: 'writgoai_reset_wizard',
-				nonce: writgocmsAdmin.nonce
+				nonce: writgoaiAdmin.nonce
 			},
 			success: function(response) {
 				if (response.success) {
-					window.location.href = '<?php echo esc_url( admin_url( 'admin.php?page=writgocms-setup-wizard' ) ); ?>';
+					window.location.href = '<?php echo esc_url( admin_url( 'admin.php?page=writgoai-setup-wizard' ) ); ?>';
 				}
 			},
 			complete: function() {

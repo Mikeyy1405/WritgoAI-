@@ -73,7 +73,7 @@ class WritgoAI_Gutenberg_AI_Block {
         }
 
         register_block_type(
-            'writgocms/ai-generator',
+            'writgoai/ai-generator',
             array(
                 'editor_script'   => 'writgoai-block',
                 'editor_style'    => 'writgoai-block-style',
@@ -123,7 +123,7 @@ class WritgoAI_Gutenberg_AI_Block {
 
         wp_localize_script(
             'writgoai-block',
-            'writgocmsAimlBlock',
+            'writgoaiAimlBlock',
             array(
                 'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
                 'nonce'        => wp_create_nonce( 'writgoai_ai_nonce' ),

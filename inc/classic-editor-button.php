@@ -96,7 +96,7 @@ class WritgoAI_Classic_Editor_Button {
         }
 
         wp_enqueue_style(
-            'writgocms-tinymce-ai',
+            'writgoai-tinymce-ai',
             WRITGOAI_URL . 'assets/css/tinymce-ai.css',
             array(),
             WRITGOAI_VERSION
@@ -104,7 +104,7 @@ class WritgoAI_Classic_Editor_Button {
 
         wp_localize_script(
             'jquery',
-            'writgocmsTinymceAiml',
+            'writgoaiTinymceAiml',
             array(
                 'ajaxUrl' => admin_url( 'admin-ajax.php' ),
                 'nonce'   => wp_create_nonce( 'writgoai_ai_nonce' ),

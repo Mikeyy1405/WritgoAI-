@@ -3,7 +3,7 @@
  *
  * Handles communication with the WritgoAI backend API.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 (function(window, $) {

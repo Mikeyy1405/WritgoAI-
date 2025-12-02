@@ -1,7 +1,7 @@
 /**
  * TinyMCE AIML Plugin
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 (function() {

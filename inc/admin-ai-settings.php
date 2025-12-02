@@ -1726,10 +1726,12 @@ class WritgoAI_AI_Admin_Settings {
      * @return bool
      */
     private function is_ai_service_active() {
-        // Check if user is authenticated via WordPress and has active API session.
-        if ( class_exists( 'WritgoAI_Auth_Manager' ) && current_user_can( 'manage_options' ) ) {
+        // Check if user is superuser.
+        if ( class_exists( 'WritgoAI_Auth_Manager' ) ) {
             $auth_manager = WritgoAI_Auth_Manager::get_instance();
-            
+            if ( $auth_manager->is_superuser() ) {
+                return true;
+            }
             if ( $auth_manager->has_valid_session() ) {
                 return true;
             }

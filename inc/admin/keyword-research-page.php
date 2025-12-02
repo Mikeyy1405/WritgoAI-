@@ -52,7 +52,7 @@ class WritgoAI_Keyword_Research_Page {
 			__( 'Keyword Research', 'writgoai' ),
 			__( '🔑 Keyword Research', 'writgoai' ),
 			'edit_posts',
-			'writgocms-keyword-research',
+			'writgoai-keyword-research',
 			array( $this, 'render_page' )
 		);
 	}
@@ -63,19 +63,19 @@ class WritgoAI_Keyword_Research_Page {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( 'writgoai_page_writgocms-keyword-research' !== $hook ) {
+		if ( 'writgoai_page_writgoai-keyword-research' !== $hook ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'writgocms-keyword-research',
+			'writgoai-keyword-research',
 			WRITGOAI_URL . 'assets/css/keyword-research.css',
 			array(),
 			WRITGOAI_VERSION
 		);
 
 		wp_enqueue_script(
-			'writgocms-keyword-research',
+			'writgoai-keyword-research',
 			WRITGOAI_URL . 'assets/js/keyword-research.js',
 			array( 'jquery' ),
 			WRITGOAI_VERSION,
@@ -83,8 +83,8 @@ class WritgoAI_Keyword_Research_Page {
 		);
 
 		wp_localize_script(
-			'writgocms-keyword-research',
-			'writgocmsKeywordResearch',
+			'writgoai-keyword-research',
+			'writgoaiKeywordResearch',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'writgoai_keyword_nonce' ),
@@ -104,7 +104,7 @@ class WritgoAI_Keyword_Research_Page {
 	 */
 	public function render_page() {
 		?>
-		<div class="wrap writgocms-keyword-research">
+		<div class="wrap writgoai-keyword-research">
 			<h1><?php esc_html_e( 'Keyword Research', 'writgoai' ); ?></h1>
 			<p class="description">
 				<?php esc_html_e( 'Search for keywords to analyze their search volume, difficulty, and competition.', 'writgoai' ); ?>
