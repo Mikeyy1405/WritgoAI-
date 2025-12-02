@@ -4,13 +4,13 @@
  * Admin interface for AIMLAPI integration.
  * Nederlandse versie - Dutch interface for WritgoAI.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 (function($) {
     'use strict';
 
-    var WritgoCMSAiml = {
+    var WritgoAIAiml = {
         testType: 'text',
         currentTopicalMap: null,
         creditRefreshInterval: null,
@@ -1245,11 +1245,11 @@
                         $modal.hide();
                         self.showPreview(response.data);
                     } else {
-                        WritgoCMSAiml.showNotification(response.data.message, 'error');
+                        WritgoAIAiml.showNotification(response.data.message, 'error');
                     }
                 },
                 error: function() {
-                    WritgoCMSAiml.showNotification('Connection error', 'error');
+                    WritgoAIAiml.showNotification('Connection error', 'error');
                 },
                 complete: function() {
                     $btn.prop('disabled', false).html('🚀 Start Verbetering');
@@ -1349,14 +1349,14 @@
                 success: function(response) {
                     if (response.success) {
                         $('#preview-modal').hide();
-                        WritgoCMSAiml.showNotification(response.data.message, 'success');
+                        WritgoAIAiml.showNotification(response.data.message, 'success');
                         self.loadPosts();
                     } else {
-                        WritgoCMSAiml.showNotification(response.data.message, 'error');
+                        WritgoAIAiml.showNotification(response.data.message, 'error');
                     }
                 },
                 error: function() {
-                    WritgoCMSAiml.showNotification('Connection error', 'error');
+                    WritgoAIAiml.showNotification('Connection error', 'error');
                 },
                 complete: function() {
                     $btnDraft.prop('disabled', false).html('💾 Opslaan als Concept');
@@ -1402,18 +1402,18 @@
                     if (response.success) {
                         $progressFill.css('width', '100%');
                         $progressText.text('Voltooid! ' + response.data.success + ' succesvol, ' + response.data.failed + ' mislukt.');
-                        WritgoCMSAiml.showNotification('Bulk verbetering voltooid!', 'success');
+                        WritgoAIAiml.showNotification('Bulk verbetering voltooid!', 'success');
 
                         setTimeout(function() {
                             $('#bulk-modal').hide();
                             self.loadPosts();
                         }, 2000);
                     } else {
-                        WritgoCMSAiml.showNotification(response.data.message, 'error');
+                        WritgoAIAiml.showNotification(response.data.message, 'error');
                     }
                 },
                 error: function() {
-                    WritgoCMSAiml.showNotification('Connection error', 'error');
+                    WritgoAIAiml.showNotification('Connection error', 'error');
                 },
                 complete: function() {
                     $btn.prop('disabled', false).html('▶️ Start Bulk Actie');
@@ -1562,7 +1562,7 @@
     };
 
     $(document).ready(function() {
-        WritgoCMSAiml.init();
+        WritgoAIAiml.init();
         PostUpdater.init();
     });
 

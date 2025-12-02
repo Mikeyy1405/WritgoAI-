@@ -3,7 +3,7 @@
  *
  * Handles text selection in the Gutenberg editor and shows a floating toolbar.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 (function(window, $) {

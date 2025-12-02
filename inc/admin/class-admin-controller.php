@@ -54,14 +54,14 @@ class WritgoAI_Admin_Controller {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_beginner_assets( $hook ) {
-		// Only load on WritgoAI admin pages.
-		if ( strpos( $hook, 'writgoai' ) === false ) {
+		// Load on all WritgoAI admin pages (both writgoai and legacy writgocms slugs).
+		if ( strpos( $hook, 'writgoai' ) === false && strpos( $hook, 'writgocms' ) === false ) {
 			return;
 		}
 
 		// Enqueue beginner CSS.
 		wp_enqueue_style(
-			'writgocms-admin-beginner',
+			'writgoai-admin-beginner',
 			WRITGOAI_URL . 'assets/css/admin-beginner.css',
 			array(),
 			WRITGOAI_VERSION
@@ -69,7 +69,7 @@ class WritgoAI_Admin_Controller {
 
 		// Enqueue beginner JS.
 		wp_enqueue_script(
-			'writgocms-admin-beginner',
+			'writgoai-admin-beginner',
 			WRITGOAI_URL . 'assets/js/admin-beginner.js',
 			array( 'jquery' ),
 			WRITGOAI_VERSION,
@@ -77,8 +77,8 @@ class WritgoAI_Admin_Controller {
 		);
 
 		wp_localize_script(
-			'writgocms-admin-beginner',
-			'writgocmsAdmin',
+			'writgoai-admin-beginner',
+			'writgoaiAdmin',
 			array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'writgoai_admin_nonce' ),
@@ -100,8 +100,8 @@ class WritgoAI_Admin_Controller {
 
 		// Add auth nonce for authentication endpoints.
 		wp_localize_script(
-			'writgocms-admin-beginner',
-			'writgocmsAuth',
+			'writgoai-admin-beginner',
+			'writgoaiAuth',
 			array(
 				'nonce' => wp_create_nonce( 'writgoai_auth_nonce' ),
 			)

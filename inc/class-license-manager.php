@@ -495,7 +495,7 @@ class WritgoAI_License_Manager {
 			echo '<div class="notice notice-warning is-dismissible">';
 			echo '<p><strong>WritgoAI:</strong> ';
 			echo esc_html__( 'Activeer je licentie om WritgoAI te gebruiken.', 'writgoai' );
-			echo ' <a href="' . esc_url( admin_url( 'admin.php?page=writgocms-license' ) ) . '">';
+			echo ' <a href="' . esc_url( admin_url( 'admin.php?page=writgoai-license' ) ) . '">';
 			echo esc_html__( 'Licentie activeren', 'writgoai' );
 			echo '</a></p></div>';
 			return;

@@ -4,7 +4,7 @@
  * Handles Social Media multi-channel posting functionality.
  * Nederlandse versie - Dutch interface for WritgoAI.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 (function($) {

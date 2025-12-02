@@ -1,7 +1,7 @@
 /**
  * Gutenberg AIML Block
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 (function(wp) {

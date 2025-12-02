@@ -41,7 +41,7 @@ $wizard_completed = $controller->is_wizard_completed();
 				?>
 			</p>
 			<?php if ( ! $wizard_completed ) : ?>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-setup-wizard' ) ); ?>" class="button button-primary button-hero">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-setup-wizard' ) ); ?>" class="button button-primary button-hero">
 					<?php esc_html_e( 'Start Setup Wizard', 'writgoai' ); ?> →
 				</a>
 			<?php endif; ?>

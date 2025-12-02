@@ -1,9 +1,9 @@
 /**
- * WritgoCMS Theme JavaScript
+ * WritgoAI Theme JavaScript
  *
  * Handles mobile navigation, smooth scrolling, animations, and other interactive elements.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 ( function() {

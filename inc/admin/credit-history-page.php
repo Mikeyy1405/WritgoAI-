@@ -63,12 +63,12 @@ class WritgoAI_Credit_History_Page {
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		if ( 'writgoai_page_writgocms-credit-history' !== $hook ) {
+		if ( 'writgoai_page_writgoai-credit-history' !== $hook ) {
 			return;
 		}
 
 		wp_enqueue_style(
-			'writgocms-credit-history',
+			'writgoai-credit-history',
 			WRITGOAI_URL . 'assets/css/admin-ai.css',
 			array(),
 			WRITGOAI_VERSION

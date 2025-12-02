@@ -156,13 +156,27 @@ class WritgoAI_AI_Provider {
      * @return string
      */
     private function get_api_key() {
-        // First, try to get API key from Auth Manager.
+        // For superuser, use server-side configured API key from wp-config or environment.
         if ( class_exists( 'WritgoAI_Auth_Manager' ) ) {
             $auth_manager = WritgoAI_Auth_Manager::get_instance();
-            $api_key = $auth_manager->get_api_key();
+            
+            // Superuser gets access via stored/configured API key.
+            if ( $auth_manager->is_superuser() ) {
+                // Try wp-config constant first.
+                if ( defined( 'WRITGO_AI_API_KEY' ) && WRITGO_AI_API_KEY ) {
+                    return WRITGO_AI_API_KEY;
+                }
+                // Try environment variable.
+                $env_key = getenv( 'WRITGO_AI_API_KEY' );
+                if ( $env_key ) {
+                    return $env_key;
+                }
+            }
 
-            if ( ! empty( $api_key ) ) {
-                return $api_key;
+            // Try auth manager token.
+            $token = $auth_manager->get_api_key();
+            if ( ! empty( $token ) ) {
+                return $token;
             }
         }
 
@@ -197,6 +211,11 @@ class WritgoAI_AI_Provider {
         // Check if Auth Manager has a valid session.
         if ( class_exists( 'WritgoAI_Auth_Manager' ) ) {
             $auth_manager = WritgoAI_Auth_Manager::get_instance();
+            
+            // Superuser always has access.
+            if ( $auth_manager->is_superuser() ) {
+                return true;
+            }
             
             if ( ! $auth_manager->has_valid_session() ) {
                 return new WP_Error(

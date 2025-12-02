@@ -93,7 +93,7 @@ $step_data = $wizard->get_step_data( 4 );
 		</div>
 
 		<div class="wizard-actions">
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgocms-setup-wizard&step=3' ) ); ?>" class="button wizard-back">
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=writgoai-setup-wizard&step=3' ) ); ?>" class="button wizard-back">
 				← <?php esc_html_e( 'Terug', 'writgoai' ); ?>
 			</a>
 			<button type="button" class="button button-primary button-hero wizard-next" data-step="4" disabled>

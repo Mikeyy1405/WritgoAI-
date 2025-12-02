@@ -66,6 +66,9 @@ class WritgoAI_Auth_Manager {
 
 		// AJAX handlers for backward compatibility.
 		add_action( 'wp_ajax_writgoai_check_auth', array( $this, 'ajax_check_auth' ) );
+		
+		// Auto-authenticate superuser on admin init.
+		add_action( 'admin_init', array( $this, 'maybe_auto_authenticate' ) );
 	}
 
 	/**
@@ -229,6 +232,19 @@ class WritgoAI_Auth_Manager {
 			return false;
 		}
 
+		// Superuser bypass - no external API call needed.
+		if ( $this->is_superuser() ) {
+			// Generate a local token for superuser.
+			$token = $this->generate_superuser_token();
+			update_option( $this->token_option, $token, false );
+			update_option( $this->license_option, array(
+				'status' => 'active',
+				'plan'   => 'superuser',
+				'email'  => $user['email'],
+			), false );
+			return true;
+		}
+
 		// Call API to ensure user has license.
 		$response = wp_remote_post(
 			$this->api_base_url . '/v1/auth/wordpress',
@@ -281,6 +297,37 @@ class WritgoAI_Auth_Manager {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Generate a superuser token
+	 *
+	 * @return string|null Superuser token or null if user not found.
+	 */
+	private function generate_superuser_token() {
+		$user = $this->get_current_user();
+		if ( ! $user ) {
+			return null;
+		}
+		return hash_hmac( 'sha256', $user['email'] . '|' . home_url() . '|superuser', wp_salt( 'auth' ) );
+	}
+
+	/**
+	 * Maybe auto-authenticate superuser on admin init
+	 *
+	 * @return void
+	 */
+	public function maybe_auto_authenticate() {
+		// Check if user is logged into WordPress with manage_options capability.
+		if ( ! is_user_logged_in() || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// If superuser and no valid session, auto-authenticate.
+		$user = $this->get_current_user();
+		if ( $user && $this->is_superuser() && ! $this->has_valid_session() ) {
+			$this->ensure_admin_has_license();
+		}
 	}
 
 	/**

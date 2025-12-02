@@ -71,7 +71,7 @@ class WritgoAI_Gutenberg_Toolbar {
 		$links_limit = get_option( 'writgoai_toolbar_links_limit', 5 );
 
 		wp_enqueue_script(
-			'writgocms-gutenberg-toolbar',
+			'writgoai-gutenberg-toolbar',
 			WRITGOAI_URL . 'assets/js/gutenberg-toolbar.js',
 			array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n', 'wp-compose', 'wp-data', 'wp-rich-text', 'wp-plugins', 'wp-edit-post' ),
 			WRITGOAI_VERSION,
@@ -79,15 +79,15 @@ class WritgoAI_Gutenberg_Toolbar {
 		);
 
 		wp_enqueue_style(
-			'writgocms-gutenberg-toolbar-style',
+			'writgoai-gutenberg-toolbar-style',
 			WRITGOAI_URL . 'assets/css/gutenberg-toolbar.css',
 			array(),
 			WRITGOAI_VERSION
 		);
 
 		wp_localize_script(
-			'writgocms-gutenberg-toolbar',
-			'writgocmsToolbar',
+			'writgoai-gutenberg-toolbar',
+			'writgoaiToolbar',
 			array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'nonce'        => wp_create_nonce( 'writgoai_toolbar_nonce' ),

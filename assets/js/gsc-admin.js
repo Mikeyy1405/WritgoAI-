@@ -3,13 +3,13 @@
  *
  * Admin interface for Google Search Console integration.
  *
- * @package WritgoCMS
+ * @package WritgoAI
  */
 
 (function($) {
     'use strict';
 
-    var WritgoCMSGsc = {
+    var WritgoAIGsc = {
         currentOpportunityType: 'quick_win',
         selectedPostId: null,
 
@@ -737,7 +737,7 @@
     };
 
     $(document).ready(function() {
-        WritgoCMSGsc.init();
+        WritgoAIGsc.init();
     });
 
 })(jQuery);
