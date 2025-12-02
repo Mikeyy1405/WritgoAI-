@@ -62,7 +62,7 @@ class WritgoAI_Auth_Manager {
 	 */
 	private function __construct() {
 		// Get API URL from options or use default.
-		$this->api_base_url = get_option( 'writgoai_api_url', 'https://api.writgoai.com' );
+		$this->api_base_url = get_option( 'writgoai_api_url', 'https://api.writgo.nl' );
 
 		// AJAX handlers for backward compatibility.
 		add_action( 'wp_ajax_writgoai_check_auth', array( $this, 'ajax_check_auth' ) );

@@ -68,7 +68,7 @@ class WritgoAI_API_Client {
 	 */
 	private function __construct() {
 		// Get API URL from options or use default.
-		$this->api_url = get_option( 'writgoai_api_url', 'https://api.writgoai.com' );
+		$this->api_url = get_option( 'writgoai_api_url', 'https://api.writgo.nl' );
 		
 		// Get license key from options (backward compatibility).
 		$this->license_key = get_option( 'writgoai_license_key', '' );

@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$api_url = get_option( 'writgoai_api_url', 'https://api.writgo.ai' );
+$api_url = get_option( 'writgoai_api_url', 'https://api.writgo.nl' );
 $notifications = get_option( 'writgoai_notifications', 1 );
 $image_size = get_option( 'writgoai_image_size', '1024x1024' );
 $image_quality = get_option( 'writgoai_image_quality', 'standard' );
@@ -47,7 +47,7 @@ $image_quality = get_option( 'writgoai_image_quality', 'standard' );
 				name="writgoai_api_url" 
 				value="<?php echo esc_url( $api_url ); ?>" 
 				class="regular-text"
-				placeholder="https://api.writgo.ai"
+				placeholder="https://api.writgo.nl"
 			/>
 			<p class="description">
 				<?php esc_html_e( 'De URL van de WritgoAI API server. Wijzig dit alleen als instructie van support.', 'writgoai' ); ?>

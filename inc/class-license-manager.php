@@ -34,7 +34,7 @@ class WritgoAI_License_Manager {
 	 *
 	 * @var string
 	 */
-	private $api_base_url = 'https://api.writgoai.com/v1';
+	private $api_base_url = 'https://api.writgo.nl/v1';
 
 	/**
 	 * License status cache key

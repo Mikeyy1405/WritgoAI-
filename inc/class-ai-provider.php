@@ -29,7 +29,7 @@ class WritgoAI_AI_Provider {
      *
      * @var string
      */
-    private $api_base_url = 'https://api.writgoai.com';
+    private $api_base_url = 'https://api.writgo.nl';
 
     /**
      * Available text models via AI API

@@ -59,7 +59,7 @@ class WritgoAI_License_Client {
         // Allow filtering the API base URL.
         $this->api_base_url = apply_filters( 
             'writgoai_license_api_url', 
-            'https://api.writgoai.com/v1' 
+            'https://api.writgo.nl/v1' 
         );
     }
 

@@ -1075,7 +1075,7 @@ class WritgoAI_AI_Admin_Settings {
                             <label for="writgoai_api_url">API URL (Optioneel)</label>
                         </th>
                         <td>
-                            <input type="url" id="writgoai_api_url" name="writgoai_api_url" value="<?php echo esc_attr( get_option( 'writgoai_api_url', 'https://api.writgoai.com' ) ); ?>" class="regular-text" placeholder="https://api.writgoai.com">
+                            <input type="url" id="writgoai_api_url" name="writgoai_api_url" value="<?php echo esc_attr( get_option( 'writgoai_api_url', 'https://api.writgo.nl' ) ); ?>" class="regular-text" placeholder="https://api.writgo.nl">
                             <p class="description">API endpoint URL. Laat standaard staan tenzij je een custom server gebruikt.</p>
                         </td>
                     </tr>

@@ -29,7 +29,7 @@ class WritgoAI_AI_Proxy {
 	 *
 	 * @var string
 	 */
-	private $api_base_url = 'https://api.aimlapi.com/v1';
+	private $api_base_url = 'https://api.writgo.nl';
 
 	/**
 	 * REST API namespace
