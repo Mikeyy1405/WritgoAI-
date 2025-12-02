@@ -21,12 +21,18 @@
 			},
 
 			loadStats: function() {
+				// Use writgoaiAdmin if available, otherwise skip
+				if (typeof writgoaiAdmin === 'undefined') {
+					console.warn('writgoaiAdmin is not defined');
+					return;
+				}
+				
 				$.ajax({
-					url: writgoaiDashboard.ajaxUrl,
+					url: writgoaiAdmin.ajaxUrl,
 					method: 'POST',
 					data: {
 						action: 'writgoai_get_dashboard_stats',
-						nonce: writgoaiDashboard.nonce
+						nonce: writgoaiAdmin.nonce
 					},
 					success: function(response) {
 						if (response.success) {
